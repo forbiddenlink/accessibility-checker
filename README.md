@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Accessibility Color Checker
+
+A modern, professional web application for checking color contrast accessibility according to WCAG guidelines. Built with Next.js, TypeScript, and Tailwind CSS.
+
+![Accessibility Color Checker Screenshot](public/screenshot.png)
+
+## Features
+
+- 🎨 Real-time color contrast checking
+- ✅ WCAG 2.1 compliance verification (AA and AAA levels)
+- 👁 Color blindness simulation
+- 💾 Save and manage color palettes
+- 📱 Fully responsive design
+- 🔄 RESTful API for external use
+- ⌨️ Keyboard shortcuts for improved accessibility
+- 📊 Detailed contrast analysis and suggestions
+- 📤 Export results in multiple formats
+
+## Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Deployment**: [Vercel](https://vercel.com)
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/accessibility-checker.git
+   cd accessibility-checker
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## API Usage
+
+The application provides a RESTful API for checking color contrast. Here's a quick example:
+
+```javascript
+fetch('/api/v1/contrast', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    foreground: '#000000',
+    background: '#FFFFFF'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For detailed API documentation, visit `/api/docs` when running the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Color Contrast Calculation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses the following formula for calculating color contrast ratios according to WCAG 2.1:
 
-## Learn More
+1. Calculate relative luminance (L) for each color
+2. Determine contrast ratio: (L1 + 0.05) / (L2 + 0.05)
+   - Where L1 is the lighter color's luminance
+   - And L2 is the darker color's luminance
 
-To learn more about Next.js, take a look at the following resources:
+## WCAG Compliance Levels
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **AA Level**
+  - Normal text (4.5:1 minimum)
+  - Large text (3:1 minimum)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **AAA Level**
+  - Normal text (7:1 minimum)
+  - Large text (4.5:1 minimum)
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/)
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- Color blindness simulation algorithms from [Color Laboratory](https://www.color-blindness.com/)
