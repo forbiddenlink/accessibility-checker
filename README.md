@@ -2,7 +2,6 @@
 
 A modern, professional web application for checking color contrast accessibility according to WCAG guidelines. Built with Next.js, TypeScript, and Tailwind CSS.
 
-![Accessibility Color Checker Screenshot](public/screenshot.png)
 
 ## Features
 
