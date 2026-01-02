@@ -5,9 +5,11 @@ interface ColorPickerProps {
 }
 
 export default function ColorPicker({ label, color, onChange }: ColorPickerProps) {
+  const inputId = label.replace(/\s+/g, '-').toLowerCase();
+
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-slate-700">{label}</label>
+      <label htmlFor={inputId} className="block text-sm font-medium text-slate-700">{label}</label>
       <div className="flex gap-3">
         <div className="relative">
           <input
@@ -15,9 +17,11 @@ export default function ColorPicker({ label, color, onChange }: ColorPickerProps
             value={color}
             onChange={(e) => onChange(e.target.value)}
             className="h-10 w-20 rounded-lg cursor-pointer border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            aria-label={`${label} Picker`}
           />
         </div>
         <input
+          id={inputId}
           type="text"
           value={color}
           onChange={(e) => onChange(e.target.value)}

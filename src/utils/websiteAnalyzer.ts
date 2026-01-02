@@ -1,6 +1,6 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { chromium } from '@playwright/test';
-import { runAccessibilityTests, AccessibilityTestResult } from './accessibilityTesting';
+import { AccessibilityTestResult } from './accessibilityTesting';
 import validate from 'html-validator';
 
 export interface WebsiteAnalysisResult {
@@ -54,7 +54,7 @@ export class WebsiteAnalyzer {
 
   private async crawlPage(currentUrl: string, baseUrl: string): Promise<string[]> {
     if (!this.context) throw new Error('Browser context not initialized');
-    
+
     const page = await this.context.newPage();
     const newUrls: string[] = [];
 
@@ -76,8 +76,8 @@ export class WebsiteAnalyzer {
         ...links.filter(url => {
           try {
             const urlObj = new URL(url);
-            return urlObj.hostname === baseUrlObj.hostname && 
-                   !this.visitedUrls.has(url);
+            return urlObj.hostname === baseUrlObj.hostname &&
+              !this.visitedUrls.has(url);
           } catch {
             return false;
           }
@@ -98,8 +98,33 @@ export class WebsiteAnalyzer {
     // Wait for network idle
     await page.waitForLoadState('networkidle');
 
-    // Run accessibility tests
-    const accessibilityResults = await runAccessibilityTests();
+    // Inject axe-core
+    await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+
+    // Run accessibility tests inside the page
+    const accessibilityResults = await page.evaluate(async () => {
+      // @ts-ignore
+      const results = await window.axe.run('body', {
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+        }
+      });
+
+      return {
+        violations: results.violations.map((v: any) => ({
+          id: v.id,
+          impact: v.impact,
+          description: v.description,
+          nodes: v.nodes.map((n: any) => n.html),
+          help: v.help,
+          helpUrl: v.helpUrl
+        })),
+        passes: results.passes.length,
+        incomplete: results.incomplete.length,
+        inapplicable: results.inapplicable.length
+      };
+    });
 
     // Get resource counts
     const resources = await page.evaluate(() => ({
@@ -127,7 +152,7 @@ export class WebsiteAnalyzer {
     try {
       while (urlsToVisit.length > 0 && pages.length < this.maxPages) {
         const currentUrl = urlsToVisit.shift()!;
-        
+
         if (!this.visitedUrls.has(currentUrl)) {
           const page = await this.context!.newPage();
           const startTime = Date.now();

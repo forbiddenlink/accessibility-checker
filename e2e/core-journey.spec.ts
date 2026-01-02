@@ -1,0 +1,36 @@
+import { test, expect } from '@playwright/test';
+
+test('Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass', async ({ page }) => {
+    // 1. Navigate to home
+    await page.goto('/');
+
+    // 2. Check title
+    await expect(page.getByText('Color Contrast Checker', { exact: true })).toBeVisible();
+
+    // 3. Enter Failing Colors (Grey on Black)
+    const fgInput = page.getByLabel('Text Color', { exact: true });
+    const bgInput = page.getByLabel('Background Color', { exact: true });
+
+    await fgInput.fill('#333333');
+    await bgInput.fill('#000000');
+
+    // 4. Click Check Contrast
+    await page.getByRole('button', { name: 'Check Contrast' }).click();
+
+    // 5. Verify Failure
+    // It should fail WCAG AA
+    await expect(page.getByText('Fail')).toBeVisible();
+
+    // 6. Verify Suggestions Appear
+    await expect(page.getByText('Color Suggestions')).toBeVisible();
+
+    // 7. Click Magic Fix (Apply First Suggestion)
+    // We added "Apply Fix" text in the button
+    await page.getByRole('button', { name: 'Apply Fix' }).first().click();
+
+    // 8. Verify Success
+    // After fix, it should say "AA" or "AAA" (Normal or Large)
+    // We check for the success message or the absence of "Fail"
+    await expect(page.getByText('Pass', { exact: false })).toBeVisible();
+    await expect(page.getByText('Fail')).not.toBeVisible();
+});

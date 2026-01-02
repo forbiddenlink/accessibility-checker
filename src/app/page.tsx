@@ -68,9 +68,12 @@ export default function Home() {
     results,
     loading,
     error,
-    checkContrast
+
+    checkContrast,
+    mode,
+    setMode
   } = useColorContrast();
-  
+
   const savedPalettesRef = useRef<{ setShowSaveDialog: (show: boolean) => void }>(null);
 
   // Keyboard shortcuts
@@ -80,14 +83,14 @@ export default function Home() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         checkContrast();
       }
-      
+
       // Ctrl/Cmd + S to save current palette
       if ((e.ctrlKey || e.metaKey) && e.key === 's' && results) {
         e.preventDefault();
         savedPalettesRef.current?.setShowSaveDialog(true);
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [results, checkContrast]);
@@ -106,17 +109,38 @@ export default function Home() {
             <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
               Color Contrast Checker
             </h2>
-            <div className="flex items-center space-x-2">
-              <AccessibilityTip title="About Contrast">
-                <p>Color contrast is important for text readability. WCAG guidelines require a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text.</p>
-              </AccessibilityTip>
-              
-              <AccessibilityTip title="Keyboard Shortcuts">
-                <ul className="list-disc pl-4 space-y-1">
-                  <li>Ctrl/⌘ + Enter: Check contrast</li>
-                  <li>Ctrl/⌘ + S: Save palette</li>
-                </ul>
-              </AccessibilityTip>
+            <div className="flex items-center space-x-4">
+              <div className="flex bg-slate-100 p-1 rounded-lg">
+                <button
+                  onClick={() => setMode('WCAG')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${mode === 'WCAG' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  WCAG 2.1
+                </button>
+                <button
+                  onClick={() => setMode('APCA')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${mode === 'APCA' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  APCA (Beta)
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <AccessibilityTip title="About Contrast">
+                  <p>
+                    {mode === 'WCAG'
+                      ? "Color contrast is important for text readability. WCAG guidelines require a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text."
+                      : "APCA (Advanced Perceptual Contrast Algorithm) is a new method for calculating contrast based on how the human eye actually perceives lightness. It uses Lc (Lightness Contrast) values."}
+                  </p>
+                </AccessibilityTip>
+
+                <AccessibilityTip title="Keyboard Shortcuts">
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>Ctrl/⌘ + Enter: Check contrast</li>
+                    <li>Ctrl/⌘ + S: Save palette</li>
+                  </ul>
+                </AccessibilityTip>
+              </div>
             </div>
           </div>
 
@@ -175,23 +199,24 @@ export default function Home() {
 
         {results && (
           <>
-            <ColorResult results={results} />
-            
+            <ColorResult results={results} mode={mode} />
+
             <ColorPaletteSuggestions
               baseColor={foregroundColor}
               onApplyPalette={handleApplyPalette}
             />
-            
+
             {results.suggestions && results.suggestions.length > 0 && (
-              <ColorSuggestions 
-                foregroundColor={foregroundColor} 
-                backgroundColor={backgroundColor} 
+              <ColorSuggestions
+                foregroundColor={foregroundColor}
+                backgroundColor={backgroundColor}
                 contrastRatio={results.contrast}
                 suggestions={results.suggestions}
                 onApplySuggestion={handleApplyPalette}
+                mode={mode}
               />
             )}
-            
+
             <div className="glass-morphism p-8 rounded-2xl">
               <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
                 Preview
@@ -208,12 +233,12 @@ export default function Home() {
                 <p className="text-base">The quick brown fox jumps over the lazy dog.</p>
               </div>
             </div>
-            
-            <ColorBlindnessSimulation 
-              foregroundColor={foregroundColor} 
-              backgroundColor={backgroundColor} 
+
+            <ColorBlindnessSimulation
+              foregroundColor={foregroundColor}
+              backgroundColor={backgroundColor}
             />
-            
+
             <ExportResults
               foregroundColor={foregroundColor}
               backgroundColor={backgroundColor}
@@ -221,7 +246,7 @@ export default function Home() {
               wcagAA={results.AA}
               wcagAAA={results.AAA}
             />
-            
+
             <SavedColorPalettes
               ref={savedPalettesRef}
               currentForeground={foregroundColor}
@@ -229,7 +254,7 @@ export default function Home() {
               contrastRatio={results.contrast}
               onApplyPalette={handleApplyPalette}
             />
-            
+
             <WcagInformation />
           </>
         )}
@@ -243,7 +268,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 gap-8">
             <WebsiteAnalyzer />
-            
+
             <Suspense fallback={<div>Loading image analyzer...</div>}>
               <ImageAnalyzer />
             </Suspense>
