@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+import { chromium } from '@playwright/test';
 import { FormAnalyzer } from '@/utils/formAnalyzer';
+import { validateUrl } from '@/utils/security';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
@@ -13,30 +16,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // Launch browser
-    const browser = await puppeteer.launch({
-      headless: true,
-    });
+    const securityCheck = await validateUrl(url);
+    if (!securityCheck.valid) {
+      return NextResponse.json(
+        { error: securityCheck.error || 'Invalid Request' },
+        { status: 400 }
+      );
+    }
+
+    const browser = await chromium.launch();
 
     try {
-      const page = await browser.newPage();
-      
-      // Set viewport
-      await page.setViewport({
-        width: 1280,
-        height: 800,
+      const context = await browser.newContext({
+        viewport: {
+          width: 1280,
+          height: 800,
+        },
       });
+      const page = await context.newPage();
 
-      // Navigate to URL
       await page.goto(url, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'networkidle',
         timeout: 30000,
       });
 
-      // Initialize analyzer
       const analyzer = new FormAnalyzer(page);
-      
-      // Analyze forms
       const results = await analyzer.analyzeForms();
 
       return NextResponse.json({ results });

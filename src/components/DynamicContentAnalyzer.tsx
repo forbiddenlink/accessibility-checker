@@ -20,11 +20,11 @@ export default function DynamicContentAnalyzer() {
         body: JSON.stringify({ url }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error('Failed to analyze dynamic content');
+        throw new Error(data?.error || 'Failed to analyze dynamic content');
       }
 
-      const data = await response.json();
       setResults(data.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis');
@@ -184,7 +184,7 @@ export default function DynamicContentAnalyzer() {
 
             {results.liveRegions.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Live Regions</h3>
+                <h3 className="text-xl font-semibold text-white">Live Regions</h3>
                 <div className="grid grid-cols-1 gap-4">
                   {results.liveRegions.map((region, index) => (
                     <div key={index}>
@@ -197,7 +197,7 @@ export default function DynamicContentAnalyzer() {
 
             {results.dynamicElements.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Dynamic Elements</h3>
+                <h3 className="text-xl font-semibold text-white">Dynamic Elements</h3>
                 <div className="grid grid-cols-1 gap-4">
                   {results.dynamicElements.map((element, index) => (
                     <div key={index}>
@@ -210,24 +210,24 @@ export default function DynamicContentAnalyzer() {
 
             {results.issues.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Accessibility Issues</h3>
+                <h3 className="text-xl font-semibold text-white">Accessibility Issues</h3>
                 <div className="space-y-2">
                   {results.issues.map((issue, index) => (
                     <div
                       key={index}
-                      className={`p-4 rounded-lg ${
-                        issue.type === 'error' ? 'bg-red-50 text-red-700' :
-                        issue.type === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                        'bg-blue-50 text-blue-700'
+                      className={`p-4 rounded-lg border ${
+                        issue.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                        issue.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                        'bg-blue-500/10 border-blue-500/20 text-blue-400'
                       }`}
                     >
                       <div className="flex items-start gap-2">
                         <span className="font-medium">{issue.code}:</span>
                         <span>{issue.message}</span>
                       </div>
-                      <p className="mt-2 font-mono text-sm">{issue.element}</p>
+                      <p className="mt-2 font-mono text-sm opacity-80 bg-black/30 p-1 rounded">{issue.element}</p>
                       {issue.suggestion && (
-                        <p className="mt-1 text-sm">
+                        <p className="mt-1 text-sm opacity-80">
                           Suggestion: {issue.suggestion}
                         </p>
                       )}

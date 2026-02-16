@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import type { Page } from '@playwright/test';
 
 export interface FormField {
   type: string;
@@ -34,6 +34,29 @@ export class FormAnalyzer {
 
   async analyzeForms(): Promise<FormAnalysisResult[]> {
     return await this.page.evaluate(() => {
+      const checkFieldLabel = (field: HTMLElement): boolean => {
+        const id = field.getAttribute('id');
+        if (id) {
+          const label = document.querySelector(`label[for="${id}"]`);
+          if (label) return true;
+        }
+
+        if (field.closest('label')) return true;
+
+        return !!(field.getAttribute('aria-label') || field.getAttribute('aria-labelledby'));
+      };
+
+      const checkAriaLabels = (field: HTMLElement): boolean => {
+        const ariaAttributes = [
+          'aria-label',
+          'aria-labelledby',
+          'aria-describedby',
+          'aria-description'
+        ];
+
+        return ariaAttributes.some(attr => field.hasAttribute(attr));
+      };
+
       const forms = document.querySelectorAll('form');
       const results: FormAnalysisResult[] = [];
 
@@ -69,7 +92,7 @@ export class FormAnalyzer {
           const fieldType = (field as HTMLInputElement).type || field.tagName.toLowerCase();
           
           // Check for labels
-          const hasLabel = this.checkFieldLabel(field);
+          const hasLabel = checkFieldLabel(field);
           if (!hasLabel) {
             issues.push({
               code: 'FIELD_NO_LABEL',
@@ -91,7 +114,7 @@ export class FormAnalyzer {
           }
 
           // Check ARIA labels
-          const hasAriaLabels = this.checkAriaLabels(field);
+          const hasAriaLabels = checkAriaLabels(field);
 
           fields.push({
             type: fieldType,
@@ -149,30 +172,4 @@ export class FormAnalyzer {
       return results;
     });
   }
-
-  private checkFieldLabel(field: HTMLElement): boolean {
-    const id = field.getAttribute('id');
-    if (id) {
-      // Check for associated label element
-      const label = document.querySelector(`label[for="${id}"]`);
-      if (label) return true;
-    }
-
-    // Check for wrapping label
-    if (field.closest('label')) return true;
-
-    // Check for aria-label or aria-labelledby
-    return !!(field.getAttribute('aria-label') || field.getAttribute('aria-labelledby'));
-  }
-
-  private checkAriaLabels(field: HTMLElement): boolean {
-    const ariaAttributes = [
-      'aria-label',
-      'aria-labelledby',
-      'aria-describedby',
-      'aria-description'
-    ];
-
-    return ariaAttributes.some(attr => field.hasAttribute(attr));
-  }
-} 
+}

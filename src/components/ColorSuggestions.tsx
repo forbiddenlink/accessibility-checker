@@ -49,17 +49,17 @@ export default function ColorSuggestions({
         Color Suggestions
       </h2>
 
-      <p className="text-slate-600 mb-4">
+      <p className="text-gray-400 mb-4">
         Here are some suggested alternatives that would improve accessibility:
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {suggestions.map((suggestion, index) => (
-          <div key={index} className="bg-white/50 p-4 rounded-lg shadow-sm">
+          <div key={index} className="bg-white/5 p-4 rounded-lg shadow-sm border border-white/5">
             <div className="flex justify-between items-center mb-2">
               <div className="flex flex-col">
-                <span className="font-medium">{suggestion.description}</span>
-                <span className="text-xs text-slate-500">
+                <span className="font-medium text-gray-200">{suggestion.description}</span>
+                <span className="text-xs text-gray-500">
                   {mode === 'APCA'
                     ? `Lc ${Math.round(Math.abs(suggestion.contrast))}`
                     : `${suggestion.contrast.toFixed(2)}:1`}
@@ -67,7 +67,7 @@ export default function ColorSuggestions({
               </div>
               <button
                 onClick={() => onApplySuggestion?.(suggestion.foreground, suggestion.background)}
-                className="flex items-center text-sm text-blue-600 hover:text-blue-800 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
+                className="flex items-center text-sm text-blue-400 hover:text-blue-300 px-3 py-1 rounded-md hover:bg-blue-500/10 transition-colors"
               >
                 <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -76,7 +76,7 @@ export default function ColorSuggestions({
               </button>
             </div>
             <div
-              className="p-4 rounded border"
+              className="p-4 rounded border border-white/10"
               style={{
                 backgroundColor: suggestion.background,
                 color: suggestion.foreground
@@ -84,7 +84,7 @@ export default function ColorSuggestions({
             >
               <p>Sample text with improved contrast</p>
             </div>
-            <div className="mt-2 text-xs text-slate-500">
+            <div className="mt-2 text-xs text-gray-500">
               <span className="mr-2">
                 FG: {suggestion.foreground}
               </span>

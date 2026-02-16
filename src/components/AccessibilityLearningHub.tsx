@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Tab } from '@headlessui/react';
+import { useState } from 'react';
 
 interface LearningResource {
   id: string;
@@ -73,41 +72,58 @@ export default function AccessibilityLearningHub() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">Accessibility Learning Hub</h2>
+    <div className="glass-morphism p-8 rounded-2xl">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+          Accessibility Learning Hub
+        </h2>
+      </div>
       
       {/* Search and Filters */}
       <div className="mb-8 space-y-4">
-        <input
-          type="text"
-          placeholder="Search resources..."
-          className="w-full p-2 border rounded-lg"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className="relative group">
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+            <input
+            type="text"
+            placeholder="Search resources..."
+            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all backdrop-blur-xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            />
+        </div>
         
-        <div className="flex gap-4">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="p-2 border rounded-lg"
-          >
-            <option value="all">All Categories</option>
-            <option value="tutorial">Tutorials</option>
-            <option value="casestudy">Case Studies</option>
-            <option value="bestpractice">Best Practices</option>
-          </select>
+        <div className="flex flex-wrap gap-4">
+          <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
+              >
+                <option value="all">All Categories</option>
+                <option value="tutorial">Tutorials</option>
+                <option value="casestudy">Case Studies</option>
+                <option value="bestpractice">Best Practices</option>
+              </select>
+               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/50">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+          </div>
           
-          <select
-            value={selectedDifficulty}
-            onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="p-2 border rounded-lg"
-          >
-            <option value="all">All Levels</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
+          <div className="relative">
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
+              >
+                <option value="all">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/50">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+          </div>
         </div>
       </div>
 
@@ -116,29 +132,29 @@ export default function AccessibilityLearningHub() {
         {filteredResources.map(resource => (
           <article
             key={resource.id}
-            className="p-6 border rounded-lg hover:shadow-lg transition-shadow"
+            className="p-6 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all hover:border-white/10 hover:shadow-2xl group"
           >
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-semibold">{resource.title}</h3>
+              <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">{resource.title}</h3>
               <span className={`
-                px-3 py-1 rounded-full text-sm
-                ${resource.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                  resource.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'}
+                px-3 py-1 rounded-full text-xs font-medium border
+                ${resource.difficulty === 'beginner' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                  resource.difficulty === 'intermediate' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                  'bg-red-500/10 text-red-400 border-red-500/20'}
               `}>
                 {resource.difficulty}
               </span>
             </div>
             
-            <p className="text-gray-600 mb-4 whitespace-pre-line">{resource.content}</p>
+            <p className="text-gray-400 mb-6 whitespace-pre-line text-sm leading-relaxed">{resource.content}</p>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-auto">
               {resource.tags.map(tag => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
+                  className="px-2 py-1 bg-white/5 border border-white/5 rounded text-xs text-gray-400 font-mono"
                 >
-                  {tag}
+                  #{tag}
                 </span>
               ))}
             </div>

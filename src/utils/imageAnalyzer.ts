@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import type { Page } from '@playwright/test';
 
 export interface ImageDimensions {
   width: number;
@@ -53,6 +53,81 @@ export class ImageAnalyzer {
 
   async analyzeImages(): Promise<ImageAnalysisResult[]> {
     return await this.page.evaluate(() => {
+      const getImageFormat = (url: string): string => {
+        const extension = url.split('.').pop()?.toLowerCase();
+        return extension || 'unknown';
+      };
+
+      const estimateImageSize = (image: HTMLImageElement): number => {
+        const pixelCount = image.naturalWidth * image.naturalHeight;
+        const format = getImageFormat(image.currentSrc || image.src);
+        
+        const bppMap: { [key: string]: number } = {
+          'jpg': 0.25,
+          'jpeg': 0.25,
+          'png': 0.5,
+          'gif': 0.15,
+          'webp': 0.15
+        };
+
+        return pixelCount * (bppMap[format] || 0.3);
+      };
+
+      const measureLoadTime = (image: HTMLImageElement): number => {
+        const entry = performance.getEntriesByName(image.currentSrc || image.src)[0];
+        return entry ? entry.duration : 0;
+      };
+
+      const estimateCompressionRatio = (image: HTMLImageElement, actualSize: number): number => {
+        if (actualSize <= 0) return 0;
+        const rawSize = image.naturalWidth * image.naturalHeight * 3;
+        return rawSize / actualSize;
+      };
+
+      const parseSrcSet = (srcset: string): string[] => {
+        return srcset.split(',').map(src => src.trim().split(' ')[1]).filter(Boolean);
+      };
+
+      const analyzePerformance = (image: HTMLImageElement): ImagePerformance => {
+        const format = getImageFormat(image.currentSrc || image.src);
+        const size = estimateImageSize(image);
+        
+        return {
+          loadTime: measureLoadTime(image),
+          size,
+          format,
+          compressionRatio: estimateCompressionRatio(image, size)
+        };
+      };
+
+      const checkAccessibility = (image: HTMLImageElement): ImageAccessibility => {
+        const alt = image.getAttribute('alt');
+        const role = image.getAttribute('role');
+        const ariaLabel = image.getAttribute('aria-label');
+        const longDesc = image.getAttribute('longdesc');
+        
+        return {
+          hasAlt: alt !== null,
+          altText: alt || undefined,
+          isDecorative: alt === '' || role === 'presentation',
+          role: role || undefined,
+          ariaLabel: ariaLabel || undefined,
+          longDescription: longDesc || undefined
+        };
+      };
+
+      const checkResponsiveness = (image: HTMLImageElement): ResponsiveImageData => {
+        const srcset = image.srcset;
+        const sizes = image.sizes;
+        
+        return {
+          hasSrcSet: !!srcset,
+          hasSizes: !!sizes,
+          isResponsive: !!srcset && !!sizes,
+          breakpoints: srcset ? parseSrcSet(srcset) : undefined
+        };
+      };
+
       const images = document.querySelectorAll('img, [role="img"]');
       const results: ImageAnalysisResult[] = [];
 
@@ -68,7 +143,7 @@ export class ImageAnalyzer {
         };
 
         // Performance analysis
-        const performance = this.analyzePerformance(image);
+        const performance = analyzePerformance(image);
         if (performance.size > 500000) { // 500KB
           issues.push({
             code: 'LARGE_IMAGE_SIZE',
@@ -79,7 +154,7 @@ export class ImageAnalyzer {
         }
 
         // Accessibility checks
-        const accessibility = this.checkAccessibility(image);
+        const accessibility = checkAccessibility(image);
         if (!accessibility.hasAlt && !accessibility.isDecorative) {
           issues.push({
             code: 'MISSING_ALT_TEXT',
@@ -97,7 +172,7 @@ export class ImageAnalyzer {
         }
 
         // Responsive image checks
-        const responsive = this.checkResponsiveness(image);
+        const responsive = checkResponsiveness(image);
         if (!responsive.isResponsive && Math.max(dimensions.width, dimensions.height) > 800) {
           issues.push({
             code: 'NOT_RESPONSIVE',
@@ -108,7 +183,7 @@ export class ImageAnalyzer {
         }
 
         // Aspect ratio checks
-        const aspectRatio = dimensions.width / dimensions.height;
+        const aspectRatio = dimensions.height > 0 ? dimensions.width / dimensions.height : 0;
         if (aspectRatio > 3 || aspectRatio < 0.33) {
           issues.push({
             code: 'EXTREME_ASPECT_RATIO',
@@ -141,81 +216,4 @@ export class ImageAnalyzer {
       return results;
     });
   }
-
-  private analyzePerformance(image: HTMLImageElement): ImagePerformance {
-    const format = this.getImageFormat(image.currentSrc || image.src);
-    const size = this.estimateImageSize(image);
-    
-    return {
-      loadTime: this.measureLoadTime(image),
-      size,
-      format,
-      compressionRatio: this.estimateCompressionRatio(image, size)
-    };
-  }
-
-  private checkAccessibility(image: HTMLImageElement): ImageAccessibility {
-    const alt = image.getAttribute('alt');
-    const role = image.getAttribute('role');
-    const ariaLabel = image.getAttribute('aria-label');
-    const longDesc = image.getAttribute('longdesc');
-    
-    return {
-      hasAlt: alt !== null,
-      altText: alt || undefined,
-      isDecorative: alt === '' || role === 'presentation',
-      role: role || undefined,
-      ariaLabel: ariaLabel || undefined,
-      longDescription: longDesc || undefined
-    };
-  }
-
-  private checkResponsiveness(image: HTMLImageElement): ResponsiveImageData {
-    const srcset = image.srcset;
-    const sizes = image.sizes;
-    
-    return {
-      hasSrcSet: !!srcset,
-      hasSizes: !!sizes,
-      isResponsive: !!srcset && !!sizes,
-      breakpoints: srcset ? this.parseSrcSet(srcset) : undefined
-    };
-  }
-
-  private getImageFormat(url: string): string {
-    const extension = url.split('.').pop()?.toLowerCase();
-    return extension || 'unknown';
-  }
-
-  private estimateImageSize(image: HTMLImageElement): number {
-    // Rough estimation based on dimensions and format
-    const pixelCount = image.naturalWidth * image.naturalHeight;
-    const format = this.getImageFormat(image.currentSrc || image.src);
-    
-    // Rough bytes per pixel for different formats
-    const bppMap: { [key: string]: number } = {
-      'jpg': 0.25,
-      'jpeg': 0.25,
-      'png': 0.5,
-      'gif': 0.15,
-      'webp': 0.15
-    };
-
-    return pixelCount * (bppMap[format] || 0.3);
-  }
-
-  private measureLoadTime(image: HTMLImageElement): number {
-    // Use performance API if available
-    const entry = performance.getEntriesByName(image.currentSrc || image.src)[0];
-    return entry ? entry.duration : 0;
-  }
-
-  private estimateCompressionRatio(image: HTMLImageElement, actualSize: number): number {
-    const rawSize = image.naturalWidth * image.naturalHeight * 3; // 3 bytes per pixel (RGB)
-    return rawSize / actualSize;
-  }
-
-  private parseSrcSet(srcset: string): string[] {
-    return srcset.split(',').map(src => src.trim().split(' ')[1]).filter(Boolean);
-  }
-} 
+}

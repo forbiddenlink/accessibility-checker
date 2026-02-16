@@ -6,55 +6,55 @@ export default function FontSizeAccessibility() {
       </h2>
       
       <div className="space-y-6">
-        <p className="text-slate-700">
-          WCAG guidelines have different contrast requirements based on text size. Here's how text size relates to contrast requirements:
+        <p className="text-gray-300">
+          WCAG guidelines have different contrast requirements based on text size. Here&apos;s how text size relates to contrast requirements:
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/50 p-5 rounded-lg">
-            <h3 className="text-lg font-semibold mb-3 text-slate-800">Normal Text</h3>
+          <div className="bg-white/5 p-5 rounded-lg border border-white/5">
+            <h3 className="text-lg font-semibold mb-3 text-white">Normal Text</h3>
             <div className="flex mb-4">
-              <div className="w-16 h-16 flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg mr-4">
-                <span className="text-lg">Aa</span>
+              <div className="w-16 h-16 flex items-center justify-center bg-blue-500/20 text-blue-400 rounded-lg mr-4 border border-blue-500/20">
+                <span className="text-lg font-bold">Aa</span>
               </div>
               <div>
-                <p className="text-slate-700 mb-1">Less than 18pt (24px) or</p>
-                <p className="text-slate-700 mb-1">Less than 14pt (18.6px) if bold</p>
-                <div className="mt-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">4.5:1 for AA</span>
-                  <span className="ml-2 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">7:1 for AAA</span>
+                <p className="text-gray-400 mb-1">Less than 18pt (24px) or</p>
+                <p className="text-gray-400 mb-1">Less than 14pt (18.6px) if bold</p>
+                <div className="mt-2 text-xs font-medium space-x-2">
+                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">4.5:1 for AA</span>
+                  <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">7:1 for AAA</span>
                 </div>
               </div>
             </div>
-            <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
+            <div className="text-sm text-gray-400 bg-black/20 p-3 rounded border border-white/5">
               Most body text on websites falls into this category, including paragraphs, lists, table content, and navigation links.
             </div>
           </div>
           
-          <div className="bg-white/50 p-5 rounded-lg">
-            <h3 className="text-lg font-semibold mb-3 text-slate-800">Large Text</h3>
+          <div className="bg-white/5 p-5 rounded-lg border border-white/5">
+            <h3 className="text-lg font-semibold mb-3 text-white">Large Text</h3>
             <div className="flex mb-4">
-              <div className="w-16 h-16 flex items-center justify-center bg-gradient-to-br from-green-100 to-green-50 rounded-lg mr-4">
-                <span className="text-2xl">Aa</span>
+              <div className="w-16 h-16 flex items-center justify-center bg-green-500/20 text-green-400 rounded-lg mr-4 border border-green-500/20">
+                <span className="text-2xl font-bold">Aa</span>
               </div>
               <div>
-                <p className="text-slate-700 mb-1">At least 18pt (24px) or</p>
-                <p className="text-slate-700 mb-1">At least 14pt (18.6px) if bold</p>
-                <div className="mt-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">3:1 for AA</span>
-                  <span className="ml-2 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">4.5:1 for AAA</span>
+                <p className="text-gray-400 mb-1">At least 18pt (24px) or</p>
+                <p className="text-gray-400 mb-1">At least 14pt (18.6px) if bold</p>
+                <div className="mt-2 text-xs font-medium space-x-2">
+                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">3:1 for AA</span>
+                  <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">4.5:1 for AAA</span>
                 </div>
               </div>
             </div>
-            <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
+            <div className="text-sm text-gray-400 bg-black/20 p-3 rounded border border-white/5">
               Larger text is generally used for headings, titles, and emphasized content that needs to stand out on the page.
             </div>
           </div>
         </div>
         
-        <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-          <h3 className="text-lg font-medium text-yellow-800 mb-2">Font Size Tip</h3>
-          <p className="text-slate-700">
+        <div className="mt-6 bg-yellow-500/10 border-l-4 border-yellow-500/50 p-4 rounded-r-lg">
+          <h3 className="text-lg font-medium text-yellow-400 mb-2">Font Size Tip</h3>
+          <p className="text-yellow-100/80">
             When designing, remember that the actual perceived size of text depends on the specific font family used. Some fonts appear smaller at the same pixel size compared to others.
           </p>
         </div>

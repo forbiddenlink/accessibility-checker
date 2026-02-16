@@ -89,44 +89,45 @@ export default function ColorPaletteSuggestions({
 
       {!loading && !error && palettes.map((palette, index) => (
         <div key={index} className="mb-8 last:mb-0">
-          <h3 className="text-lg font-semibold text-slate-700 mb-4">
+          <h3 className="text-lg font-semibold text-white mb-4">
             {palette.name}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {palette.colors.map((combo, comboIndex) => (
-              <div
+              <button
                 key={comboIndex}
-                className="bg-white/30 rounded-lg p-4 hover:bg-white/50 transition-colors cursor-pointer"
+                type="button"
+                className="w-full text-left bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer border border-white/5 hover:border-white/10"
                 onClick={() => onApplyPalette(combo.foreground, combo.background)}
               >
                 <div className="flex space-x-2 mb-3">
                   <div
-                    className="w-8 h-8 rounded-md shadow-inner border border-slate-200"
+                    className="w-8 h-8 rounded-md shadow-inner border border-white/10"
                     style={{ backgroundColor: combo.foreground }}
                   />
                   <div
-                    className="w-8 h-8 rounded-md shadow-inner border border-slate-200"
+                    className="w-8 h-8 rounded-md shadow-inner border border-white/10"
                     style={{ backgroundColor: combo.background }}
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Contrast:</span>
-                    <span className="text-sm text-slate-600">
+                    <span className="text-sm font-medium text-gray-300">Contrast:</span>
+                    <span className="text-sm text-gray-400">
                       {combo.contrast.toFixed(1)}:1
                     </span>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     {combo.AA.normal && (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-green-500/10 text-green-400 text-xs px-2 py-0.5 rounded-full border border-green-500/20">
                         AA
                       </span>
                     )}
                     {combo.AAA.normal && (
-                      <span className="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-purple-500/10 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/20">
                         AAA
                       </span>
                     )}
@@ -142,7 +143,7 @@ export default function ColorPaletteSuggestions({
                     Sample Text
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>

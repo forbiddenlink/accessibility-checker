@@ -36,15 +36,26 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
 
   // Load saved palettes from localStorage on component mount
   useEffect(() => {
-    const savedPalettes = localStorage.getItem('accessibilityPalettes');
-    if (savedPalettes) {
-      setPalettes(JSON.parse(savedPalettes));
+    try {
+      const savedPalettes = localStorage.getItem('accessibilityPalettes');
+      if (savedPalettes) {
+        const parsed = JSON.parse(savedPalettes);
+        if (Array.isArray(parsed)) {
+          setPalettes(parsed);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load saved palettes:', error);
     }
   }, []);
   
   // Save palettes to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('accessibilityPalettes', JSON.stringify(palettes));
+    try {
+      localStorage.setItem('accessibilityPalettes', JSON.stringify(palettes));
+    } catch (error) {
+      console.error('Failed to persist palettes:', error);
+    }
   }, [palettes]);
   
   const savePalette = () => {
@@ -74,24 +85,24 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
         </h2>
         <button
           onClick={() => setShowSaveDialog(true)}
-          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-blue-500/20"
         >
           Save Current
         </button>
       </div>
       
       {showSaveDialog && (
-        <div className="mb-6 bg-white/70 p-4 rounded-lg">
-          <h3 className="text-lg font-medium mb-3">Save Current Palette</h3>
+        <div className="mb-6 bg-white/10 p-4 rounded-lg border border-white/10 backdrop-blur-md">
+          <h3 className="text-lg font-medium mb-3 text-white">Save Current Palette</h3>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Palette Name
             </label>
             <input
               type="text"
               value={paletteName}
               onChange={(e) => setPaletteName(e.target.value)}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-md bg-black/50 border-white/10 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="My Color Combination"
               autoFocus
             />
@@ -99,13 +110,13 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
           <div className="flex justify-end space-x-2">
             <button
               onClick={() => setShowSaveDialog(false)}
-              className="py-2 px-4 border border-gray-300 rounded-md text-slate-700 hover:bg-gray-50"
+              className="py-2 px-4 border border-white/10 rounded-md text-gray-300 hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={savePalette}
-              className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               Save
             </button>
@@ -114,25 +125,25 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
       )}
       
       {palettes.length === 0 ? (
-        <div className="text-center py-8 text-slate-500">
-          <p>You haven't saved any color combinations yet.</p>
+        <div className="text-center py-8 text-gray-500">
+          <p>You haven&apos;t saved any color combinations yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {palettes.map(palette => (
-            <div key={palette.id} className="bg-white/50 rounded-lg p-4 shadow-sm">
+            <div key={palette.id} className="bg-white/5 rounded-lg p-4 shadow-sm border border-white/5 hover:border-white/10 transition-colors">
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium">{palette.name}</h3>
+                <h3 className="font-medium text-gray-200">{palette.name}</h3>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => onApplyPalette(palette.foreground, palette.background)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
                   >
                     Apply
                   </button>
                   <button
                     onClick={() => deletePalette(palette.id)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className="text-red-400 hover:text-red-300 text-sm transition-colors"
                   >
                     Delete
                   </button>
@@ -140,7 +151,7 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
               </div>
               
               <div 
-                className="h-16 rounded-md mb-2"
+                className="h-16 rounded-md mb-2 border border-white/10 shadow-inner"
                 style={{
                   backgroundColor: palette.background,
                   color: palette.foreground,
@@ -152,7 +163,7 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
                 <span>Sample Text</span>
               </div>
               
-              <div className="flex justify-between text-xs text-slate-500">
+              <div className="flex justify-between text-xs text-gray-400">
                 <span>
                   FG: {palette.foreground}
                 </span>
@@ -160,8 +171,8 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
                   BG: {palette.background}
                 </span>
                 <span className={`font-medium ${
-                  palette.contrast >= 7 ? 'text-green-600' : 
-                  palette.contrast >= 4.5 ? 'text-blue-600' : 'text-red-600'
+                  palette.contrast >= 7 ? 'text-green-400' : 
+                  palette.contrast >= 4.5 ? 'text-blue-400' : 'text-red-400'
                 }`}>
                   {palette.contrast.toFixed(2)}:1
                 </span>
@@ -174,4 +185,6 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
   );
 });
 
-export default SavedColorPalettes; 
+SavedColorPalettes.displayName = 'SavedColorPalettes';
+
+export default SavedColorPalettes;

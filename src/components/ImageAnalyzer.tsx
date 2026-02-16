@@ -20,11 +20,11 @@ export default function ImageAnalyzer() {
         body: JSON.stringify({ url }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error('Failed to analyze images');
+        throw new Error(data?.error || 'Failed to analyze images');
       }
 
-      const data = await response.json();
       setResults(data.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis');
@@ -114,6 +114,7 @@ export default function ImageAnalyzer() {
                 <div key={index} className="bg-white/5 p-6 rounded-lg space-y-4">
                   <div className="flex items-start gap-6">
                     <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={image.url}
                         alt=""
@@ -195,15 +196,15 @@ export default function ImageAnalyzer() {
 
                   {image.issues.length > 0 && (
                     <div>
-                      <h5 className="font-medium mb-2">Issues Found</h5>
+                      <h5 className="font-medium mb-2 text-white">Issues Found</h5>
                       <div className="space-y-2">
                         {image.issues.map((issue, issueIndex) => (
                           <div
                             key={issueIndex}
-                            className={`p-3 rounded-lg ${
-                              issue.type === 'error' ? 'bg-red-50 text-red-700' :
-                              issue.type === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                              'bg-blue-50 text-blue-700'
+                            className={`p-3 rounded-lg border ${
+                              issue.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                              issue.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                              'bg-blue-500/10 border-blue-500/20 text-blue-400'
                             }`}
                           >
                             <div className="flex items-start gap-2">
@@ -211,7 +212,7 @@ export default function ImageAnalyzer() {
                               <span>{issue.message}</span>
                             </div>
                             {issue.suggestion && (
-                              <p className="mt-1 text-sm">
+                              <p className="mt-1 text-sm opacity-80">
                                 Suggestion: {issue.suggestion}
                               </p>
                             )}

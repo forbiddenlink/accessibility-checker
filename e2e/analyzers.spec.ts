@@ -4,7 +4,7 @@ test('Analyzer Security: SSRF Validation', async ({ page }) => {
     await page.goto('/');
 
     // 1. Find Website Analyzer section
-    const urlInput = page.getByPlaceholder('Enter website URL', { exact: true });
+    const urlInput = page.getByRole('textbox', { name: 'Enter website URL', exact: true }).first();
     const analyzeBtn = page.getByRole('button', { name: 'Analyze Website' });
 
     // 2. Try Internal URL (localhost) - Should be blocked by our new SSRF logic

@@ -3,21 +3,16 @@
 import { useRef, useEffect, useCallback } from "react";
 import ColorResult from "@/components/ColorResult";
 import ColorPicker from "@/components/ColorPicker";
-import ColorBlindnessSimulation from "@/components/ColorBlindnessSimulation";
 import ColorSuggestions from "@/components/ColorSuggestions";
 import SavedColorPalettes from "@/components/SavedColorPalettes";
-import WcagInformation from "@/components/WcagInformation";
-import AccessibilityTip from "@/components/AccessibilityTip";
 import ExportResults from "@/components/ExportResults";
 import ColorPaletteSuggestions from "@/components/ColorPaletteSuggestions";
-import AccessibilityLearningHub from "@/components/AccessibilityLearningHub";
 import KeyboardNavigationChecker from "@/components/KeyboardNavigationChecker";
 import SemanticStructureAnalyzer from "@/components/SemanticStructureAnalyzer";
 import WebsiteAnalyzer from "@/components/WebsiteAnalyzer";
 import useColorContrast from "@/hooks/useColorContrast";
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
-import FontSizeAccessibility from '@/components/FontSizeAccessibility';
 
 // Dynamically import components to avoid SSR issues
 const ImageAnalyzer = dynamic(() => import('@/components/ImageAnalyzer'), {
@@ -101,239 +96,189 @@ export default function Home() {
   }, [setForegroundColor, setBackgroundColor]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      {/* Color Analysis Section */}
-      <section className="space-y-8">
-        <div className="glass-morphism p-8 rounded-2xl">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-              Color Contrast Checker
-            </h2>
-            <div className="flex items-center space-x-4">
-              <div className="flex bg-slate-100 p-1 rounded-lg">
-                <button
-                  onClick={() => setMode('WCAG')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${mode === 'WCAG' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  WCAG 2.1
-                </button>
-                <button
-                  onClick={() => setMode('APCA')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${mode === 'APCA' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  APCA (Beta)
-                </button>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <AccessibilityTip title="About Contrast">
-                  <p>
-                    {mode === 'WCAG'
-                      ? "Color contrast is important for text readability. WCAG guidelines require a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text."
-                      : "APCA (Advanced Perceptual Contrast Algorithm) is a new method for calculating contrast based on how the human eye actually perceives lightness. It uses Lc (Lightness Contrast) values."}
-                  </p>
-                </AccessibilityTip>
-
-                <AccessibilityTip title="Keyboard Shortcuts">
-                  <ul className="list-disc pl-4 space-y-1">
-                    <li>Ctrl/⌘ + Enter: Check contrast</li>
-                    <li>Ctrl/⌘ + S: Save palette</li>
-                  </ul>
-                </AccessibilityTip>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <ColorPicker
-              label="Text Color"
-              color={foregroundColor}
-              onChange={setForegroundColor}
-            />
-            <ColorPicker
-              label="Background Color"
-              color={backgroundColor}
-              onChange={setBackgroundColor}
-            />
-          </div>
-
-          <div className="mt-8">
-            <button
-              onClick={checkContrast}
-              disabled={loading.colorCheck}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-6 rounded-xl font-medium 
-                       hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                       focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all 
-                       duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
-              aria-label="Check color contrast"
-            >
-              {loading.colorCheck ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Checking...
-                </span>
-              ) : (
-                "Check Contrast"
-              )}
-            </button>
-          </div>
+    <div className="space-y-12 pb-24">
+      {/* Hero Section */}
+      <section className="relative py-20 text-center space-y-6">
+        <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-muted-foreground backdrop-blur-xl mb-4">
+          <span className="flex h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
+          WCAG 2.1 & APCA Compliant
         </div>
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+          Precision Contrast<br />Control.
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+          Advanced color accessibility accessible for everyone. <br />
+          Design with confidence using our cinematic-grade analysis tools.
+        </p>
+      </section>
 
-        {error.type && (
-          <div className="glass-morphism border-l-4 border-red-500 p-4 rounded-xl">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+      {/* Main Control Deck */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {/* Color Pickers - 4 cols */}
+        <div className="col-span-1 md:col-span-4 glass-card rounded-3xl p-6 space-y-6 border border-white/10 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10">
+            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-6">Input Parameters</h2>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <ColorPicker
+                  label="Foreground"
+                  color={foregroundColor}
+                  onChange={setForegroundColor}
+                />
               </div>
-              <div className="ml-3">
-                <p className="text-red-700">{error.message}</p>
+              <div className="space-y-2">
+                <ColorPicker
+                  label="Background"
+                  color={backgroundColor}
+                  onChange={setBackgroundColor}
+                />
               </div>
             </div>
-          </div>
-        )}
-
-        {results && (
-          <>
-            <ColorResult results={results} mode={mode} />
-
-            <ColorPaletteSuggestions
-              baseColor={foregroundColor}
-              onApplyPalette={handleApplyPalette}
-            />
-
-            {results.suggestions && results.suggestions.length > 0 && (
-              <ColorSuggestions
-                foregroundColor={foregroundColor}
-                backgroundColor={backgroundColor}
-                contrastRatio={results.contrast}
-                suggestions={results.suggestions}
-                onApplySuggestion={handleApplyPalette}
-                mode={mode}
-              />
-            )}
-
-            <div className="glass-morphism p-8 rounded-2xl">
-              <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-                Preview
-              </h2>
-              <div
-                className="p-8 rounded-xl transition-all duration-300 shadow-lg"
-                style={{
-                  backgroundColor: backgroundColor,
-                  color: foregroundColor,
-                }}
+            
+            <div className="pt-8">
+              <button
+                onClick={checkContrast}
+                disabled={loading.colorCheck}
+                className="w-full bg-white text-black hover:bg-gray-200 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 flex items-center justify-center space-x-2"
               >
-                <p className="text-3xl font-bold mb-4">Sample Text</p>
-                <p className="text-lg mb-4">This is how your text will look with the selected colors.</p>
-                <p className="text-base">The quick brown fox jumps over the lazy dog.</p>
-              </div>
+                {loading.colorCheck ? (
+                  <span>Analyzing...</span>
+                ) : (
+                  <>
+                    <span>Execute Check</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </>
+                )}
+              </button>
             </div>
+          </div>
+        </div>
 
-            <ColorBlindnessSimulation
-              foregroundColor={foregroundColor}
-              backgroundColor={backgroundColor}
-            />
-
-            <ExportResults
-              foregroundColor={foregroundColor}
-              backgroundColor={backgroundColor}
-              contrastRatio={results.contrast}
-              wcagAA={results.AA}
-              wcagAAA={results.AAA}
-            />
-
-            <SavedColorPalettes
-              ref={savedPalettesRef}
-              currentForeground={foregroundColor}
-              currentBackground={backgroundColor}
-              contrastRatio={results.contrast}
-              onApplyPalette={handleApplyPalette}
-            />
-
-            <WcagInformation />
-          </>
+        {/* Main Result Display - 8 cols */}
+        <div className="col-span-1 md:col-span-8 glass-card rounded-3xl p-8 border border-white/10 flex flex-col justify-center relative overflow-hidden">
+           <div className="absolute top-0 right-0 p-4 opacity-50">
+             <div className="flex bg-black/40 rounded-lg p-1">
+               {['WCAG', 'APCA'].map((m) => (
+                 <button
+                   key={m}
+                   onClick={() => setMode(m as any)}
+                   className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${mode === m ? 'bg-white/10 text-white' : 'text-muted-foreground hover:text-white'}`}
+                 >
+                   {m}
+                 </button>
+               ))}
+             </div>
+           </div>
+          
+           {results ? (
+             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <ColorResult results={results} mode={mode} />
+             </div>
+           ) : (
+             <div className="flex flex-col items-center justify-center text-muted-foreground py-12">
+               <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                 <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+               </div>
+               <p className="text-lg">Initiate analysis to view results</p>
+             </div>
+           )}
+        </div>
+        
+        {/* Preview Card - 6 cols */}
+        {results && (
+          <div className="col-span-1 md:col-span-6 glass-card rounded-3xl p-6 border border-white/10 min-h-[300px] flex flex-col">
+             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">Live Preview</h3>
+             <div 
+               className="flex-1 rounded-2xl p-8 transition-colors duration-500 flex flex-col justify-center relative overflow-hidden shadow-2xl"
+               style={{ backgroundColor, color: foregroundColor }}
+             >
+                <div className="relative z-10">
+                  <h4 className="text-4xl font-bold mb-4 tracking-tight">The quick brown fox.</h4>
+                  <p className="text-lg opacity-90 font-light leading-relaxed">
+                    Jumps over the lazy dog. Accessibility is essential for every digital experience.
+                  </p>
+                </div>
+                {/* Texture overlay for preview to show it handles noise well */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+             </div>
+          </div>
         )}
-      </section>
 
-      {/* Website Analysis Section */}
-      <section className="space-y-8">
-        <div className="glass-morphism p-8 rounded-2xl">
-          <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-            Website Accessibility Analysis
-          </h2>
-          <div className="grid grid-cols-1 gap-8">
-            <WebsiteAnalyzer />
-
-            <Suspense fallback={<div>Loading image analyzer...</div>}>
-              <ImageAnalyzer />
-            </Suspense>
-
-            <Suspense fallback={<div>Loading form analyzer...</div>}>
-              <FormAccessibilityAnalyzer />
-            </Suspense>
-
-            <Suspense fallback={<div>Loading dynamic content analyzer...</div>}>
-              <DynamicContentAnalyzer />
-            </Suspense>
-
-            <div className="space-y-8">
-              <div>
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-                    Semantic Structure Analyzer
-                  </h3>
-                  <AccessibilityTip title="About Semantic HTML">
-                    <p>Semantic HTML helps assistive technologies understand your content structure.</p>
-                    <ul className="list-disc pl-4 mt-2">
-                      <li>Use proper heading hierarchy (h1-h6)</li>
-                      <li>Include ARIA labels where needed</li>
-                      <li>Use semantic elements (nav, main, article, etc.)</li>
-                      <li>Ensure form elements have labels</li>
-                    </ul>
-                  </AccessibilityTip>
-                </div>
-                <SemanticStructureAnalyzer />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-                    Keyboard Navigation Checker
-                  </h3>
-                  <AccessibilityTip title="About Keyboard Navigation">
-                    <p>Keyboard navigation is essential for users who can't use a mouse.</p>
-                    <ul className="list-disc pl-4 mt-2">
-                      <li>All interactive elements should be focusable</li>
-                      <li>Focus order should be logical</li>
-                      <li>Focus indicators should be visible</li>
-                      <li>Skip links should be available for main content</li>
-                    </ul>
-                  </AccessibilityTip>
-                </div>
-                <KeyboardNavigationChecker />
-              </div>
+        {/* Suggestions & Palettes - 6 cols */}
+        {results && (
+          <div className="col-span-1 md:col-span-6 glass-card rounded-3xl p-6 border border-white/10 space-y-6">
+             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Suggestions</h3>
+             <ColorPaletteSuggestions
+                baseColor={foregroundColor}
+                onApplyPalette={handleApplyPalette}
+             />
+             <div className="pt-4 border-t border-white/5">
+                <ColorSuggestions
+                  foregroundColor={foregroundColor}
+                  backgroundColor={backgroundColor}
+                  contrastRatio={results.contrast}
+                  suggestions={results.suggestions || []}
+                  onApplySuggestion={handleApplyPalette}
+                  mode={mode}
+                />
+             </div>
+          </div>
+        )}
+        
+        {/* Full Width Analyzers */}
+        <div className="col-span-1 md:col-span-12 space-y-6 pt-12">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-light tracking-tight text-white">Full-Site Intelligence</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent ml-6"></div>
             </div>
-          </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="glass-card rounded-3xl p-6 border border-white/10">
+                 <WebsiteAnalyzer />
+               </div>
+               <div className="glass-card rounded-3xl p-6 border border-white/10">
+                  <Suspense fallback={<div className="animate-pulse h-64 bg-white/5 rounded-2xl"/>}>
+                    <ImageAnalyzer />
+                  </Suspense>
+               </div>
+            </div>
+
+            <div className="glass-card rounded-3xl p-6 border border-white/10">
+               <Suspense fallback={<div className="animate-pulse h-64 bg-white/5 rounded-2xl"/>}>
+                  <SemanticStructureAnalyzer />
+               </Suspense>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="glass-card rounded-3xl p-6 border border-white/10">
+                  <KeyboardNavigationChecker />
+               </div>
+               <div className="glass-card rounded-3xl p-6 border border-white/10">
+                  <Suspense fallback={<div className="animate-pulse h-64 bg-white/5 rounded-2xl"/>}>
+                     <FormAccessibilityAnalyzer />
+                  </Suspense>
+               </div>
+            </div>
         </div>
       </section>
 
-      {/* Learning Resources Section */}
-      <section className="space-y-8">
-        <div className="glass-morphism p-8 rounded-2xl">
-          <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-            Learning Resources
-          </h2>
-          <div className="grid grid-cols-1 gap-8">
-            <AccessibilityLearningHub />
-            <FontSizeAccessibility />
-          </div>
-        </div>
-      </section>
+      {/* Utilities Overlay */}
+      <ExportResults
+        foregroundColor={foregroundColor}
+        backgroundColor={backgroundColor}
+        contrastRatio={results?.contrast || 0}
+        wcagAA={results?.AA || { normal: false, large: false }}
+        wcagAAA={results?.AAA || { normal: false, large: false }}
+      />
+      
+      <SavedColorPalettes
+        ref={savedPalettesRef}
+        currentForeground={foregroundColor}
+        currentBackground={backgroundColor}
+        contrastRatio={results?.contrast || 0}
+        onApplyPalette={handleApplyPalette}
+      />
     </div>
   );
 }

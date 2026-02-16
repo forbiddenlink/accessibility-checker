@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import type { Page } from '@playwright/test';
 
 export interface LiveRegion {
   element: string;
@@ -47,6 +47,35 @@ export class DynamicContentAnalyzer {
 
   async analyzeDynamicContent(): Promise<DynamicContentAnalysis> {
     return await this.page.evaluate(() => {
+      const getElementDescription = (element: Element): string => {
+        const id = element.id ? `#${element.id}` : '';
+        const classes = Array.from(element.classList).map(c => `.${c}`).join('');
+        const tag = element.tagName.toLowerCase();
+        return `${tag}${id}${classes}`;
+      };
+
+      const checkFocusManagement = (element: Element): DynamicElement['focusManagement'] => {
+        const trapsFocus = element.hasAttribute('data-focus-trap') || 
+                          element.querySelector('[data-focus-trap]') !== null;
+        
+        const restoresFocus = element.hasAttribute('data-focus-restore') ||
+                             element.querySelector('[data-focus-restore]') !== null;
+        
+        const hasKeyboardNav = element.hasAttribute('data-keyboard-nav') ||
+                              element.querySelector('[role="button"], [role="link"], [tabindex]') !== null;
+
+        return {
+          trapsFocus,
+          restoresFocus,
+          hasKeyboardNav
+        };
+      };
+
+      const checkEscapeKeyHandler = (element: Element): boolean => {
+        return element.hasAttribute('data-escape-dismiss') ||
+               element.querySelector('[data-escape-dismiss]') !== null;
+      };
+
       const liveRegions: LiveRegion[] = [];
       const dynamicElements: DynamicElement[] = [];
       const issues: DynamicContentIssue[] = [];
@@ -57,7 +86,7 @@ export class DynamicContentAnalyzer {
         const ariaLive = element.getAttribute('aria-live') as LiveRegion['ariaLive'];
         
         liveRegions.push({
-          element: this.getElementDescription(element),
+          element: getElementDescription(element),
           role,
           ariaLive,
           ariaAtomic: element.getAttribute('aria-atomic') === 'true',
@@ -71,7 +100,7 @@ export class DynamicContentAnalyzer {
             code: 'LIVE_REGION_NO_LEVEL',
             message: 'Live region lacks politeness level',
             type: 'error',
-            element: this.getElementDescription(element),
+            element: getElementDescription(element),
             suggestion: 'Add aria-live="polite" or aria-live="assertive"'
           });
         }
@@ -89,8 +118,8 @@ export class DynamicContentAnalyzer {
           hasAriaExpanded: element.hasAttribute('aria-expanded'),
           hasAriaHidden: element.hasAttribute('aria-hidden'),
           hasAriaModal,
-          focusManagement: this.checkFocusManagement(element),
-          escapeKey: this.checkEscapeKeyHandler(element)
+          focusManagement: checkFocusManagement(element),
+          escapeKey: checkEscapeKeyHandler(element)
         });
 
         if (!hasAriaModal) {
@@ -98,7 +127,7 @@ export class DynamicContentAnalyzer {
             code: 'MODAL_NO_ARIA_MODAL',
             message: 'Modal dialog lacks aria-modal attribute',
             type: 'warning',
-            element: this.getElementDescription(element),
+            element: getElementDescription(element),
             suggestion: 'Add aria-modal="true" to indicate modal behavior'
           });
         }
@@ -108,7 +137,7 @@ export class DynamicContentAnalyzer {
             code: 'MODAL_NO_LABEL',
             message: 'Modal lacks accessible name',
             type: 'error',
-            element: this.getElementDescription(element),
+            element: getElementDescription(element),
             suggestion: 'Add aria-label or aria-labelledby attribute'
           });
         }
@@ -122,8 +151,8 @@ export class DynamicContentAnalyzer {
           hasAriaControls: element.hasAttribute('aria-controls'),
           hasAriaExpanded: element.hasAttribute('aria-expanded'),
           hasAriaHidden: element.hasAttribute('aria-hidden'),
-          focusManagement: this.checkFocusManagement(element),
-          escapeKey: this.checkEscapeKeyHandler(element)
+          focusManagement: checkFocusManagement(element),
+          escapeKey: checkEscapeKeyHandler(element)
         });
 
         if (!element.hasAttribute('aria-expanded')) {
@@ -131,7 +160,7 @@ export class DynamicContentAnalyzer {
             code: 'POPUP_NO_EXPANDED',
             message: 'Popup element lacks aria-expanded state',
             type: 'warning',
-            element: this.getElementDescription(element),
+            element: getElementDescription(element),
             suggestion: 'Add aria-expanded attribute to indicate popup state'
           });
         }
@@ -148,8 +177,8 @@ export class DynamicContentAnalyzer {
           hasAriaControls: element.hasAttribute('aria-controls'),
           hasAriaExpanded: element.hasAttribute('aria-expanded'),
           hasAriaHidden: element.hasAttribute('aria-hidden'),
-          focusManagement: this.checkFocusManagement(element),
-          escapeKey: this.checkEscapeKeyHandler(element)
+          focusManagement: checkFocusManagement(element),
+          escapeKey: checkEscapeKeyHandler(element)
         });
 
         if (!hasTimeout) {
@@ -157,7 +186,7 @@ export class DynamicContentAnalyzer {
             code: 'TOAST_NO_TIMEOUT',
             message: 'Toast notification lacks timeout mechanism',
             type: 'warning',
-            element: this.getElementDescription(element),
+            element: getElementDescription(element),
             suggestion: 'Add timeout mechanism for automatic dismissal'
           });
         }
@@ -170,33 +199,4 @@ export class DynamicContentAnalyzer {
       };
     });
   }
-
-  private getElementDescription(element: Element): string {
-    const id = element.id ? `#${element.id}` : '';
-    const classes = Array.from(element.classList).map(c => `.${c}`).join('');
-    const tag = element.tagName.toLowerCase();
-    return `${tag}${id}${classes}`;
-  }
-
-  private checkFocusManagement(element: Element): DynamicElement['focusManagement'] {
-    const trapsFocus = element.hasAttribute('data-focus-trap') || 
-                      element.querySelector('[data-focus-trap]') !== null;
-    
-    const restoresFocus = element.hasAttribute('data-focus-restore') ||
-                         element.querySelector('[data-focus-restore]') !== null;
-    
-    const hasKeyboardNav = element.hasAttribute('data-keyboard-nav') ||
-                          element.querySelector('[role="button"], [role="link"], [tabindex]') !== null;
-
-    return {
-      trapsFocus,
-      restoresFocus,
-      hasKeyboardNav
-    };
-  }
-
-  private checkEscapeKeyHandler(element: Element): boolean {
-    return element.hasAttribute('data-escape-dismiss') ||
-           element.querySelector('[data-escape-dismiss]') !== null;
-  }
-} 
+}

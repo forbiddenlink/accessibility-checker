@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import { WebsiteAnalyzer as WebsiteAnalyzerUtil } from '@/utils/websiteAnalyzer';
+import { useState } from 'react';
 import type { WebsiteAnalysisResult } from '@/utils/websiteAnalyzer';
 
 export default function WebsiteAnalyzer() {
@@ -23,11 +22,11 @@ export default function WebsiteAnalyzer() {
         body: JSON.stringify({ url }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error('Failed to analyze website');
+        throw new Error(data?.error || 'Failed to analyze website');
       }
 
-      const data = await response.json();
       setResults(data.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis');
@@ -91,19 +90,19 @@ export default function WebsiteAnalyzer() {
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold">Page Analysis</h3>
+              <h3 className="text-xl font-semibold mb-4 text-white">Page Analysis</h3>
               {results.pages.map((page, index) => (
                 <div key={index} className="bg-white/5 p-6 rounded-lg space-y-4">
-                  <h4 className="font-medium">{page.path || '/'}</h4>
+                  <h4 className="font-medium text-white">{page.path || '/'}</h4>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-400">Load Time</p>
-                      <p>{Math.round(page.loadTime)}ms</p>
+                      <p className="text-white">{Math.round(page.loadTime)}ms</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Resources</p>
-                      <p>
+                      <p className="text-white">
                         {page.resources.images} images, {page.resources.scripts} scripts,{' '}
                         {page.resources.stylesheets} stylesheets
                       </p>
@@ -111,12 +110,12 @@ export default function WebsiteAnalyzer() {
                   </div>
 
                   <div>
-                    <h5 className="font-medium mb-2">Accessibility Issues</h5>
+                    <h5 className="font-medium mb-2 text-white">Accessibility Issues</h5>
                     <div className="space-y-2">
                       {page.accessibility.violations.map((violation, vIndex) => (
                         <div
                           key={vIndex}
-                          className="p-3 bg-red-50 text-red-700 rounded-lg"
+                          className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg"
                         >
                           <div className="flex items-start gap-2">
                             <span className="font-medium">{violation.id}:</span>
@@ -124,10 +123,10 @@ export default function WebsiteAnalyzer() {
                           </div>
                           {violation.nodes.length > 0 && (
                             <div className="mt-2 text-sm">
-                              <p className="font-medium">Affected Elements:</p>
-                              <ul className="list-disc list-inside">
+                              <p className="font-medium text-red-300">Affected Elements:</p>
+                              <ul className="list-disc list-inside text-red-300/80">
                                 {violation.nodes.map((node, nIndex) => (
-                                  <li key={nIndex}>{node}</li>
+                                  <li key={nIndex} className="font-mono text-xs mt-1">{node}</li>
                                 ))}
                               </ul>
                             </div>

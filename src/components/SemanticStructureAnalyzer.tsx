@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 interface SemanticElement {
   tagName: string;
@@ -220,92 +220,103 @@ export default function SemanticStructureAnalyzer() {
 
       {/* Input Section */}
       <div className="space-y-4">
-        <textarea
-          value={htmlInput}
-          onChange={(e) => setHtmlInput(e.target.value)}
-          placeholder="Paste your HTML here..."
-          className="w-full h-48 p-4 border rounded-lg font-mono text-sm"
-          spellCheck="false"
-        />
+        <div className="relative group">
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+            <textarea
+            value={htmlInput}
+            onChange={(e) => setHtmlInput(e.target.value)}
+            placeholder="<!-- Paste your HTML here to analyze structure -->"
+            className="relative w-full h-48 p-4 rounded-lg bg-[#0d1117] border border-white/10 text-gray-300 font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600"
+            spellCheck="false"
+            />
+        </div>
         <button
           onClick={analyzeSemanticStructure}
           disabled={isAnalyzing || !htmlInput.trim()}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50
-                   hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 bg-white text-black font-semibold rounded-lg disabled:opacity-50
+                   hover:bg-gray-200 transition-all flex items-center justify-center space-x-2"
         >
-          {isAnalyzing ? 'Analyzing...' : 'Analyze Structure'}
+          {isAnalyzing ? (
+             <span>Running Analysis...</span>
+          ) : (
+             <>
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+               <span>Analyze Structure</span>
+             </>
+          )}
         </button>
       </div>
 
       {/* Results Section */}
       {structure.length > 0 && (
-        <div className="space-y-6">
-          {/* Structure Tree */}
-          <div className="glass-morphism p-6 rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">Document Structure</h3>
-            <div className="space-y-2 font-mono text-sm">
-              {renderStructureTree(structure)}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Structure Tree - Code Editor Style */}
+          <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1117] shadow-2xl">
+            <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5">
+                <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span className="text-xs text-muted-foreground font-mono">structure.html</span>
+            </div>
+            <div className="p-4 overflow-x-auto max-h-[500px] custom-scrollbar">
+                <div className="space-y-1 font-mono text-sm">
+                {renderStructureTree(structure)}
+                </div>
             </div>
           </div>
 
-          {/* Issues List */}
-          <div className="glass-morphism p-6 rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">
-              Issues Found
-              {issues.length > 0 && (
-                <span className="ml-2 text-sm font-normal">
-                  ({issues.filter(i => i.type === 'error').length} errors,
-                   {issues.filter(i => i.type === 'warning').length} warnings)
-                </span>
-              )}
-            </h3>
-            <div className="space-y-4">
-              {issues.map((issue, index) => (
-                <div
-                  key={index}
-                  className={`p-4 rounded-lg ${
-                    issue.type === 'error' ? 'bg-red-50 border-l-4 border-red-500' :
-                    issue.type === 'warning' ? 'bg-yellow-50 border-l-4 border-yellow-500' :
-                    'bg-blue-50 border-l-4 border-blue-500'
-                  }`}
-                >
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      {issue.type === 'error' ? (
-                        <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                      ) : issue.type === 'warning' ? (
-                        <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      ) : (
-                        <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                      )}
+          {/* Issues List - Console Style */}
+          <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1117] shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5">
+                <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Console Output</span>
+                {issues.length > 0 && (
+                    <div className="flex space-x-3 text-xs">
+                        <span className="text-red-400">{issues.filter(i => i.type === 'error').length} Errors</span>
+                        <span className="text-yellow-400">{issues.filter(i => i.type === 'warning').length} Warnings</span>
                     </div>
-                    <div className="ml-3">
-                      <div className="flex items-center">
-                        <h4 className="text-sm font-medium text-gray-800">{issue.message}</h4>
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs
-                          ${issue.priority === 'high' ? 'bg-red-100 text-red-800' :
-                            issue.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-blue-100 text-blue-800'}`}
-                        >
-                          {issue.priority} priority
-                        </span>
-                      </div>
-                      <p className="mt-1 text-sm text-gray-600">{issue.suggestion}</p>
-                      {issue.element && (
-                        <pre className="mt-2 p-2 bg-gray-800 text-white rounded text-xs overflow-x-auto">
-                          {issue.element}
-                        </pre>
-                      )}
+                )}
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[500px] custom-scrollbar flex-1">
+                {issues.length === 0 ? (
+                    <div className="text-green-400 font-mono text-sm">
+                        <span className="text-green-500 opacity-50">➜</span> No semantic issues found. Good job!
                     </div>
-                  </div>
-                </div>
-              ))}
+                ) : (
+                    <div className="space-y-4">
+                        {issues.map((issue, index) => (
+                            <div key={index} className="font-mono text-sm group">
+                                <div className="flex items-start space-x-2">
+                                    <span className={`mt-0.5 shrink-0 ${
+                                        issue.type === 'error' ? 'text-red-500' :
+                                        issue.type === 'warning' ? 'text-yellow-500' : 'text-blue-500'
+                                    }`}>
+                                        {issue.type === 'error' ? '✖' : issue.type === 'warning' ? '⚠' : 'ℹ'}
+                                    </span>
+                                    <div className="space-y-1">
+                                        <p className={`font-medium ${
+                                            issue.type === 'error' ? 'text-red-400' :
+                                            issue.type === 'warning' ? 'text-yellow-400' : 'text-blue-400'
+                                        }`}>
+                                            {issue.message}
+                                        </p>
+                                        <div className="pl-4 border-l-2 border-white/10 ml-1 space-y-1">
+                                            {issue.element && (
+                                                <div className="text-gray-500 text-xs break-all">
+                                                    Source: <span className="text-gray-400 font-mono bg-white/5 px-1 rounded">{issue.element}</span>
+                                                </div>
+                                            )}
+                                            <p className="text-gray-400 text-xs">
+                                                <span className="text-blue-400 opacity-70">Hint:</span> {issue.suggestion}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
           </div>
         </div>
@@ -316,24 +327,35 @@ export default function SemanticStructureAnalyzer() {
 
 function renderStructureTree(elements: SemanticElement[], depth = 0): JSX.Element[] {
   return elements.map((el, index) => (
-    <div key={index} style={{ marginLeft: `${depth * 20}px` }}>
-      <div className="flex items-center space-x-2">
-        <span className="text-blue-600">&lt;{el.tagName}</span>
-        {el.role && <span className="text-purple-600">role="{el.role}"</span>}
+    <div key={index} style={{ paddingLeft: `${depth * 20}px` }} className="hover:bg-white/5 rounded transition-colors duration-150">
+      <div className="flex items-center flex-wrap">
+        <span className="text-blue-400 opacity-80">&lt;</span>
+        <span className="text-blue-400 font-semibold">{el.tagName}</span>
+        {el.role && <span className="text-purple-400 ml-2 italic">role=&quot;{el.role}&quot;</span>}
         {Object.entries(el.ariaAttributes).map(([key, value]) => (
-          <span key={key} className="text-green-600">{key}="{value}"</span>
+          <span key={key} className="text-green-400 ml-2">{`${key}="${value}"`}</span>
         ))}
-        <span className="text-blue-600">&gt;</span>
+        <span className="text-blue-400 opacity-80">&gt;</span>
+      
+        {/* Inline text preview if it's short */}
+        {el.text && !el.children.length && (
+            <span className="text-gray-500 ml-2 truncate max-w-[200px]">{el.text}</span>
+        )}
+
+         {/* If no children and has text, close inline */}
+        {!el.children.length && (
+             <span className="text-blue-400 opacity-80 ml-1">&lt;/{el.tagName}&gt;</span>
+        )}
       </div>
-      {el.text && (
-        <div style={{ marginLeft: '20px' }} className="text-gray-600">
-          {el.text.length > 50 ? el.text.slice(0, 47) + '...' : el.text}
-        </div>
+
+      {el.children.length > 0 && (
+          <>
+            {renderStructureTree(el.children, depth + 1)}
+            <div style={{ paddingLeft: `${depth * 20}px` }} className="text-blue-400 opacity-60">
+                &lt;/{el.tagName}&gt;
+            </div>
+          </>
       )}
-      {el.children.length > 0 && renderStructureTree(el.children, depth + 1)}
-      <div style={{ marginLeft: `${depth * 20}px` }} className="text-blue-600">
-        &lt;/{el.tagName}&gt;
-      </div>
     </div>
   ));
 } 

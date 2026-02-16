@@ -3,82 +3,115 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 30, 41, 59;
-  --background-start-rgb: 241, 245, 249;
-  --background-end-rgb: 248, 250, 252;
-  --primary: 37, 99, 235;
-  --primary-light: 59, 130, 246;
+  --background: 10, 10, 10;
+  --foreground: 250, 250, 250;
+
+  --card: 20, 20, 20;
+  --card-foreground: 250, 250, 250;
+
+  --popover: 10, 10, 10;
+  --popover-foreground: 250, 250, 250;
+
+  --primary: 250, 250, 250;
+  --primary-foreground: 10, 10, 10;
+
+  --secondary: 30, 30, 30;
+  --secondary-foreground: 250, 250, 250;
+
+  --muted: 30, 30, 30;
+  --muted-foreground: 160, 160, 160;
+
+  --accent: 40, 40, 40;
+  --accent-foreground: 250, 250, 250;
+
+  --destructive: 200, 50, 50;
+  --destructive-foreground: 250, 250, 250;
+
+  --border: 40, 40, 40;
+  --input: 40, 40, 40;
+  --ring: 250, 250, 250;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(135deg,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb)));
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
   min-height: 100vh;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
+  -webkit-font-smoothing: antialiased;
 }
 
-.glass-morphism {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-}
-
-.gradient-border {
-  position: relative;
-  border-radius: 0.5rem;
-  background: white;
-}
-
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, rgb(var(--primary)), rgb(var(--primary-light)));
-  border-radius: 0.6rem;
+/* Noise Texture */
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-.gradient-border:hover::before {
-  opacity: 1;
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-input[type="color"] {
-  -webkit-appearance: none;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.2s ease;
+.glass-card {
+  background: rgba(30, 30, 30, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-input[type="color"]:hover {
-  transform: scale(1.05);
+.glass-card:hover {
+  background: rgba(30, 30, 30, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-input[type="color"]::-webkit-color-swatch {
-  border: none;
-  border-radius: 8px;
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
 }
 
-.animate-gradient {
-  background: linear-gradient(270deg, rgb(var(--primary)), rgb(var(--primary-light)));
-  background-size: 200% 200%;
-  animation: gradient 4s ease infinite;
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--accent));
+  border-radius: 5px;
+  border: 2px solid rgb(var(--background));
 }
 
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--muted-foreground));
+}
+
+/* Utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.mesh-gradient {
+  background:
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+    radial-gradient(
+      at 100% 100%,
+      rgba(56, 189, 248, 0.15) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+  position: absolute;
+  inset: 0;
+  z-index: -2;
 }

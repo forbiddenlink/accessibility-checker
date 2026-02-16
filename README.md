@@ -1,97 +1,65 @@
-# Accessibility Color Checker
+# Precision Contrast Control
 
-A modern, professional web application for checking color contrast accessibility according to WCAG guidelines. Built with Next.js, TypeScript, and Tailwind CSS.
+![App Screenshot](/Users/elizabethstein/.gemini/antigravity/brain/0f1aaa17-8657-498f-9692-1c2e1e9e89f9/initial_load_1771265186078.png)
 
+A cinematic-grade, professional accessibility suite designed for modern interface designers and developers. Beyond simple contrast checking, this application provides deep insights into semantic structure, keyboard navigation, and color perception, all wrapped in a premium "Cinematic Archive" aesthetic.
 
-## Features
+## ✨ Features
 
-- 🎨 Real-time color contrast checking
-- ✅ WCAG 2.1 compliance verification (AA and AAA levels)
-- 👁 Color blindness simulation
-- 💾 Save and manage color palettes
-- 📱 Fully responsive design
-- 🔄 RESTful API for external use
-- ⌨️ Keyboard shortcuts for improved accessibility
-- 📊 Detailed contrast analysis and suggestions
-- 📤 Export results in multiple formats
+### 🎨 Advanced Color Intelligence
+- **Real-time Contrast Analysis**: Instant feedback on WCAG 2.1 (AA/AAA) and APCA compliance.
+- **Smart Suggestions**: AI-driven color palette recommendations that maintain your aesthetic while ensuring accessibility.
+- **Color Blindness Simulation**: View your palettes through multiple vision deficiency simulations (Protanopia, Deuteranopia, etc.).
 
-## Tech Stack
+### 🛠 Comprehensive Accessibility Tools
+- **Semantic Structure Analyzer**: Visualizes your HTML hierarchy to ensure logical document flow.
+- **Keyboard Navigation Checker**: Simulates and verifies tab order and focus states.
+- **Form Accessibility Analyzer**: Validates form labels, error states, and ARIA attributes.
+- **Image Accessibility Analyzer**: Audits alt text and decorative image usage.
 
-- **Framework**: [Next.js 14](https://nextjs.org/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Deployment**: [Vercel](https://vercel.com)
+### 💎 Premium Experience
+- **Cinematic Interface**: A deep dark mode design (`#0a0a0a`) with glassmorphism and subtle noise textures.
+- **Data Visualization**: "Code editor" style outputs for technical data and clean, high-contrast cards for educational content.
+- **Privacy First**: All analysis happens locally in your browser.
 
-## Getting Started
+## 🚀 Tech Stack
 
-1. Clone the repository:
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + Custom Design Tokens
+- **State Management**: Zustand
+- **Testing**: Vitest + React Testing Library + Playwright
+
+## 📦 Getting Started
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/accessibility-checker.git
    cd accessibility-checker
    ```
 
-2. Install dependencies:
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. Run the development server:
+3. **Run the development server**
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. **Open [http://localhost:3000](http://localhost:3000)** to view the application.
 
-## API Usage
+## 🤝 Contributing
 
-The application provides a RESTful API for checking color contrast. Here's a quick example:
+We welcome contributions to make the web more accessible for everyone. Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-```javascript
-fetch('/api/v1/contrast', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    foreground: '#000000',
-    background: '#FFFFFF'
-  })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
-
-For detailed API documentation, visit `/api/docs` when running the application.
-
-## Color Contrast Calculation
-
-The application uses the following formula for calculating color contrast ratios according to WCAG 2.1:
-
-1. Calculate relative luminance (L) for each color
-2. Determine contrast ratio: (L1 + 0.05) / (L2 + 0.05)
-   - Where L1 is the lighter color's luminance
-   - And L2 is the darker color's luminance
-
-## WCAG Compliance Levels
-
-- **AA Level**
-  - Normal text (4.5:1 minimum)
-  - Large text (3:1 minimum)
-
-- **AAA Level**
-  - Normal text (7:1 minimum)
-  - Large text (4.5:1 minimum)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+---
 
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/)
-- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
-- Color blindness simulation algorithms from [Color Laboratory](https://www.color-blindness.com/)
+<p align="center">
+  Built with ❤️ for the accessible web.
+</p>

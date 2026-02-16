@@ -31,11 +31,11 @@ describe('Home Page', () => {
         render(<Home />);
 
         // Check for the main heading
-        const heading = screen.getByText('Color Contrast Checker');
+        const heading = screen.getByText(/Precision Contrast/i);
         expect(heading).toBeDefined();
 
         // Check for the Analyze button
-        const button = screen.getByText('Check Contrast');
+        const button = screen.getByText('Execute Check');
         expect(button).toBeDefined();
     });
 });

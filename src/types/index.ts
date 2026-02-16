@@ -79,6 +79,12 @@ export interface ExportResultsProps {
   foregroundColor: string;
   backgroundColor: string;
   contrastRatio: number;
-  wcagAA: boolean;
-  wcagAAA: boolean;
-} 
+  wcagAA: {
+    normal: boolean;
+    large: boolean;
+  };
+  wcagAAA: {
+    normal: boolean;
+    large: boolean;
+  };
+}

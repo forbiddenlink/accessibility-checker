@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { chromium } from '@playwright/test';
-import { DynamicContentAnalyzer } from '@/utils/dynamicContentAnalyzer';
 import { validateUrl } from '@/utils/security';
+import { KeyboardNavigationAnalyzer } from '@/utils/keyboardNavigationAnalyzer';
 
 export const runtime = 'nodejs';
 
@@ -10,10 +10,7 @@ export async function POST(request: Request) {
     const { url } = await request.json();
 
     if (!url) {
-      return NextResponse.json(
-        { error: 'URL is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
     const securityCheck = await validateUrl(url);
@@ -40,18 +37,18 @@ export async function POST(request: Request) {
         timeout: 30000,
       });
 
-      const analyzer = new DynamicContentAnalyzer(page);
-      const results = await analyzer.analyzeDynamicContent();
+      const analyzer = new KeyboardNavigationAnalyzer(page);
+      const results = await analyzer.analyze();
 
       return NextResponse.json({ results });
     } finally {
       await browser.close();
     }
   } catch (error) {
-    console.error('Dynamic content analysis error:', error);
+    console.error('Keyboard analysis error:', error);
     return NextResponse.json(
-      { error: 'Failed to analyze dynamic content' },
+      { error: 'Failed to analyze keyboard navigation' },
       { status: 500 }
     );
   }
-} 
+}

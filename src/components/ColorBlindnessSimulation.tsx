@@ -31,10 +31,10 @@ export default function ColorBlindnessSimulation({
           <button
             key={type}
             onClick={() => setSimulationType(type)}
-            className={`py-2 px-4 rounded-lg transition-all ${
+            className={`py-2 px-4 rounded-lg transition-all border ${
               simulationType === type 
-                ? 'bg-blue-100 text-blue-800 font-medium' 
-                : 'bg-white/50 hover:bg-white'
+                ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' 
+                : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
             }`}
           >
             {type.charAt(0).toUpperCase() + type.slice(1)}

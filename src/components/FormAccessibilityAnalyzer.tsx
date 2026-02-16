@@ -20,11 +20,11 @@ export default function FormAccessibilityAnalyzer() {
         body: JSON.stringify({ url }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error('Failed to analyze forms');
+        throw new Error(data?.error || 'Failed to analyze forms');
       }
 
-      const data = await response.json();
       setResults(data.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis');
@@ -153,15 +153,15 @@ export default function FormAccessibilityAnalyzer() {
 
                   {form.issues.length > 0 && (
                     <div>
-                      <h5 className="font-medium mb-2">Issues Found</h5>
+                      <h5 className="font-medium mb-2 text-white">Issues Found</h5>
                       <div className="space-y-2">
                         {form.issues.map((issue: FormIssue, issueIndex: number) => (
                           <div
                             key={issueIndex}
-                            className={`p-3 rounded-lg ${
-                              issue.severity === 'error' ? 'bg-red-50 text-red-700' :
-                              issue.severity === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                              'bg-blue-50 text-blue-700'
+                            className={`p-3 rounded-lg border ${
+                              issue.severity === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                              issue.severity === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                              'bg-blue-500/10 border-blue-500/20 text-blue-400'
                             }`}
                           >
                             <div className="flex items-start gap-2">
@@ -169,7 +169,7 @@ export default function FormAccessibilityAnalyzer() {
                               <span>{issue.message}</span>
                             </div>
                             {issue.suggestion && (
-                              <p className="mt-1 text-sm">
+                              <p className="mt-1 text-sm opacity-80">
                                 Suggestion: {issue.suggestion}
                               </p>
                             )}

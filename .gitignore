@@ -48,3 +48,13 @@ next-env.d.ts
 
 # Vitest
 /test/__snapshots__
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
