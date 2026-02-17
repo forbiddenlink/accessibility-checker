@@ -16,7 +16,7 @@ const config: Config = {
     },
     extend: {
       colors: {
-        border: "rgb(var(--border))",
+        border: "rgba(var(--border), var(--border-opacity))",
         input: "rgb(var(--input))",
         ring: "rgb(var(--ring))",
         background: "rgb(var(--background))",
@@ -49,11 +49,29 @@ const config: Config = {
           DEFAULT: "rgb(var(--card))",
           foreground: "rgb(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "rgb(var(--success))",
+          foreground: "rgb(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "rgb(var(--warning))",
+          foreground: "rgb(var(--warning-foreground))",
+        },
+      },
+      fontSize: {
+        'display': ['3.5rem', { lineHeight: '1.1', fontWeight: '700' }],
+        'h1': ['2.5rem', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2': ['1.75rem', { lineHeight: '1.25', fontWeight: '600' }],
+        'h3': ['1.25rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'body': ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-sm': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '500' }],
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--radius-lg)",
+        md: "var(--radius-md)",
+        sm: "var(--radius-sm)",
+        xl: "var(--radius-xl)",
       },
       keyframes: {
         "accordion-down": {

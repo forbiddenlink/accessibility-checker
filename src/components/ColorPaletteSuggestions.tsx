@@ -70,77 +70,73 @@ export default function ColorPaletteSuggestions({
   if (!baseColor) return null;
 
   return (
-    <div className="glass-morphism p-8 rounded-2xl">
-      <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-        Color Palette Suggestions
-      </h2>
-
+    <div className="space-y-6">
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent"></div>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
-          <p className="text-red-700">{error}</p>
+        <div className="badge-fail p-4 rounded-lg">
+          <p>{error}</p>
         </div>
       )}
 
       {!loading && !error && palettes.map((palette, index) => (
-        <div key={index} className="mb-8 last:mb-0">
-          <h3 className="text-lg font-semibold text-white mb-4">
+        <div key={index} className="space-y-4">
+          <h3 className="text-body-sm font-semibold text-white">
             {palette.name}
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {palette.colors.map((combo, comboIndex) => (
               <button
                 key={comboIndex}
                 type="button"
-                className="w-full text-left bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer border border-white/5 hover:border-white/10"
+                className="w-full text-left bg-white/5 rounded-lg p-3 hover:bg-white/8 transition-colors cursor-pointer border border-white/8 hover:border-white/12"
                 onClick={() => onApplyPalette(combo.foreground, combo.background)}
               >
-                <div className="flex space-x-2 mb-3">
+                <div className="flex gap-2 mb-2">
                   <div
-                    className="w-8 h-8 rounded-md shadow-inner border border-white/10"
+                    className="w-6 h-6 rounded border border-white/10"
                     style={{ backgroundColor: combo.foreground }}
                   />
                   <div
-                    className="w-8 h-8 rounded-md shadow-inner border border-white/10"
+                    className="w-6 h-6 rounded border border-white/10"
                     style={{ backgroundColor: combo.background }}
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-300">Contrast:</span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-caption text-muted-foreground">Contrast:</span>
+                    <span className="text-caption text-foreground/80">
                       {combo.contrast.toFixed(1)}:1
                     </span>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-1">
                     {combo.AA.normal && (
-                      <span className="bg-green-500/10 text-green-400 text-xs px-2 py-0.5 rounded-full border border-green-500/20">
+                      <span className="badge-pass text-caption px-1.5 py-0.5 rounded">
                         AA
                       </span>
                     )}
                     {combo.AAA.normal && (
-                      <span className="bg-purple-500/10 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/20">
+                      <span className="bg-purple-500/15 text-purple-400 border border-purple-500/30 text-caption px-1.5 py-0.5 rounded">
                         AAA
                       </span>
                     )}
                   </div>
 
                   <div
-                    className="mt-2 p-2 rounded text-center"
+                    className="mt-2 p-2 rounded text-center text-body-sm"
                     style={{
                       backgroundColor: combo.background,
                       color: combo.foreground,
                     }}
                   >
-                    Sample Text
+                    Sample
                   </div>
                 </div>
               </button>

@@ -1,44 +1,44 @@
 export default function ApiDocs() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-        Color Contrast API Documentation
+      <h1 className="text-h1 mb-8 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+        API Documentation
       </h1>
 
       <div className="space-y-12">
         {/* Introduction */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Introduction</h2>
-          <p className="text-slate-600 mb-4">
-            Our Color Contrast API provides a simple way to check if your color combinations meet WCAG accessibility standards.
-            The API is RESTful and returns JSON responses.
+          <h2 className="text-h2 text-white mb-4">Introduction</h2>
+          <p className="text-muted-foreground text-body leading-relaxed">
+            The AccessCheck API provides programmatic access to color contrast checking and palette generation.
+            It&apos;s RESTful and returns JSON responses.
           </p>
         </section>
 
         {/* Authentication */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Authentication</h2>
-          <p className="text-slate-600 mb-4">
+          <h2 className="text-h2 text-white mb-4">Authentication</h2>
+          <p className="text-muted-foreground text-body leading-relaxed">
             Currently, the API is free to use without authentication. Rate limiting may be implemented in the future.
           </p>
         </section>
 
         {/* Endpoints */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Endpoints</h2>
+          <h2 className="text-h2 text-white mb-6">Endpoints</h2>
           
           {/* Contrast Check Endpoint */}
-          <div className="glass-morphism p-6 rounded-xl mb-8">
-            <div className="flex items-center mb-4">
-              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium mr-3">POST</span>
-              <code className="text-slate-800 font-mono">/api/v1/contrast</code>
+          <div className="glass-card rounded-lg p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="badge-pass px-3 py-1 rounded-md text-caption font-semibold">POST</span>
+              <code className="text-white font-mono text-body-sm">/api/v1/contrast</code>
             </div>
 
-            <h3 className="text-xl font-medium mb-4">Check Color Contrast</h3>
+            <h3 className="text-h3 text-white mb-4">Check Color Contrast</h3>
             
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Request Body</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Request Body</h4>
+              <pre className="code-block p-4 text-green-400">
 {`{
   "foreground": "#000000",  // Hex color code for text
   "background": "#FFFFFF"   // Hex color code for background
@@ -47,8 +47,8 @@ export default function ApiDocs() {
             </div>
 
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Response</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Response</h4>
+              <pre className="code-block p-4 text-green-400">
 {`{
   "contrast": 21,          // Contrast ratio
   "AA": {
@@ -66,8 +66,8 @@ export default function ApiDocs() {
             </div>
 
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Example Usage</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Example Usage</h4>
+              <pre className="code-block p-4 text-blue-400">
 {`fetch('/api/v1/contrast', {
   method: 'POST',
   headers: {
@@ -85,17 +85,17 @@ export default function ApiDocs() {
           </div>
 
           {/* Color Palettes Endpoint */}
-          <div className="glass-morphism p-6 rounded-xl mb-8">
-            <div className="flex items-center mb-4">
-              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium mr-3">POST</span>
-              <code className="text-slate-800 font-mono">/api/v1/palettes</code>
+          <div className="glass-card rounded-lg p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="badge-pass px-3 py-1 rounded-md text-caption font-semibold">POST</span>
+              <code className="text-white font-mono text-body-sm">/api/v1/palettes</code>
             </div>
 
-            <h3 className="text-xl font-medium mb-4">Generate Color Palettes</h3>
+            <h3 className="text-h3 text-white mb-4">Generate Color Palettes</h3>
             
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Request Body</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Request Body</h4>
+              <pre className="code-block p-4 text-green-400">
 {`{
   "color": "#1A365D",     // Base hex color code
   "type": "accessible"    // Optional: "accessible" | "analogous" | "all"
@@ -104,8 +104,8 @@ export default function ApiDocs() {
             </div>
 
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Response</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Response</h4>
+              <pre className="code-block p-4 text-green-400">
 {`{
   "palettes": [
     {
@@ -139,8 +139,8 @@ export default function ApiDocs() {
             </div>
 
             <div className="mb-6">
-              <h4 className="font-medium mb-2">Example Usage</h4>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+              <h4 className="text-body-sm font-medium text-white mb-2">Example Usage</h4>
+              <pre className="code-block p-4 text-blue-400">
 {`fetch('/api/v1/palettes', {
   method: 'POST',
   headers: {
@@ -160,15 +160,15 @@ export default function ApiDocs() {
 
         {/* Error Handling */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Error Handling</h2>
+          <h2 className="text-h2 text-white mb-6">Error Handling</h2>
           
-          <div className="glass-morphism p-6 rounded-xl">
-            <h3 className="text-xl font-medium mb-4">Error Responses</h3>
+          <div className="glass-card rounded-lg p-6">
+            <h3 className="text-h3 text-white mb-4">Error Responses</h3>
             
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium mb-2">400 Bad Request</h4>
-                <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+                <h4 className="text-body-sm font-medium text-white mb-2">400 Bad Request</h4>
+                <pre className="code-block p-4 text-red-400">
 {`{
   "error": "Both foreground and background colors are required"
 }`}
@@ -176,8 +176,8 @@ export default function ApiDocs() {
               </div>
 
               <div>
-                <h4 className="font-medium mb-2">400 Invalid Format</h4>
-                <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+                <h4 className="text-body-sm font-medium text-white mb-2">400 Invalid Format</h4>
+                <pre className="code-block p-4 text-red-400">
 {`{
   "error": "Colors must be in valid hex format (e.g., #FF0000)"
 }`}
@@ -185,8 +185,8 @@ export default function ApiDocs() {
               </div>
 
               <div>
-                <h4 className="font-medium mb-2">500 Internal Server Error</h4>
-                <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+                <h4 className="text-body-sm font-medium text-white mb-2">500 Internal Server Error</h4>
+                <pre className="code-block p-4 text-red-400">
 {`{
   "error": "Internal server error"
 }`}
@@ -198,23 +198,23 @@ export default function ApiDocs() {
 
         {/* Rate Limiting */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Rate Limiting</h2>
-          <p className="text-slate-600">
-            Currently, there are no rate limits in place. However, we recommend implementing appropriate caching and error handling in your applications.
+          <h2 className="text-h2 text-white mb-4">Rate Limiting</h2>
+          <p className="text-muted-foreground text-body leading-relaxed">
+            Currently, there are no rate limits in place. We recommend implementing appropriate caching and error handling in your applications.
           </p>
         </section>
 
         {/* SDKs and Libraries */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">SDKs and Libraries</h2>
-          <p className="text-slate-600 mb-4">
-            We provide code examples in multiple languages to help you integrate with our API:
+          <h2 className="text-h2 text-white mb-4">Code Examples</h2>
+          <p className="text-muted-foreground text-body leading-relaxed mb-6">
+            Quick examples for common languages:
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="glass-morphism p-6 rounded-xl">
-              <h3 className="text-lg font-medium mb-4">JavaScript/TypeScript</h3>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+            <div className="glass-card rounded-lg p-6">
+              <h3 className="text-h3 text-white mb-4">JavaScript</h3>
+              <pre className="code-block p-4 text-yellow-400">
 {`// npm install accessibility-checker-api
 
 import { AccessibilityChecker } from 'accessibility-checker-api';
@@ -224,9 +224,9 @@ const result = await checker.checkContrast('#000000', '#FFFFFF');`}
               </pre>
             </div>
 
-            <div className="glass-morphism p-6 rounded-xl">
-              <h3 className="text-lg font-medium mb-4">Python</h3>
-              <pre className="bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto">
+            <div className="glass-card rounded-lg p-6">
+              <h3 className="text-h3 text-white mb-4">Python</h3>
+              <pre className="code-block p-4 text-yellow-400">
 {`# pip install accessibility-checker
 
 from accessibility_checker import ContrastChecker

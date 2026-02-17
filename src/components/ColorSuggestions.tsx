@@ -27,13 +27,9 @@ export default function ColorSuggestions({
 
   if (suggestions.length === 0 || isGoodEnough) {
     return (
-      <div className="glass-morphism p-6 rounded-xl mb-8">
-        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-          Color Suggestions
-        </h2>
-
-        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-          <p className="text-green-700">
+      <div className="space-y-4">
+        <div className="badge-pass p-4 rounded-lg">
+          <p>
             {mode === 'APCA'
               ? `Your current color combination (Lc ${Math.round(Math.abs(contrastRatio))}) meets APCA standards!`
               : "Your current color combination meets WCAG AA standards! No changes needed."}
@@ -44,22 +40,18 @@ export default function ColorSuggestions({
   }
 
   return (
-    <div className="glass-morphism p-6 rounded-xl mb-8">
-      <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-        Color Suggestions
-      </h2>
-
-      <p className="text-gray-400 mb-4">
-        Here are some suggested alternatives that would improve accessibility:
+    <div className="space-y-4">
+      <p className="text-muted-foreground text-body-sm">
+        Suggested alternatives to improve accessibility:
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {suggestions.map((suggestion, index) => (
-          <div key={index} className="bg-white/5 p-4 rounded-lg shadow-sm border border-white/5">
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex flex-col">
-                <span className="font-medium text-gray-200">{suggestion.description}</span>
-                <span className="text-xs text-gray-500">
+          <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/8 hover:bg-white/8 transition-colors">
+            <div className="flex justify-between items-center mb-3">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium text-white text-body-sm">{suggestion.description}</span>
+                <span className="text-caption text-muted-foreground">
                   {mode === 'APCA'
                     ? `Lc ${Math.round(Math.abs(suggestion.contrast))}`
                     : `${suggestion.contrast.toFixed(2)}:1`}
@@ -67,30 +59,26 @@ export default function ColorSuggestions({
               </div>
               <button
                 onClick={() => onApplySuggestion?.(suggestion.foreground, suggestion.background)}
-                className="flex items-center text-sm text-blue-400 hover:text-blue-300 px-3 py-1 rounded-md hover:bg-blue-500/10 transition-colors"
+                className="flex items-center text-body-sm text-accent hover:text-white px-3 py-1.5 rounded-md hover:bg-accent/10 transition-colors"
               >
-                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Apply Fix
+                Apply
               </button>
             </div>
             <div
-              className="p-4 rounded border border-white/10"
+              className="p-4 rounded-md border border-white/10"
               style={{
                 backgroundColor: suggestion.background,
                 color: suggestion.foreground
               }}
             >
-              <p>Sample text with improved contrast</p>
+              <p className="text-body-sm">Sample text with improved contrast</p>
             </div>
-            <div className="mt-2 text-xs text-gray-500">
-              <span className="mr-2">
-                FG: {suggestion.foreground}
-              </span>
-              <span>
-                BG: {suggestion.background}
-              </span>
+            <div className="mt-2 text-caption text-muted-foreground font-mono">
+              <span className="mr-3">FG: {suggestion.foreground}</span>
+              <span>BG: {suggestion.background}</span>
             </div>
           </div>
         ))}

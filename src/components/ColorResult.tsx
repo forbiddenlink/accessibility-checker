@@ -16,23 +16,24 @@ interface ColorResultProps {
 
 function ResultItem({ label, passed }: { label: string; passed: boolean }) {
   return (
-    <div className="flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 hover:bg-white/5 border border-transparent hover:border-white/10">
+    <div className="flex items-center gap-4 p-4 rounded-lg transition-all duration-200 hover:bg-white/5 border border-transparent hover:border-white/8">
       <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${passed
-            ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-            : "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-          }`}
+        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+          passed
+            ? "bg-success/20 text-success ring-1 ring-success/50"
+            : "bg-destructive/20 text-destructive ring-1 ring-destructive/50"
+        }`}
       >
         {passed ? "✓" : "✗"}
       </div>
-      <span className="text-white/80 font-medium">{label}</span>
+      <span className="text-foreground/80 text-body-sm font-medium">{label}</span>
     </div>
   );
 }
 
 export default function ColorResult({ results, mode }: ColorResultProps) {
   // Common result box styles
-  const resultBoxClass = "rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md";
+  const resultBoxClass = "rounded-lg p-6 border border-white/8 bg-white/5 backdrop-blur-md";
 
   if (mode === 'APCA' && results.apca !== null) {
     const lc = Math.round(results.apca);
@@ -48,11 +49,11 @@ export default function ColorResult({ results, mode }: ColorResultProps) {
     return (
       <div className="space-y-8">
         <div className="text-center space-y-2">
-           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">APCA Score</h2>
+           <h2 className="text-caption text-muted-foreground uppercase tracking-widest">APCA Score</h2>
            <div className={`text-6xl font-black tracking-tighter ${getApcaColor(absLc)}`}>
              Lc {absLc}
            </div>
-           <p className="text-sm text-white/50">
+           <p className="text-caption text-muted-foreground">
              {lc < 0 ? "(Light on Dark)" : "(Dark on Light)"}
            </p>
         </div>
@@ -78,16 +79,16 @@ export default function ColorResult({ results, mode }: ColorResultProps) {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-2">
-         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Contrast Ratio</h2>
-         <div className={`text-7xl font-black tracking-tighter ${getScoreColor(results.contrast)} drop-shadow-2xl`}>
+         <h2 className="text-caption text-muted-foreground uppercase tracking-widest">Contrast Ratio</h2>
+         <div className={`text-7xl font-black tracking-tighter ${getScoreColor(results.contrast)}`}>
            {contrastScore}
          </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className={resultBoxClass}>
-          <h3 className="text-lg font-bold text-white mb-6 flex items-center">
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs mr-3 ring-1 ring-blue-500/50">AA</span>
+          <h3 className="text-h3 text-white mb-6 flex items-center">
+            <span className="badge-info px-3 py-1 rounded-md text-caption mr-3">AA</span>
             Level AA
           </h3>
           <div className="space-y-2">
@@ -103,8 +104,8 @@ export default function ColorResult({ results, mode }: ColorResultProps) {
         </div>
 
         <div className={resultBoxClass}>
-          <h3 className="text-lg font-bold text-white mb-6 flex items-center">
-            <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-xs mr-3 ring-1 ring-purple-500/50">AAA</span>
+          <h3 className="text-h3 text-white mb-6 flex items-center">
+            <span className="bg-purple-500/15 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-md text-caption mr-3">AAA</span>
             Level AAA
           </h3>
           <div className="space-y-2">

@@ -42,13 +42,15 @@ export default function KeyboardNavigationChecker() {
 
   return (
     <div className="space-y-6">
+      <h2 className="text-h3 text-white">Keyboard Navigation</h2>
+      
       <div className="flex gap-4">
         <div className="relative flex-1 group">
-           <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+           <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition duration-300 blur" />
            <input
             type="url"
             placeholder="Enter website URL to check"
-            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all backdrop-blur-xl"
+            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent transition-all backdrop-blur-xl"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
@@ -56,48 +58,47 @@ export default function KeyboardNavigationChecker() {
         <button
           onClick={checkKeyboardNavigation}
           disabled={isChecking || !url}
-          className="px-6 py-3 bg-white text-black font-semibold rounded-lg disabled:opacity-50
-                   hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          className="px-6 py-3 bg-white text-black font-semibold rounded-lg disabled:opacity-50 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
         >
-          {isChecking ? 'Checking...' : 'Check Navigation'}
+          {isChecking ? 'Checking...' : 'Check'}
         </button>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg" role="alert">
+        <div className="p-4 badge-fail rounded-lg" role="alert">
           {error}
         </div>
       )}
 
       {focusableElements.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="glass-morphism p-6 rounded-xl border border-white/10 bg-[#0d1117]">
-            <h3 className="text-xl font-semibold mb-4 text-white">Focusable Elements</h3>
-            <div className="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar">
+          <div className="bg-white/5 p-6 rounded-lg border border-white/8">
+            <h3 className="text-h3 text-white mb-4">Focusable Elements</h3>
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {focusableElements.map((el, index) => (
-                <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
+                <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/5 hover:bg-white/8 transition-colors">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-mono text-sm text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">&lt;{el.tagName}&gt;</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      el.hasVisibleFocus ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/50' : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/50'
+                    <span className="font-mono text-body-sm text-accent bg-accent/10 px-2 py-0.5 rounded">&lt;{el.tagName}&gt;</span>
+                    <span className={`px-2 py-1 rounded-md text-caption font-medium ${
+                      el.hasVisibleFocus ? 'badge-pass' : 'badge-fail'
                     }`}>
                       {el.hasVisibleFocus ? 'Visible Focus' : 'No Focus Style'}
                     </span>
                   </div>
                   {el.ariaLabel && (
-                    <p className="text-sm text-white/60 truncate">aria-label: <span className="text-white/80">{el.ariaLabel}</span></p>
+                    <p className="text-body-sm text-muted-foreground truncate">aria-label: <span className="text-foreground/80">{el.ariaLabel}</span></p>
                   )}
                   {el.text && (
-                    <p className="text-sm text-white/60 truncate">Text: <span className="text-white/80">{el.text}</span></p>
+                    <p className="text-body-sm text-muted-foreground truncate">Text: <span className="text-foreground/80">{el.text}</span></p>
                   )}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="glass-morphism p-6 rounded-xl border border-white/10 bg-[#0d1117]">
-            <h3 className="text-xl font-semibold mb-4 text-white">Issues Found</h3>
-            <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
+          <div className="bg-white/5 p-6 rounded-lg border border-white/8">
+            <h3 className="text-h3 text-white mb-4">Issues Found</h3>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto">
               {issues.map((issue, index) => (
                 <div
                   key={index}
@@ -119,10 +120,10 @@ export default function KeyboardNavigationChecker() {
                       )}
                     </div>
                     <div className="ml-3">
-                      <h4 className="text-sm font-medium text-white">{issue.message}</h4>
-                      <p className="mt-1 text-sm text-white/60">{issue.suggestion}</p>
+                      <h4 className="text-body-sm font-medium text-white">{issue.message}</h4>
+                      <p className="mt-1 text-body-sm text-muted-foreground">{issue.suggestion}</p>
                       {issue.element && (
-                        <pre className="mt-2 p-2 bg-black/50 text-white/80 rounded text-xs overflow-x-auto font-mono border border-white/5">
+                        <pre className="mt-2 p-2 code-block text-body-sm overflow-x-auto">
                           {issue.element}
                         </pre>
                       )}
@@ -131,7 +132,7 @@ export default function KeyboardNavigationChecker() {
                 </div>
               ))}
               {issues.length === 0 && (
-                <div className="p-4 rounded-lg bg-green-500/10 border-l-4 border-green-500 text-green-400">
+                <div className="p-4 rounded-lg badge-pass border-l-4 border-success">
                   No keyboard navigation issues detected.
                 </div>
               )}

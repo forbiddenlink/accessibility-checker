@@ -36,36 +36,34 @@ export default function WebsiteAnalyzer() {
   };
 
   return (
-    <div className="glass-morphism p-8 rounded-2xl">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-          Website Accessibility Analyzer
-        </h2>
-      </div>
+    <div className="space-y-6">
+      <h2 className="text-h3 text-white">Website Analyzer</h2>
 
-      <div className="space-y-6">
-        <div className="flex gap-4">
+      <div className="flex gap-4">
+        <div className="relative flex-1 group">
+          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition duration-300 blur" />
           <input
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter website URL"
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="relative w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
           />
-          <button
-            onClick={handleAnalyze}
-            disabled={loading || !url}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {loading ? 'Analyzing...' : 'Analyze Website'}
-          </button>
         </div>
+        <button
+          onClick={handleAnalyze}
+          disabled={loading || !url}
+          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 transition-all"
+        >
+          {loading ? 'Analyzing...' : 'Analyze'}
+        </button>
+      </div>
 
-        {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
+      {error && (
+        <div className="p-4 badge-fail rounded-lg">
+          {error}
+        </div>
+      )}
 
         {results && (
           <div className="space-y-8">
@@ -140,7 +138,6 @@ export default function WebsiteAnalyzer() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 } 
