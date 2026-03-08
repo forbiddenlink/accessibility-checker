@@ -1,13 +1,5 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-
-interface SavedPalette {
-  id: string;
-  name: string;
-  foreground: string;
-  background: string;
-  contrast: number;
-  timestamp: number;
-}
+import { parseSavedPalettes, stringifySavedPalettes, type SavedPalette } from '@/utils/validation';
 
 interface SavedColorPalettesProps {
   currentForeground: string;
@@ -36,23 +28,15 @@ const SavedColorPalettes = forwardRef<SavedColorPalettesRef, SavedColorPalettesP
 
   // Load saved palettes from localStorage on component mount
   useEffect(() => {
-    try {
-      const savedPalettes = localStorage.getItem('accessibilityPalettes');
-      if (savedPalettes) {
-        const parsed = JSON.parse(savedPalettes);
-        if (Array.isArray(parsed)) {
-          setPalettes(parsed);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load saved palettes:', error);
-    }
+    const savedPalettes = localStorage.getItem('accessibilityPalettes');
+    const validatedPalettes = parseSavedPalettes(savedPalettes);
+    setPalettes(validatedPalettes);
   }, []);
   
   // Save palettes to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem('accessibilityPalettes', JSON.stringify(palettes));
+      localStorage.setItem('accessibilityPalettes', stringifySavedPalettes(palettes));
     } catch (error) {
       console.error('Failed to persist palettes:', error);
     }
