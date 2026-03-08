@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getContrastRatio, getLuminance, hexToRgb, getAPCA, generateColorSuggestions, findClosestAccessibleColor } from './colorUtils';
+import { getContrastRatio, getLuminance, hexToRgb, getAPCA, generateColorSuggestions, findClosestAccessibleColor, adjustColorForContrast } from './colorUtils';
 
 describe('colorUtils', () => {
     describe('hexToRgb', () => {
@@ -64,6 +64,56 @@ describe('colorUtils', () => {
             expect(suggestions.length).toBeGreaterThan(0);
         });
     });
+    describe('adjustColorForContrast', () => {
+        it('never produces negative RGB values when darkening', () => {
+            // BUG TEST: Start with color at r=0 where the code tries to darken further
+            // Math.min(255, 0-1) = Math.min(255, -1) = -1 which is INVALID
+            const almostBlack = { r: 0, g: 0, b: 0 };
+            const whiteBg = { r: 255, g: 255, b: 255 };
+            // Request impossible contrast (higher than max 21:1) to force repeated darkening
+            const targetContrast = 25;
+
+            const result = adjustColorForContrast(almostBlack, whiteBg, targetContrast);
+
+            // RGB values must NEVER go below 0
+            expect(result.r).toBeGreaterThanOrEqual(0);
+            expect(result.g).toBeGreaterThanOrEqual(0);
+            expect(result.b).toBeGreaterThanOrEqual(0);
+        });
+
+        it('returns valid RGB values in range 0-255', () => {
+            const darkColor = { r: 50, g: 50, b: 50 };
+            const whiteBg = { r: 255, g: 255, b: 255 };
+            const targetContrast = 10;
+
+            const result = adjustColorForContrast(darkColor, whiteBg, targetContrast);
+
+            expect(result.r).toBeGreaterThanOrEqual(0);
+            expect(result.g).toBeGreaterThanOrEqual(0);
+            expect(result.b).toBeGreaterThanOrEqual(0);
+            expect(result.r).toBeLessThanOrEqual(255);
+            expect(result.g).toBeLessThanOrEqual(255);
+            expect(result.b).toBeLessThanOrEqual(255);
+        });
+
+        it('adjusts color toward target contrast', () => {
+            const greyColor = { r: 128, g: 128, b: 128 };
+            const whiteBg = { r: 255, g: 255, b: 255 };
+            const targetContrast = 4.5;
+
+            const result = adjustColorForContrast(greyColor, whiteBg, targetContrast);
+
+            expect(result.r).toBeGreaterThanOrEqual(0);
+            expect(result.r).toBeLessThanOrEqual(255);
+
+            const resultLum = getLuminance(result.r, result.g, result.b);
+            const bgLum = getLuminance(255, 255, 255);
+            const resultContrast = getContrastRatio(resultLum, bgLum);
+
+            expect(Math.abs(resultContrast - targetContrast)).toBeLessThan(0.2);
+        });
+    });
+
     describe('findClosestAccessibleColor', () => {
         it('finds closest WCAG compliant color', () => {
             // #777777 on black is ~4.48:1 (fail AA)

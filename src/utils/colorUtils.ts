@@ -155,10 +155,12 @@ export function adjustColorForContrast(
     if (currentContrast < targetContrast) {
       // Make color lighter or darker based on background
       if (currentLuminance < bgLuminance) {
-        r = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, r - 1);
-        g = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, g - 1);
-        b = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, b - 1);
+        // Darken: subtract 1, but clamp to minimum of 0
+        r = Math.max(0, r - 1);
+        g = Math.max(0, g - 1);
+        b = Math.max(0, b - 1);
       } else {
+        // Lighten: add 1, but clamp to maximum of 255
         r = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, r + 1);
         g = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, g + 1);
         b = Math.min(COLOR_CONSTANTS.MAX_RGB_VALUE, b + 1);
@@ -238,27 +240,31 @@ export function generateColorSuggestions(foreground: string, background: string,
       if (lc75Color) {
         // Recalculate exact Lc for display
         const newFg = hexToRgb(lc75Color);
-        const newLc = getAPCA(newFg!, bgRgb);
-        suggestions.push({
-          foreground: lc75Color,
-          background: background,
-          contrast: newLc || 75,
-          level: "AA", // Mapping to roughly AA equivalent
-          description: "Smart adjustment for Body Text (Lc 75)"
-        });
+        if (newFg) {
+          const newLc = getAPCA(newFg, bgRgb);
+          suggestions.push({
+            foreground: lc75Color,
+            background: background,
+            contrast: newLc || 75,
+            level: "AA", // Mapping to roughly AA equivalent
+            description: "Smart adjustment for Body Text (Lc 75)"
+          });
+        }
       }
 
       const lc90Color = findClosestAccessibleColor(foreground, background, 90, 'APCA');
       if (lc90Color) {
         const newFg = hexToRgb(lc90Color);
-        const newLc = getAPCA(newFg!, bgRgb);
-        suggestions.push({
-          foreground: lc90Color,
-          background: background,
-          contrast: newLc || 90,
-          level: "AAA", // Mapping to roughly AAA equivalent
-          description: "Smart adjustment for Preferred Text (Lc 90)"
-        });
+        if (newFg) {
+          const newLc = getAPCA(newFg, bgRgb);
+          suggestions.push({
+            foreground: lc90Color,
+            background: background,
+            contrast: newLc || 90,
+            level: "AAA", // Mapping to roughly AAA equivalent
+            description: "Smart adjustment for Preferred Text (Lc 90)"
+          });
+        }
       }
     }
   }
