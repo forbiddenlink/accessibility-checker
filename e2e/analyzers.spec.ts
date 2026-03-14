@@ -11,6 +11,7 @@ test("Analyzer Security: SSRF Validation", async ({ page }) => {
 
   // 2. Try Internal URL (localhost) - Should be blocked by our new SSRF logic
   await urlInput.fill("http://localhost:3000");
+  await expect(analyzeBtn).toBeEnabled();
   await analyzeBtn.click();
 
   // 3. Verify Error Message
