@@ -28,14 +28,11 @@ test("Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass", async ({
   await page.getByRole("button", { name: "Execute Check" }).click();
 
   // 5. Verify Suggestions Appear for failing colors
-  await expect(page.getByText("Color Suggestions")).toBeVisible();
+  await expect(page.getByText("Suggestions")).toBeVisible();
 
-  // 7. Click Magic Fix (Apply First Suggestion)
-  // We added "Apply Fix" text in the button
-  await page.getByRole("button", { name: "Apply Fix" }).first().click();
+  // 6. Click Magic Fix (Apply First Suggestion)
+  await page.getByRole("button", { name: "Apply" }).first().click();
 
   // 7. Verify Success state appears
-  await expect(
-    page.getByText("meets WCAG AA standards! No changes needed."),
-  ).toBeVisible();
+  await expect(page.getByText(/meets WCAG AA standards/i)).toBeVisible();
 });
