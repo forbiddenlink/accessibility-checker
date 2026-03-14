@@ -1,18 +1,25 @@
-import { NextResponse } from 'next/server';
-import { getLuminance, getContrastRatio, hexToRgb, rgbToHex, rgbToHsl, hslToRgb } from '@/utils/colorUtils';
+import { NextResponse } from "next/server";
+import {
+  getLuminance,
+  getContrastRatio,
+  hexToRgb,
+  rgbToHex,
+  rgbToHsl,
+  hslToRgb,
+} from "@/utils/colorUtils";
 
 // Base colors that work well for accessibility
 const baseColors = [
-  '#000000', // Black
-  '#FFFFFF', // White
-  '#1A365D', // Navy
-  '#2C5282', // Blue
-  '#2D3748', // Gray
-  '#48BB78', // Green
-  '#9F7AEA', // Purple
-  '#ED8936', // Orange
-  '#E53E3E', // Red
-  '#EDF2F7', // Light Gray
+  "#000000", // Black
+  "#FFFFFF", // White
+  "#1A365D", // Navy
+  "#2C5282", // Blue
+  "#2D3748", // Gray
+  "#48BB78", // Green
+  "#9F7AEA", // Purple
+  "#ED8936", // Orange
+  "#E53E3E", // Red
+  "#EDF2F7", // Light Gray
 ];
 
 interface ColorPalette {
@@ -32,18 +39,18 @@ interface ColorPalette {
   }[];
 }
 
-function generateAccessiblePalette(baseColor: string): ColorPalette['colors'] {
+function generateAccessiblePalette(baseColor: string): ColorPalette["colors"] {
   const baseRgb = hexToRgb(baseColor);
   if (!baseRgb) return [];
 
   const combinations = baseColors
-    .map(color => {
+    .map((color) => {
       const rgb = hexToRgb(color);
       if (!rgb) return null;
 
       const contrast = getContrastRatio(
         getLuminance(baseRgb.r, baseRgb.g, baseRgb.b),
-        getLuminance(rgb.r, rgb.g, rgb.b)
+        getLuminance(rgb.r, rgb.g, rgb.b),
       );
 
       return {
@@ -60,15 +67,16 @@ function generateAccessiblePalette(baseColor: string): ColorPalette['colors'] {
         },
       };
     })
-    .filter((combo): combo is NonNullable<typeof combo> => 
-      combo !== null && (combo.AA.normal || combo.AA.large)
+    .filter(
+      (combo): combo is NonNullable<typeof combo> =>
+        combo !== null && (combo.AA.normal || combo.AA.large),
     )
     .sort((a, b) => b.contrast - a.contrast);
 
   return combinations;
 }
 
-function generateAnalogousPalette(baseColor: string): ColorPalette['colors'] {
+function generateAnalogousPalette(baseColor: string): ColorPalette["colors"] {
   const baseRgb = hexToRgb(baseColor);
   if (!baseRgb) return [];
 
@@ -81,17 +89,17 @@ function generateAnalogousPalette(baseColor: string): ColorPalette['colors'] {
   ];
 
   const combinations = analogousHues
-    .flatMap(hue => {
+    .flatMap((hue) => {
       const rgb = hslToRgb(hue, hslBase.s, hslBase.l);
       const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-      
-      return baseColors.map(background => {
+
+      return baseColors.map((background) => {
         const bgRgb = hexToRgb(background);
         if (!bgRgb) return null;
 
         const contrast = getContrastRatio(
           getLuminance(rgb.r, rgb.g, rgb.b),
-          getLuminance(bgRgb.r, bgRgb.g, bgRgb.b)
+          getLuminance(bgRgb.r, bgRgb.g, bgRgb.b),
         );
 
         return {
@@ -109,8 +117,9 @@ function generateAnalogousPalette(baseColor: string): ColorPalette['colors'] {
         };
       });
     })
-    .filter((combo): combo is NonNullable<typeof combo> => 
-      combo !== null && (combo.AA.normal || combo.AA.large)
+    .filter(
+      (combo): combo is NonNullable<typeof combo> =>
+        combo !== null && (combo.AA.normal || combo.AA.large),
     )
     .sort((a, b) => b.contrast - a.contrast);
 
@@ -119,13 +128,13 @@ function generateAnalogousPalette(baseColor: string): ColorPalette['colors'] {
 
 export async function POST(request: Request) {
   try {
-    const { color, type = 'accessible' } = await request.json();
+    const { color, type = "accessible" } = await request.json();
 
     // Validate input
     if (!color) {
       return NextResponse.json(
-        { error: 'Base color is required' },
-        { status: 400 }
+        { error: "Base color is required" },
+        { status: 400 },
       );
     }
 
@@ -133,37 +142,37 @@ export async function POST(request: Request) {
     const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
     if (!hexColorRegex.test(color)) {
       return NextResponse.json(
-        { error: 'Color must be in valid hex format (e.g., #FF0000)' },
-        { status: 400 }
+        { error: "Color must be in valid hex format (e.g., #FF0000)" },
+        { status: 400 },
       );
     }
 
     let palettes: ColorPalette[] = [];
 
-    if (type === 'accessible') {
+    if (type === "accessible") {
       const accessibleCombos = generateAccessiblePalette(color);
       palettes.push({
-        name: 'Accessible Combinations',
+        name: "Accessible Combinations",
         colors: accessibleCombos,
       });
-    } else if (type === 'analogous') {
+    } else if (type === "analogous") {
       const analogousCombos = generateAnalogousPalette(color);
       palettes.push({
-        name: 'Analogous Combinations',
+        name: "Analogous Combinations",
         colors: analogousCombos,
       });
     } else {
       // Generate both types
       const accessibleCombos = generateAccessiblePalette(color);
       const analogousCombos = generateAnalogousPalette(color);
-      
+
       palettes = [
         {
-          name: 'Accessible Combinations',
+          name: "Accessible Combinations",
           colors: accessibleCombos,
         },
         {
-          name: 'Analogous Combinations',
+          name: "Analogous Combinations",
           colors: analogousCombos,
         },
       ];
@@ -171,10 +180,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ palettes });
   } catch (error) {
-    console.error('Error generating color palettes:', error);
+    console.error(
+      "Error generating color palettes:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
-} 
+}

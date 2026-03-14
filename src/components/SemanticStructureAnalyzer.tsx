@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 
 interface SemanticElement {
   tagName: string;
@@ -11,15 +11,15 @@ interface SemanticElement {
 }
 
 interface SemanticIssue {
-  type: 'error' | 'warning' | 'info';
+  type: "error" | "warning" | "info";
   message: string;
   element?: string;
   suggestion: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: "high" | "medium" | "low";
 }
 
 export default function SemanticStructureAnalyzer() {
-  const [htmlInput, setHtmlInput] = useState('');
+  const [htmlInput, setHtmlInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [structure, setStructure] = useState<SemanticElement[]>([]);
   const [issues, setIssues] = useState<SemanticIssue[]>([]);
@@ -36,24 +36,26 @@ export default function SemanticStructureAnalyzer() {
         parserDiv.current.innerHTML = htmlInput;
         const parsedElements = parseElement(parserDiv.current);
         elements.push(...parsedElements);
-        
+
         // Analyze structure
         analyzeHeadingStructure(elements, newIssues);
         analyzeARIAUsage(elements, newIssues);
         analyzeLandmarks(elements, newIssues);
         analyzeFormElements(elements, newIssues);
         analyzeInteractiveElements(elements, newIssues);
-        
+
         setStructure(elements);
         setIssues(newIssues);
       }
     } catch (error) {
-      setIssues([{
-        type: 'error',
-        message: 'Error analyzing HTML structure',
-        suggestion: 'Please check your HTML input for syntax errors',
-        priority: 'high'
-      }]);
+      setIssues([
+        {
+          type: "error",
+          message: "Error analyzing HTML structure",
+          suggestion: "Please check your HTML input for syntax errors",
+          priority: "high",
+        },
+      ]);
     } finally {
       setIsAnalyzing(false);
     }
@@ -61,15 +63,15 @@ export default function SemanticStructureAnalyzer() {
 
   const parseElement = (element: Element): SemanticElement[] => {
     const elements: SemanticElement[] = [];
-    
-    Array.from(element.children).forEach(child => {
+
+    Array.from(element.children).forEach((child) => {
       const semanticEl: SemanticElement = {
         tagName: child.tagName.toLowerCase(),
-        role: child.getAttribute('role') || undefined,
+        role: child.getAttribute("role") || undefined,
         ariaAttributes: getAriaAttributes(child),
         children: parseElement(child),
         text: child.textContent?.trim(),
-        hasLabel: hasAccessibleLabel(child)
+        hasLabel: hasAccessibleLabel(child),
       };
 
       // Add heading level if applicable
@@ -86,39 +88,42 @@ export default function SemanticStructureAnalyzer() {
   const getAriaAttributes = (element: Element): Record<string, string> => {
     const ariaAttrs: Record<string, string> = {};
     const attrs = element.attributes;
-    
+
     for (let i = 0; i < attrs.length; i++) {
-      if (attrs[i].name.startsWith('aria-')) {
+      if (attrs[i].name.startsWith("aria-")) {
         ariaAttrs[attrs[i].name] = attrs[i].value;
       }
     }
-    
+
     return ariaAttrs;
   };
 
   const hasAccessibleLabel = (element: Element): boolean => {
     return !!(
-      element.getAttribute('aria-label') ||
-      element.getAttribute('aria-labelledby') ||
-      element.getAttribute('title') ||
-      element.getAttribute('alt') ||
+      element.getAttribute("aria-label") ||
+      element.getAttribute("aria-labelledby") ||
+      element.getAttribute("title") ||
+      element.getAttribute("alt") ||
       (element instanceof HTMLLabelElement && element.htmlFor) ||
       element.textContent?.trim()
     );
   };
 
-  const analyzeHeadingStructure = (elements: SemanticElement[], issues: SemanticIssue[]) => {
+  const analyzeHeadingStructure = (
+    elements: SemanticElement[],
+    issues: SemanticIssue[],
+  ) => {
     let lastLevel = 0;
     const findHeadings = (els: SemanticElement[]) => {
-      els.forEach(el => {
+      els.forEach((el) => {
         if (el.level) {
           if (el.level - lastLevel > 1) {
             issues.push({
-              type: 'error',
+              type: "error",
               message: `Heading level skipped from h${lastLevel} to h${el.level}`,
               element: `<${el.tagName}>${el.text}</${el.tagName}>`,
-              suggestion: 'Maintain sequential heading hierarchy',
-              priority: 'high'
+              suggestion: "Maintain sequential heading hierarchy",
+              priority: "high",
             });
           }
           lastLevel = el.level;
@@ -129,27 +134,30 @@ export default function SemanticStructureAnalyzer() {
     findHeadings(elements);
   };
 
-  const analyzeARIAUsage = (elements: SemanticElement[], issues: SemanticIssue[]) => {
+  const analyzeARIAUsage = (
+    elements: SemanticElement[],
+    issues: SemanticIssue[],
+  ) => {
     const checkARIA = (el: SemanticElement) => {
       // Check for common ARIA mistakes
-      if (el.role === 'button' && el.tagName !== 'button') {
+      if (el.role === "button" && el.tagName !== "button") {
         issues.push({
-          type: 'warning',
+          type: "warning",
           message: `Element with role="button" is not a <button>`,
           element: `<${el.tagName} role="button">`,
           suggestion: 'Use native <button> element instead of role="button"',
-          priority: 'medium'
+          priority: "medium",
         });
       }
 
       // Check for required ARIA attributes
-      if (el.role === 'combobox' && !el.ariaAttributes['aria-expanded']) {
+      if (el.role === "combobox" && !el.ariaAttributes["aria-expanded"]) {
         issues.push({
-          type: 'error',
-          message: 'Combobox missing required aria-expanded attribute',
+          type: "error",
+          message: "Combobox missing required aria-expanded attribute",
           element: `<${el.tagName} role="combobox">`,
-          suggestion: 'Add aria-expanded attribute to combobox',
-          priority: 'high'
+          suggestion: "Add aria-expanded attribute to combobox",
+          priority: "high",
         });
       }
 
@@ -158,38 +166,49 @@ export default function SemanticStructureAnalyzer() {
     elements.forEach(checkARIA);
   };
 
-  const analyzeLandmarks = (elements: SemanticElement[], issues: SemanticIssue[]) => {
-    const hasMain = elements.some(el => el.role === 'main' || el.tagName === 'main');
-    const hasNav = elements.some(el => el.role === 'navigation' || el.tagName === 'nav');
-    
+  const analyzeLandmarks = (
+    elements: SemanticElement[],
+    issues: SemanticIssue[],
+  ) => {
+    const hasMain = elements.some(
+      (el) => el.role === "main" || el.tagName === "main",
+    );
+    const hasNav = elements.some(
+      (el) => el.role === "navigation" || el.tagName === "nav",
+    );
+
     if (!hasMain) {
       issues.push({
-        type: 'warning',
-        message: 'No main landmark found',
-        suggestion: 'Add <main> element or role="main" to identify main content',
-        priority: 'medium'
+        type: "warning",
+        message: "No main landmark found",
+        suggestion:
+          'Add <main> element or role="main" to identify main content',
+        priority: "medium",
       });
     }
-    
+
     if (!hasNav) {
       issues.push({
-        type: 'info',
-        message: 'No navigation landmark found',
-        suggestion: 'Consider adding <nav> element for navigation sections',
-        priority: 'low'
+        type: "info",
+        message: "No navigation landmark found",
+        suggestion: "Consider adding <nav> element for navigation sections",
+        priority: "low",
       });
     }
   };
 
-  const analyzeFormElements = (elements: SemanticElement[], issues: SemanticIssue[]) => {
+  const analyzeFormElements = (
+    elements: SemanticElement[],
+    issues: SemanticIssue[],
+  ) => {
     const checkForms = (el: SemanticElement) => {
-      if (el.tagName === 'input' && !el.hasLabel) {
+      if (el.tagName === "input" && !el.hasLabel) {
         issues.push({
-          type: 'error',
-          message: 'Input element without label',
+          type: "error",
+          message: "Input element without label",
           element: `<input>`,
-          suggestion: 'Add label element or aria-label attribute',
-          priority: 'high'
+          suggestion: "Add label element or aria-label attribute",
+          priority: "high",
         });
       }
       el.children.forEach(checkForms);
@@ -197,15 +216,21 @@ export default function SemanticStructureAnalyzer() {
     elements.forEach(checkForms);
   };
 
-  const analyzeInteractiveElements = (elements: SemanticElement[], issues: SemanticIssue[]) => {
+  const analyzeInteractiveElements = (
+    elements: SemanticElement[],
+    issues: SemanticIssue[],
+  ) => {
     const checkInteractive = (el: SemanticElement) => {
-      if (['button', 'a', 'input', 'select'].includes(el.tagName) && !el.hasLabel) {
+      if (
+        ["button", "a", "input", "select"].includes(el.tagName) &&
+        !el.hasLabel
+      ) {
         issues.push({
-          type: 'error',
+          type: "error",
           message: `Interactive element (${el.tagName}) without accessible name`,
           element: `<${el.tagName}>`,
-          suggestion: 'Add text content, aria-label, or aria-labelledby',
-          priority: 'high'
+          suggestion: "Add text content, aria-label, or aria-labelledby",
+          priority: "high",
         });
       }
       el.children.forEach(checkInteractive);
@@ -221,14 +246,16 @@ export default function SemanticStructureAnalyzer() {
       {/* Input Section */}
       <div className="space-y-4">
         <div className="relative group">
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
-            <textarea
+          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+          <textarea
+            id="html-input"
+            aria-label="HTML code to analyze"
             value={htmlInput}
             onChange={(e) => setHtmlInput(e.target.value)}
             placeholder="<!-- Paste your HTML here to analyze structure -->"
             className="relative w-full h-48 p-4 rounded-lg bg-[#0d1117] border border-white/10 text-gray-300 font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600"
             spellCheck="false"
-            />
+          />
         </div>
         <button
           onClick={analyzeSemanticStructure}
@@ -237,12 +264,30 @@ export default function SemanticStructureAnalyzer() {
                    hover:bg-gray-200 transition-all flex items-center justify-center space-x-2"
         >
           {isAnalyzing ? (
-             <span>Running Analysis...</span>
+            <span>Running Analysis...</span>
           ) : (
-             <>
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-               <span>Analyze Structure</span>
-             </>
+            <>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                ></path>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <span>Analyze Structure</span>
+            </>
           )}
         </button>
       </div>
@@ -253,70 +298,99 @@ export default function SemanticStructureAnalyzer() {
           {/* Structure Tree - Code Editor Style */}
           <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1117] shadow-2xl">
             <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5">
-                <div className="flex space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span className="text-xs text-muted-foreground font-mono">structure.html</span>
+              <div className="flex space-x-2">
+                <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+              </div>
+              <span className="text-xs text-muted-foreground font-mono">
+                structure.html
+              </span>
             </div>
             <div className="p-4 overflow-x-auto max-h-[500px] custom-scrollbar">
-                <div className="space-y-1 font-mono text-sm">
+              <div className="space-y-1 font-mono text-sm">
                 {renderStructureTree(structure)}
-                </div>
+              </div>
             </div>
           </div>
 
           {/* Issues List - Console Style */}
           <div className="rounded-xl overflow-hidden border border-white/10 bg-[#0d1117] shadow-2xl flex flex-col">
             <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5">
-                <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Console Output</span>
-                {issues.length > 0 && (
-                    <div className="flex space-x-3 text-xs">
-                        <span className="text-red-400">{issues.filter(i => i.type === 'error').length} Errors</span>
-                        <span className="text-yellow-400">{issues.filter(i => i.type === 'warning').length} Warnings</span>
-                    </div>
-                )}
+              <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">
+                Console Output
+              </span>
+              {issues.length > 0 && (
+                <div className="flex space-x-3 text-xs">
+                  <span className="text-red-400">
+                    {issues.filter((i) => i.type === "error").length} Errors
+                  </span>
+                  <span className="text-yellow-400">
+                    {issues.filter((i) => i.type === "warning").length} Warnings
+                  </span>
+                </div>
+              )}
             </div>
             <div className="p-4 overflow-y-auto max-h-[500px] custom-scrollbar flex-1">
-                {issues.length === 0 ? (
-                    <div className="text-green-400 font-mono text-sm">
-                        <span className="text-green-500 opacity-50">➜</span> No semantic issues found. Good job!
+              {issues.length === 0 ? (
+                <div className="text-green-400 font-mono text-sm">
+                  <span className="text-green-500 opacity-50">➜</span> No
+                  semantic issues found. Good job!
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {issues.map((issue, index) => (
+                    <div key={index} className="font-mono text-sm group">
+                      <div className="flex items-start space-x-2">
+                        <span
+                          className={`mt-0.5 shrink-0 ${
+                            issue.type === "error"
+                              ? "text-red-500"
+                              : issue.type === "warning"
+                                ? "text-yellow-500"
+                                : "text-blue-500"
+                          }`}
+                        >
+                          {issue.type === "error"
+                            ? "✖"
+                            : issue.type === "warning"
+                              ? "⚠"
+                              : "ℹ"}
+                        </span>
+                        <div className="space-y-1">
+                          <p
+                            className={`font-medium ${
+                              issue.type === "error"
+                                ? "text-red-400"
+                                : issue.type === "warning"
+                                  ? "text-yellow-400"
+                                  : "text-blue-400"
+                            }`}
+                          >
+                            {issue.message}
+                          </p>
+                          <div className="pl-4 border-l-2 border-white/10 ml-1 space-y-1">
+                            {issue.element && (
+                              <div className="text-gray-500 text-xs break-all">
+                                Source:{" "}
+                                <span className="text-gray-400 font-mono bg-white/5 px-1 rounded">
+                                  {issue.element}
+                                </span>
+                              </div>
+                            )}
+                            <p className="text-gray-400 text-xs">
+                              <span className="text-blue-400 opacity-70">
+                                Hint:
+                              </span>{" "}
+                              {issue.suggestion}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                ) : (
-                    <div className="space-y-4">
-                        {issues.map((issue, index) => (
-                            <div key={index} className="font-mono text-sm group">
-                                <div className="flex items-start space-x-2">
-                                    <span className={`mt-0.5 shrink-0 ${
-                                        issue.type === 'error' ? 'text-red-500' :
-                                        issue.type === 'warning' ? 'text-yellow-500' : 'text-blue-500'
-                                    }`}>
-                                        {issue.type === 'error' ? '✖' : issue.type === 'warning' ? '⚠' : 'ℹ'}
-                                    </span>
-                                    <div className="space-y-1">
-                                        <p className={`font-medium ${
-                                            issue.type === 'error' ? 'text-red-400' :
-                                            issue.type === 'warning' ? 'text-yellow-400' : 'text-blue-400'
-                                        }`}>
-                                            {issue.message}
-                                        </p>
-                                        <div className="pl-4 border-l-2 border-white/10 ml-1 space-y-1">
-                                            {issue.element && (
-                                                <div className="text-gray-500 text-xs break-all">
-                                                    Source: <span className="text-gray-400 font-mono bg-white/5 px-1 rounded">{issue.element}</span>
-                                                </div>
-                                            )}
-                                            <p className="text-gray-400 text-xs">
-                                                <span className="text-blue-400 opacity-70">Hint:</span> {issue.suggestion}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -325,37 +399,58 @@ export default function SemanticStructureAnalyzer() {
   );
 }
 
-function renderStructureTree(elements: SemanticElement[], depth = 0): JSX.Element[] {
+function renderStructureTree(
+  elements: SemanticElement[],
+  depth = 0,
+): JSX.Element[] {
   return elements.map((el, index) => (
-    <div key={index} style={{ paddingLeft: `${depth * 20}px` }} className="hover:bg-white/5 rounded transition-colors duration-150">
+    <div
+      key={index}
+      style={{ paddingLeft: `${depth * 20}px` }}
+      className="hover:bg-white/5 rounded transition-colors duration-150"
+    >
       <div className="flex items-center flex-wrap">
         <span className="text-blue-400 opacity-80">&lt;</span>
         <span className="text-blue-400 font-semibold">{el.tagName}</span>
-        {el.role && <span className="text-purple-400 ml-2 italic">role=&quot;{el.role}&quot;</span>}
+        {el.role && (
+          <span className="text-purple-400 ml-2 italic">
+            role=&quot;{el.role}&quot;
+          </span>
+        )}
         {Object.entries(el.ariaAttributes).map(([key, value]) => (
-          <span key={key} className="text-green-400 ml-2">{`${key}="${value}"`}</span>
+          <span
+            key={key}
+            className="text-green-400 ml-2"
+          >{`${key}="${value}"`}</span>
         ))}
         <span className="text-blue-400 opacity-80">&gt;</span>
-      
+
         {/* Inline text preview if it's short */}
         {el.text && !el.children.length && (
-            <span className="text-gray-500 ml-2 truncate max-w-[200px]">{el.text}</span>
+          <span className="text-gray-500 ml-2 truncate max-w-[200px]">
+            {el.text}
+          </span>
         )}
 
-         {/* If no children and has text, close inline */}
+        {/* If no children and has text, close inline */}
         {!el.children.length && (
-             <span className="text-blue-400 opacity-80 ml-1">&lt;/{el.tagName}&gt;</span>
+          <span className="text-blue-400 opacity-80 ml-1">
+            &lt;/{el.tagName}&gt;
+          </span>
         )}
       </div>
 
       {el.children.length > 0 && (
-          <>
-            {renderStructureTree(el.children, depth + 1)}
-            <div style={{ paddingLeft: `${depth * 20}px` }} className="text-blue-400 opacity-60">
-                &lt;/{el.tagName}&gt;
-            </div>
-          </>
+        <>
+          {renderStructureTree(el.children, depth + 1)}
+          <div
+            style={{ paddingLeft: `${depth * 20}px` }}
+            className="text-blue-400 opacity-60"
+          >
+            &lt;/{el.tagName}&gt;
+          </div>
+        </>
       )}
     </div>
   ));
-} 
+}

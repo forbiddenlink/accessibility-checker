@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { WebsiteAnalyzer } from '@/utils/websiteAnalyzer';
-import { validateUrl } from '@/utils/security';
+import { NextResponse } from "next/server";
+import { WebsiteAnalyzer } from "@/utils/websiteAnalyzer";
+import { validateUrl } from "@/utils/security";
 
-export const runtime = 'nodejs'; // Force Node.js runtime instead of Edge
+export const runtime = "nodejs"; // Force Node.js runtime instead of Edge
 
 export async function POST(request: Request) {
   try {
@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     const securityCheck = await validateUrl(url);
     if (!securityCheck.valid) {
       return NextResponse.json(
-        { error: securityCheck.error || 'Invalid Request' },
-        { status: 400 }
+        { error: securityCheck.error || "Invalid Request" },
+        { status: 400 },
       );
     }
 
@@ -22,10 +22,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ results });
   } catch (error) {
-    console.error('Error analyzing website:', error);
+    console.error(
+      "Error analyzing website:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return NextResponse.json(
-      { error: 'Failed to analyze website' },
-      { status: 500 }
+      { error: "Failed to analyze website" },
+      { status: 500 },
     );
   }
-} 
+}
