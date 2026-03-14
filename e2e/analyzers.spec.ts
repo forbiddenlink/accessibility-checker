@@ -7,7 +7,7 @@ test("Analyzer Security: SSRF Validation", async ({ page }) => {
   const urlInput = page
     .getByRole("textbox", { name: "Website URL to analyze" })
     .first();
-  const analyzeBtn = page.getByRole("button", { name: "Analyze Website" });
+  const analyzeBtn = page.getByRole("button", { name: "Analyze" });
 
   // 2. Try Internal URL (localhost) - Should be blocked by our new SSRF logic
   await urlInput.fill("http://localhost:3000");

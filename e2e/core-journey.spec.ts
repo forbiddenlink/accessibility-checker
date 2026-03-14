@@ -12,8 +12,14 @@ test("Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass", async ({
   ).toBeVisible();
 
   // 3. Enter Failing Colors (Grey on Black)
-  const fgInput = page.getByLabel("Foreground");
-  const bgInput = page.getByLabel("Background");
+  const fgInput = page.getByRole("textbox", {
+    name: "Foreground",
+    exact: true,
+  });
+  const bgInput = page.getByRole("textbox", {
+    name: "Background",
+    exact: true,
+  });
 
   await fgInput.fill("#333333");
   await bgInput.fill("#000000");
