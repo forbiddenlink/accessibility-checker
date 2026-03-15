@@ -1,6 +1,8 @@
 {
   "name": "accessibiliy-checker",
   "version": "0.1.0",
+  "description": "Automated web accessibility checker using axe-core, APCA contrast analysis, and HTML validation",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
