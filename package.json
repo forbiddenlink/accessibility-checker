@@ -27,7 +27,7 @@
     "axe-core": "^4.10.3",
     "html-validator": "^6.0.1",
     "jspdf": "^4.2.0",
-    "next": "^16.1.6",
+    "next": "^16.1.7",
     "react": "^18",
     "react-dom": "^19",
     "zod": "^4.3.6",
