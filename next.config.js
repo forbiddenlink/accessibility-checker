@@ -1,3 +1,4 @@
+require("./src/env.js");
 const nextConfig = {
     async headers() {
         return [
