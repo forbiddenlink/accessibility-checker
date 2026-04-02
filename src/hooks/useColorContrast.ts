@@ -1,25 +1,25 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getContrastRatio,
   getAPCA,
   generateColorSuggestions,
   hexToRgb,
-  getLuminance
-} from '@/utils/colorUtils';
+  getLuminance,
+} from "@/utils/colorUtils";
 
 // Constants
 const DEFAULT_COLORS = {
-  FOREGROUND: '#000000',
-  BACKGROUND: '#FFFFFF'
+  FOREGROUND: "#000000",
+  BACKGROUND: "#FFFFFF",
 } as const;
 
 const DEBOUNCE_DELAY = {
-  COLOR_CHECK: 0,  // Immediate client-side check
-  URL_UPDATE: 1000   // ms
+  COLOR_CHECK: 0, // Immediate client-side check
+  URL_UPDATE: 1000, // ms
 } as const;
 
 // Types
-export type ContrastMode = 'WCAG' | 'APCA';
+export type ContrastMode = "WCAG" | "APCA";
 
 interface ContrastResults {
   contrast: number; // WCAG ratio
@@ -41,7 +41,7 @@ interface ContrastResults {
   }>;
 }
 
-type ErrorType = 'INVALID_COLOR' | null;
+type ErrorType = "INVALID_COLOR" | null;
 
 interface ErrorState {
   type: ErrorType;
@@ -51,36 +51,41 @@ interface ErrorState {
 // Utility function for debouncing
 function useDebounce<T extends (...args: any[]) => void>(
   callback: T,
-  delay: number
+  delay: number,
 ) {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  return useCallback((...args: Parameters<T>) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  return useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    if (delay === 0) {
-      callback(...args);
-      return;
-    }
+      if (delay === 0) {
+        callback(...args);
+        return;
+      }
 
-    timeoutRef.current = setTimeout(() => {
-      callback(...args);
-    }, delay);
-  }, [callback, delay]);
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    },
+    [callback, delay],
+  );
 }
 
 export default function useColorContrast(
   initialFg = DEFAULT_COLORS.FOREGROUND,
-  initialBg = DEFAULT_COLORS.BACKGROUND
+  initialBg = DEFAULT_COLORS.BACKGROUND,
 ) {
   const [foregroundColor, setForegroundColor] = useState<string>(initialFg);
   const [backgroundColor, setBackgroundColor] = useState<string>(initialBg);
-  const [mode, setMode] = useState<ContrastMode>('WCAG');
+  const [mode, setMode] = useState<ContrastMode>("WCAG");
   const [results, setResults] = useState<ContrastResults | null>(null);
-  const [loading, setLoading] = useState<{ colorCheck: boolean }>({ colorCheck: false });
-  const [error, setError] = useState<ErrorState>({ type: null, message: '' });
+  const [loading, setLoading] = useState<{ colorCheck: boolean }>({
+    colorCheck: false,
+  });
+  const [error, setError] = useState<ErrorState>({ type: null, message: "" });
 
   // Check if the color is a valid hex format
   const isValidHexColor = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
@@ -88,14 +93,16 @@ export default function useColorContrast(
   // Normalize color input
   const normalizeColor = (color: string): string => {
     try {
-      if (color[0] !== '#') color = '#' + color;
+      if (color[0] !== "#") color = "#" + color;
       if (color.length === 4) {
-        const r = color[1], g = color[2], b = color[3];
+        const r = color[1],
+          g = color[2],
+          b = color[3];
         color = `#${r}${r}${g}${g}${b}${b}`;
       }
       return color.toUpperCase();
     } catch (e) {
-      throw new Error('Invalid color format');
+      throw new Error("Invalid color format");
     }
   };
 
@@ -104,14 +111,20 @@ export default function useColorContrast(
       const normalizedColor = normalizeColor(color);
       if (isValidHexColor(normalizedColor)) {
         setForegroundColor(normalizedColor);
-        setError({ type: null, message: '' });
+        setError({ type: null, message: "" });
       } else {
         setForegroundColor(color);
-        setError({ type: 'INVALID_COLOR', message: 'Invalid foreground color format' });
+        setError({
+          type: "INVALID_COLOR",
+          message: "Invalid foreground color format",
+        });
       }
     } catch (e) {
       setForegroundColor(color);
-      setError({ type: 'INVALID_COLOR', message: 'Invalid foreground color format' });
+      setError({
+        type: "INVALID_COLOR",
+        message: "Invalid foreground color format",
+      });
     }
   };
 
@@ -120,20 +133,29 @@ export default function useColorContrast(
       const normalizedColor = normalizeColor(color);
       if (isValidHexColor(normalizedColor)) {
         setBackgroundColor(normalizedColor);
-        setError({ type: null, message: '' });
+        setError({ type: null, message: "" });
       } else {
         setBackgroundColor(color);
-        setError({ type: 'INVALID_COLOR', message: 'Invalid background color format' });
+        setError({
+          type: "INVALID_COLOR",
+          message: "Invalid background color format",
+        });
       }
     } catch (e) {
       setBackgroundColor(color);
-      setError({ type: 'INVALID_COLOR', message: 'Invalid background color format' });
+      setError({
+        type: "INVALID_COLOR",
+        message: "Invalid background color format",
+      });
     }
   };
 
   // Synchronous client-side check
   const checkContrast = useCallback(() => {
-    if (!isValidHexColor(foregroundColor) || !isValidHexColor(backgroundColor)) {
+    if (
+      !isValidHexColor(foregroundColor) ||
+      !isValidHexColor(backgroundColor)
+    ) {
       return;
     }
 
@@ -156,7 +178,12 @@ export default function useColorContrast(
       const apca = getAPCA(fgRgb, bgRgb);
 
       // Generate suggestions based on current mode
-      const suggestions = generateColorSuggestions(foregroundColor, backgroundColor, mode === 'WCAG' ? contrast : (apca ?? 0), mode);
+      const suggestions = generateColorSuggestions(
+        foregroundColor,
+        backgroundColor,
+        mode === "WCAG" ? contrast : (apca ?? 0),
+        mode,
+      );
 
       setResults({
         contrast,
@@ -169,13 +196,15 @@ export default function useColorContrast(
           normal: contrast >= 7,
           large: contrast >= 4.5,
         },
-        suggestions
+        suggestions,
       });
-      setError({ type: null, message: '' });
-
+      setError({ type: null, message: "" });
     } catch (err) {
       console.error(err);
-      setError({ type: 'INVALID_COLOR', message: 'Failed to calculate contrast' });
+      setError({
+        type: "INVALID_COLOR",
+        message: "Failed to calculate contrast",
+      });
     } finally {
       // Simulate a tiny delay for UI responsiveness or just clear immediately
       // Since it's instant, we don't strictly *need* loading state, but it keeps UI consistent
@@ -185,21 +214,27 @@ export default function useColorContrast(
 
   // Load colors from URL
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const fgParam = params.get('fg');
-      const bgParam = params.get('bg');
-      if (fgParam && isValidHexColor(fgParam)) setForegroundColor(fgParam.toUpperCase());
-      if (bgParam && isValidHexColor(bgParam)) setBackgroundColor(bgParam.toUpperCase());
+      const fgParam = params.get("fg");
+      const bgParam = params.get("bg");
+      if (fgParam && isValidHexColor(fgParam))
+        setForegroundColor(fgParam.toUpperCase());
+      if (bgParam && isValidHexColor(bgParam))
+        setBackgroundColor(bgParam.toUpperCase());
     }
   }, []);
 
   const updateURL = useDebounce(() => {
-    if (typeof window !== 'undefined' && isValidHexColor(foregroundColor) && isValidHexColor(backgroundColor)) {
+    if (
+      typeof window !== "undefined" &&
+      isValidHexColor(foregroundColor) &&
+      isValidHexColor(backgroundColor)
+    ) {
       const url = new URL(window.location.href);
-      url.searchParams.set('fg', foregroundColor);
-      url.searchParams.set('bg', backgroundColor);
-      window.history.replaceState({}, '', url.toString());
+      url.searchParams.set("fg", foregroundColor);
+      url.searchParams.set("bg", backgroundColor);
+      window.history.replaceState({}, "", url.toString());
     }
   }, DEBOUNCE_DELAY.URL_UPDATE);
 
@@ -219,6 +254,6 @@ export default function useColorContrast(
     checkContrast,
     isValidColor: isValidHexColor,
     mode,
-    setMode
+    setMode,
   };
-} 
+}
