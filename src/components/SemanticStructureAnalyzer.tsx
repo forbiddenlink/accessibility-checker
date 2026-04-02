@@ -402,7 +402,7 @@ export default function SemanticStructureAnalyzer() {
 function renderStructureTree(
   elements: SemanticElement[],
   depth = 0,
-): JSX.Element[] {
+): React.JSX.Element[] {
   return elements.map((el, index) => (
     <div
       key={index}
