@@ -35,7 +35,7 @@
     "axe-core": "^4.10.3",
     "html-validator": "^6.0.1",
     "jspdf": "^4.2.1",
-    "next": "^16.1.7",
+    "next": "^16.2.3",
     "next-axiom": "^1.5.0",
     "next-safe-action": "^8.3.0",
     "nuqs": "^2.8.9",
@@ -65,7 +65,7 @@
     "jsdom": "^27.4.0",
     "lint-staged": "^15.3.0",
     "msw": "^2.12.14",
-    "postcss": "^8.4.35",
+    "postcss": "^8.5.3",
     "postcss-import": "^16.1.1",
     "postcss-nesting": "^12.0.2",
     "prettier": "^3.8.1",
@@ -81,5 +81,19 @@
     "*.{json,md,css}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "axios": ">=1.15.0",
+      "glob": ">=11.1.0",
+      "minimatch": ">=9.0.7",
+      "picomatch": ">=4.0.4",
+      "next": ">=16.2.3",
+      "postcss": ">=8.5.3",
+      "rollup": ">=4.59.0",
+      "semver": ">=7.7.2",
+      "vite": ">=6.4.2",
+      "ws": ">=8.18.2"
+    }
   }
 }
