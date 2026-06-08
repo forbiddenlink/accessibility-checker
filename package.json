@@ -37,7 +37,7 @@
     "axe-core": "^4.10.3",
     "html-validator": "^6.0.1",
     "jspdf": "^4.2.1",
-    "next": "^16.2.6",
+    "next": "^16.2.7",
     "next-axiom": "^1.5.0",
     "next-safe-action": "^8.3.0",
     "nuqs": "^2.8.9",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
     "@eslint/eslintrc": "^3.3.5",
-    "@next/bundle-analyzer": "^16.2.4",
+    "@next/bundle-analyzer": "^16.2.7",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
