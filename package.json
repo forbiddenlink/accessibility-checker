@@ -31,6 +31,7 @@
     "@headlessui/react": "^2.2.10",
     "@t3-oss/env-nextjs": "^0.13.11",
     "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/postcss": "^4.3.1",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "apca-w3": "^0.1.9",
@@ -52,7 +53,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
-    "@eslint/eslintrc": "^3.3.5",
     "@next/bundle-analyzer": "^16.2.9",
     "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -77,11 +77,11 @@
     "prettier": "^3.8.4",
     "tailwindcss": "^4.3.1",
     "typescript": "^6",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "@eslint/eslintrc": "^3.3.5"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
       "prettier --write"
     ],
     "*.{json,md,css}": [
