@@ -218,6 +218,7 @@ export default function useColorContrast(
       const params = new URLSearchParams(window.location.search);
       const fgParam = params.get("fg");
       const bgParam = params.get("bg");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (fgParam && isValidHexColor(fgParam))
         setForegroundColor(fgParam.toUpperCase());
       if (bgParam && isValidHexColor(bgParam))
@@ -239,6 +240,7 @@ export default function useColorContrast(
   }, DEBOUNCE_DELAY.URL_UPDATE);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkContrast();
     updateURL();
   }, [foregroundColor, backgroundColor, mode, checkContrast, updateURL]);
