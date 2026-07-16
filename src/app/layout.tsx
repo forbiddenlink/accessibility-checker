@@ -10,12 +10,13 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://accesscheck.app";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://precision-contrast.vercel.app";
 
 export const metadata: Metadata = {
   title: {
-    default: "AccessCheck - Accessibility Color Checker",
-    template: "%s | AccessCheck",
+    default: "Precision Contrast — Accessibility Color Checker",
+    template: "%s | Precision Contrast",
   },
   description:
     "Check color combinations for WCAG 2.1 and APCA accessibility compliance. Analyze websites, images, and forms for accessibility issues.",
@@ -27,8 +28,8 @@ export const metadata: Metadata = {
     "a11y",
     "web accessibility",
   ],
-  authors: [{ name: "AccessCheck" }],
-  creator: "AccessCheck",
+  authors: [{ name: "Precision Contrast" }],
+  creator: "Precision Contrast",
   metadataBase: new URL(siteUrl),
   alternates: {
     canonical: "/",
@@ -37,8 +38,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "AccessCheck",
-    title: "AccessCheck - Accessibility Color Checker",
+    siteName: "Precision Contrast",
+    title: "Precision Contrast — Accessibility Color Checker",
     description:
       "Check color combinations for WCAG 2.1 and APCA accessibility compliance.",
     images: [
@@ -46,13 +47,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "AccessCheck - Accessibility Color Checker",
+        alt: "Precision Contrast — Accessibility Color Checker",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AccessCheck - Accessibility Color Checker",
+    title: "Precision Contrast — Accessibility Color Checker",
     description:
       "Check color combinations for WCAG 2.1 and APCA accessibility compliance.",
     images: ["/opengraph-image.png"],
@@ -71,7 +72,7 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "AccessCheck",
+    name: "Precision Contrast",
     description:
       "Check color combinations for WCAG 2.1 and APCA accessibility compliance",
     url: siteUrl,
@@ -122,7 +123,7 @@ export default function RootLayout({
             <Link
               href="/"
               className="flex items-center gap-3 group"
-              aria-label="AccessCheck Home"
+              aria-label="Precision Contrast Home"
             >
               <div
                 className="h-7 w-7 rounded-full bg-white flex items-center justify-center group-hover:scale-105 transition-transform duration-200"
@@ -131,7 +132,7 @@ export default function RootLayout({
                 <div className="h-2 w-2 bg-black rounded-full" />
               </div>
               <span className="font-semibold tracking-tight text-body-sm">
-                AccessCheck
+                Precision Contrast
               </span>
             </Link>
 
@@ -168,7 +169,7 @@ export default function RootLayout({
         <footer className="border-t border-white/5 mt-auto">
           <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-caption text-muted-foreground">
-              <p>AccessCheck &copy; {new Date().getFullYear()}</p>
+              <p>Precision Contrast &copy; {new Date().getFullYear()}</p>
               <nav aria-label="Footer navigation" className="flex gap-6">
                 <Link
                   href="/privacy"

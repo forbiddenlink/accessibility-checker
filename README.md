@@ -1,4 +1,4 @@
-# AccessCheck
+# Precision Contrast
 
 A professional accessibility suite for interface designers and developers. Beyond
 contrast checking, it analyses semantic structure, keyboard navigation, forms, images,

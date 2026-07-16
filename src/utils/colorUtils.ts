@@ -15,12 +15,11 @@ interface HSL {
 const LUMINANCE_COEFFICIENTS = {
   RED: 0.2126,
   GREEN: 0.7152,
-  BLUE: 0.0722
+  BLUE: 0.0722,
 } as const;
 
 // APCA Import
-import { calcAPCA } from 'apca-w3';
-
+import { calcAPCA } from "apca-w3";
 
 // Color space constants
 const COLOR_CONSTANTS = {
@@ -29,14 +28,14 @@ const COLOR_CONSTANTS = {
   GAMMA_OFFSET: 0.055,
   GAMMA_DIVIDER: 1.055,
   GAMMA_EXPONENT: 2.4,
-  GAMMA_SIMPLE_MULTIPLIER: 12.92
+  GAMMA_SIMPLE_MULTIPLIER: 12.92,
 } as const;
 
 // Contrast ratio constants
 const CONTRAST_CONSTANTS = {
   LUMINANCE_OFFSET: 0.05,
   CONTRAST_TOLERANCE: 0.1,
-  MAX_ADJUSTMENT_STEPS: 100
+  MAX_ADJUSTMENT_STEPS: 100,
 } as const;
 
 export function hexToRgb(hex: string): RGB | null {
@@ -46,18 +45,23 @@ export function hexToRgb(hex: string): RGB | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16),
-    }
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
     : null;
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-  return '#' + [r, g, b].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
+  return (
+    "#" +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      })
+      .join("")
+  );
 }
 
 export function rgbToHsl(r: number, g: number, b: number): HSL {
@@ -66,15 +70,23 @@ export function rgbToHsl(r: number, g: number, b: number): HSL {
   b /= 255;
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h = 0, s = 0, l = (max + min) / 2;
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2;
 
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
     switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
     }
     h /= 6;
   }
@@ -109,36 +121,41 @@ export function hslToRgb(h: number, s: number, l: number): RGB {
   return {
     r: Math.round(r * 255),
     g: Math.round(g * 255),
-    b: Math.round(b * 255)
+    b: Math.round(b * 255),
   };
 }
 
 export function getLuminance(r: number, g: number, b: number): number {
-  const [rs, gs, bs] = [r, g, b].map(value => {
+  const [rs, gs, bs] = [r, g, b].map((value) => {
     value /= COLOR_CONSTANTS.MAX_RGB_VALUE;
     return value <= COLOR_CONSTANTS.GAMMA_THRESHOLD
       ? value / COLOR_CONSTANTS.GAMMA_SIMPLE_MULTIPLIER
       : Math.pow(
-        (value + COLOR_CONSTANTS.GAMMA_OFFSET) / COLOR_CONSTANTS.GAMMA_DIVIDER,
-        COLOR_CONSTANTS.GAMMA_EXPONENT
-      );
+          (value + COLOR_CONSTANTS.GAMMA_OFFSET) /
+            COLOR_CONSTANTS.GAMMA_DIVIDER,
+          COLOR_CONSTANTS.GAMMA_EXPONENT,
+        );
   });
-  return rs * LUMINANCE_COEFFICIENTS.RED +
+  return (
+    rs * LUMINANCE_COEFFICIENTS.RED +
     gs * LUMINANCE_COEFFICIENTS.GREEN +
-    bs * LUMINANCE_COEFFICIENTS.BLUE;
+    bs * LUMINANCE_COEFFICIENTS.BLUE
+  );
 }
 
 export function getContrastRatio(l1: number, l2: number): number {
   const lighter = Math.max(l1, l2);
   const darker = Math.min(l1, l2);
-  return (lighter + CONTRAST_CONSTANTS.LUMINANCE_OFFSET) /
-    (darker + CONTRAST_CONSTANTS.LUMINANCE_OFFSET);
+  return (
+    (lighter + CONTRAST_CONSTANTS.LUMINANCE_OFFSET) /
+    (darker + CONTRAST_CONSTANTS.LUMINANCE_OFFSET)
+  );
 }
 
 export function adjustColorForContrast(
   color: RGB,
   bgColor: RGB,
-  targetContrast: number
+  targetContrast: number,
 ): RGB {
   let { r, g, b } = color;
   const bgLuminance = getLuminance(bgColor.r, bgColor.g, bgColor.b);
@@ -148,7 +165,10 @@ export function adjustColorForContrast(
     const currentLuminance = getLuminance(r, g, b);
     const currentContrast = getContrastRatio(currentLuminance, bgLuminance);
 
-    if (Math.abs(currentContrast - targetContrast) < CONTRAST_CONSTANTS.CONTRAST_TOLERANCE) {
+    if (
+      Math.abs(currentContrast - targetContrast) <
+      CONTRAST_CONSTANTS.CONTRAST_TOLERANCE
+    ) {
       break;
     }
 
@@ -195,7 +215,40 @@ export function getAPCA(foreground: RGB, background: RGB): number | null {
   }
 }
 
-export function generateColorSuggestions(foreground: string, background: string, contrast: number, mode: 'WCAG' | 'APCA' = 'WCAG') {
+/**
+ * The measured ratio of a suggested pair. Suggestions used to report the
+ * target they were aiming for (4.5 / 7) rather than what the returned colour
+ * actually achieves, and the UI renders that number as a measurement.
+ */
+function measuredContrast(foreground: string, background: string): number {
+  const fg = hexToRgb(foreground);
+  const bg = hexToRgb(background);
+  if (!fg || !bg) return 0;
+  return getContrastRatio(
+    getLuminance(fg.r, fg.g, fg.b),
+    getLuminance(bg.r, bg.g, bg.b),
+  );
+}
+
+/**
+ * APCA Lc -> label. Needs a floor: without one every Lc was labelled at least
+ * "AA", so an Lc of 62 (below the Lc 75 body-text minimum this app's own
+ * results table shows) rendered as a pass.
+ */
+function apcaLevel(lc: number): "AAA" | "AA" | "Large" | "Fail" {
+  const abs = Math.abs(lc);
+  if (abs >= 90) return "AAA";
+  if (abs >= 75) return "AA";
+  if (abs >= 60) return "Large";
+  return "Fail";
+}
+
+export function generateColorSuggestions(
+  foreground: string,
+  background: string,
+  contrast: number,
+  mode: "WCAG" | "APCA" = "WCAG",
+) {
   const fgRgb = hexToRgb(foreground);
   const bgRgb = hexToRgb(background);
 
@@ -203,30 +256,40 @@ export function generateColorSuggestions(foreground: string, background: string,
 
   const suggestions = [];
 
-  if (mode === 'WCAG') {
+  if (mode === "WCAG") {
     // If contrast is below AA level (4.5:1), offer suggestions
     if (contrast < 4.5) {
       // 1. Adjust foreground to meet AA (4.5:1)
-      const aaColor = findClosestAccessibleColor(foreground, background, 4.5, 'WCAG');
+      const aaColor = findClosestAccessibleColor(
+        foreground,
+        background,
+        4.5,
+        "WCAG",
+      );
       if (aaColor) {
         suggestions.push({
           foreground: aaColor,
           background: background,
-          contrast: 4.5,
+          contrast: measuredContrast(aaColor, background),
           level: "AA",
-          description: "Smart adjustment for AA compliance"
+          description: "Smart adjustment for AA compliance",
         });
       }
 
       // 2. Adjust foreground to meet AAA (7:1)
-      const aaaColor = findClosestAccessibleColor(foreground, background, 7.0, 'WCAG');
+      const aaaColor = findClosestAccessibleColor(
+        foreground,
+        background,
+        7.0,
+        "WCAG",
+      );
       if (aaaColor) {
         suggestions.push({
           foreground: aaaColor,
           background: background,
-          contrast: 7,
+          contrast: measuredContrast(aaaColor, background),
           level: "AAA",
-          description: "Smart adjustment for AAA compliance"
+          description: "Smart adjustment for AAA compliance",
         });
       }
     }
@@ -236,7 +299,12 @@ export function generateColorSuggestions(foreground: string, background: string,
     const currentLc = Math.abs(contrast);
 
     if (currentLc < 75) {
-      const lc75Color = findClosestAccessibleColor(foreground, background, 75, 'APCA');
+      const lc75Color = findClosestAccessibleColor(
+        foreground,
+        background,
+        75,
+        "APCA",
+      );
       if (lc75Color) {
         // Recalculate exact Lc for display
         const newFg = hexToRgb(lc75Color);
@@ -247,12 +315,17 @@ export function generateColorSuggestions(foreground: string, background: string,
             background: background,
             contrast: newLc || 75,
             level: "AA", // Mapping to roughly AA equivalent
-            description: "Smart adjustment for Body Text (Lc 75)"
+            description: "Smart adjustment for Body Text (Lc 75)",
           });
         }
       }
 
-      const lc90Color = findClosestAccessibleColor(foreground, background, 90, 'APCA');
+      const lc90Color = findClosestAccessibleColor(
+        foreground,
+        background,
+        90,
+        "APCA",
+      );
       if (lc90Color) {
         const newFg = hexToRgb(lc90Color);
         if (newFg) {
@@ -262,29 +335,35 @@ export function generateColorSuggestions(foreground: string, background: string,
             background: background,
             contrast: newLc || 90,
             level: "AAA", // Mapping to roughly AAA equivalent
-            description: "Smart adjustment for Preferred Text (Lc 90)"
+            description: "Smart adjustment for Preferred Text (Lc 90)",
           });
         }
       }
     }
   }
 
-  // Always suggest the optimal black/white as a baseline fallback
+  // Always suggest the optimal black/white as a baseline fallback.
+  // The crossover is sqrt(1.05 * 0.05) - 0.05, not 0.5: on a mid-grey like
+  // #808080 (luminance 0.216) a 0.5 threshold picks white at 3.95:1 when
+  // black would have given 5.32:1.
   const bgLuminance = getLuminance(bgRgb.r, bgRgb.g, bgRgb.b);
-  const optimalTextColor = bgLuminance > 0.5 ? "#000000" : "#FFFFFF";
+  const BLACK_WHITE_CROSSOVER = Math.sqrt(1.05 * 0.05) - 0.05;
+  const optimalTextColor =
+    bgLuminance > BLACK_WHITE_CROSSOVER ? "#000000" : "#FFFFFF";
   const optimalTextRgb = hexToRgb(optimalTextColor)!;
 
-  if (mode === 'WCAG') {
+  if (mode === "WCAG") {
     const optimalContrast = getContrastRatio(
       getLuminance(optimalTextRgb.r, optimalTextRgb.g, optimalTextRgb.b),
-      bgLuminance
+      bgLuminance,
     );
     suggestions.push({
       foreground: optimalTextColor,
       background: background,
       contrast: optimalContrast,
-      level: optimalContrast >= 7 ? "AAA" : optimalContrast >= 4.5 ? "AA" : "Fail",
-      description: `Maximum contrast ${optimalTextColor === "#000000" ? "black" : "white"}`
+      level:
+        optimalContrast >= 7 ? "AAA" : optimalContrast >= 4.5 ? "AA" : "Fail",
+      description: `Maximum contrast ${optimalTextColor === "#000000" ? "black" : "white"}`,
     });
   } else {
     const optimalLc = getAPCA(optimalTextRgb, bgRgb);
@@ -293,8 +372,8 @@ export function generateColorSuggestions(foreground: string, background: string,
         foreground: optimalTextColor,
         background: background,
         contrast: optimalLc,
-        level: Math.abs(optimalLc) >= 90 ? "AAA" : "AA",
-        description: `Maximum contrast ${optimalTextColor === "#000000" ? "black" : "white"}`
+        level: apcaLevel(optimalLc),
+        description: `Maximum contrast ${optimalTextColor === "#000000" ? "black" : "white"}`,
       });
     }
   }
@@ -306,7 +385,7 @@ export function findClosestAccessibleColor(
   foreground: string,
   background: string,
   targetRatio: number, // Ratio for WCAG or Lc for APCA
-  mode: 'WCAG' | 'APCA' = 'WCAG'
+  mode: "WCAG" | "APCA" = "WCAG",
 ): string | null {
   const fgRgb = hexToRgb(foreground);
   const bgRgb = hexToRgb(background);
@@ -322,7 +401,7 @@ export function findClosestAccessibleColor(
     const testRgb = hslToRgb(fgHsl.h, fgHsl.s, l);
     let passes = false;
 
-    if (mode === 'WCAG') {
+    if (mode === "WCAG") {
       const l1 = getLuminance(testRgb.r, testRgb.g, testRgb.b);
       const l2 = getLuminance(bgRgb.r, bgRgb.g, bgRgb.b);
       const ratio = getContrastRatio(l1, l2);
@@ -342,4 +421,4 @@ export function findClosestAccessibleColor(
   }
 
   return bestColor;
-} 
+}

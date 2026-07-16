@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of service for AccessCheck accessibility color checker",
+  description:
+    "Terms of service for Precision Contrast accessibility color checker",
 };
 
 export default function TermsOfService() {
@@ -24,27 +25,27 @@ export default function TermsOfService() {
           <section className="space-y-4">
             <h2 className="text-h3 text-white">Acceptance of Terms</h2>
             <p>
-              By accessing and using AccessCheck, you accept and agree to be
-              bound by the terms and provisions of this agreement.
+              By accessing and using Precision Contrast, you accept and agree to
+              be bound by the terms and provisions of this agreement.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-h3 text-white">Use License</h2>
             <p>
-              AccessCheck is provided as a free tool for checking color contrast
-              and accessibility compliance. You may use this tool for personal
-              and commercial projects.
+              Precision Contrast is provided as a free tool for checking color
+              contrast and accessibility compliance. You may use this tool for
+              personal and commercial projects.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-h3 text-white">Disclaimer</h2>
             <p>
-              The accessibility checks and suggestions provided by AccessCheck
-              are for informational purposes only. While we strive for accuracy,
-              we do not guarantee that using our tool will make your website
-              fully WCAG compliant.
+              The accessibility checks and suggestions provided by Precision
+              Contrast are for informational purposes only. While we strive for
+              accuracy, we do not guarantee that using our tool will make your
+              website fully WCAG compliant.
             </p>
             <p>
               You are responsible for ensuring your website meets accessibility
@@ -56,9 +57,9 @@ export default function TermsOfService() {
           <section className="space-y-4">
             <h2 className="text-h3 text-white">Limitations</h2>
             <p>
-              AccessCheck is provided &quot;as is&quot; without warranties of
-              any kind. We are not liable for any damages arising from the use
-              of this tool.
+              Precision Contrast is provided &quot;as is&quot; without
+              warranties of any kind. We are not liable for any damages arising
+              from the use of this tool.
             </p>
           </section>
 
@@ -75,8 +76,8 @@ export default function TermsOfService() {
             <h2 className="text-h3 text-white">Modifications</h2>
             <p>
               We reserve the right to modify these terms at any time. Continued
-              use of AccessCheck after changes constitutes acceptance of the new
-              terms.
+              use of Precision Contrast after changes constitutes acceptance of
+              the new terms.
             </p>
           </section>
 

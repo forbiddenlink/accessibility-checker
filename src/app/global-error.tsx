@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function GlobalError({
   error,
   reset,
@@ -7,6 +9,13 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // This boundary catches errors that took out the root layout, and it was
+  // reporting them nowhere at all. There is no error-tracking service wired up
+  // yet, so the digest is the only thread back to the server-side stack.
+  useEffect(() => {
+    console.error("Critical error:", error.message, { digest: error.digest });
+  }, [error]);
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-black text-white flex items-center justify-center">
