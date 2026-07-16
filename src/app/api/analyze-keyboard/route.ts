@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { chromium } from "@playwright/test";
+import { launchBrowser, createGuardedContext } from "@/utils/browser";
 import { validateUrl } from "@/utils/security";
 import { KeyboardNavigationAnalyzer } from "@/utils/keyboardNavigationAnalyzer";
 
 export const runtime = "nodejs";
+
+// Chromium cold start (binary unpack + launch) exceeds the default limit.
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -21,10 +24,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const browser = await chromium.launch();
+    const browser = await launchBrowser();
 
     try {
-      const context = await browser.newContext({
+      const context = await createGuardedContext(browser, {
         viewport: {
           width: 1280,
           height: 800,

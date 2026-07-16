@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page } from "playwright-core";
 
 export interface FocusableElement {
   tagName: string;
@@ -10,7 +10,7 @@ export interface FocusableElement {
 }
 
 export interface NavigationIssue {
-  type: 'error' | 'warning';
+  type: "error" | "warning";
   message: string;
   element?: string;
   suggestion: string;
@@ -35,21 +35,22 @@ export class KeyboardNavigationAnalyzer {
 
       const isElementVisible = (el: HTMLElement): boolean => {
         const style = window.getComputedStyle(el);
-        return style.display !== 'none' && style.visibility !== 'hidden';
+        return style.display !== "none" && style.visibility !== "hidden";
       };
 
       const hasAccessibleName = (el: HTMLElement): boolean => {
-        const ariaLabel = el.getAttribute('aria-label');
-        const ariaLabelledBy = el.getAttribute('aria-labelledby');
+        const ariaLabel = el.getAttribute("aria-label");
+        const ariaLabelledBy = el.getAttribute("aria-labelledby");
         const text = el.textContent?.trim();
-        const title = el.getAttribute('title');
+        const title = el.getAttribute("title");
         return !!(ariaLabel || ariaLabelledBy || title || text);
       };
 
       const hasVisibleFocus = (el: HTMLElement): boolean => {
         const style = window.getComputedStyle(el);
-        const hasOutline = style.outlineStyle !== 'none' && style.outlineWidth !== '0px';
-        const hasBoxShadow = style.boxShadow !== 'none';
+        const hasOutline =
+          style.outlineStyle !== "none" && style.outlineWidth !== "0px";
+        const hasBoxShadow = style.boxShadow !== "none";
         return hasOutline || hasBoxShadow;
       };
 
@@ -58,7 +59,7 @@ export class KeyboardNavigationAnalyzer {
       };
 
       const focusable = document.querySelectorAll<HTMLElement>(
-        'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
 
       focusable.forEach((element) => {
@@ -66,9 +67,9 @@ export class KeyboardNavigationAnalyzer {
           tagName: element.tagName.toLowerCase(),
           tabIndex: element.tabIndex,
           hasVisibleFocus: hasVisibleFocus(element),
-          ariaLabel: element.getAttribute('aria-label') || undefined,
-          role: element.getAttribute('role') || undefined,
-          text: element.textContent?.trim() || undefined
+          ariaLabel: element.getAttribute("aria-label") || undefined,
+          role: element.getAttribute("role") || undefined,
+          text: element.textContent?.trim() || undefined,
         };
         focusableElements.push(elementInfo);
 
@@ -78,53 +79,64 @@ export class KeyboardNavigationAnalyzer {
 
         if (element.tabIndex < 0) {
           issues.push({
-            type: 'warning',
+            type: "warning",
             message: `Element with negative tabindex found: ${element.tagName.toLowerCase()}`,
             element: truncate(element.outerHTML),
-            suggestion: 'Avoid negative tabindex unless intentionally removing focus.'
+            suggestion:
+              "Avoid negative tabindex unless intentionally removing focus.",
           });
         }
 
         if (!elementInfo.hasVisibleFocus) {
           issues.push({
-            type: 'error',
-            message: 'Element lacks visible focus indicator',
+            type: "error",
+            message: "Element lacks visible focus indicator",
             element: truncate(element.outerHTML),
-            suggestion: 'Add focus-visible styles with a clear outline or box shadow.'
+            suggestion:
+              "Add focus-visible styles with a clear outline or box shadow.",
           });
         }
 
-        if (['a', 'button', 'input', 'select', 'textarea'].includes(elementInfo.tagName) && !hasAccessibleName(element)) {
+        if (
+          ["a", "button", "input", "select", "textarea"].includes(
+            elementInfo.tagName,
+          ) &&
+          !hasAccessibleName(element)
+        ) {
           issues.push({
-            type: 'error',
+            type: "error",
             message: `Interactive element (${elementInfo.tagName}) lacks an accessible name`,
             element: truncate(element.outerHTML),
-            suggestion: 'Add text content, aria-label, or aria-labelledby.'
+            suggestion: "Add text content, aria-label, or aria-labelledby.",
           });
         }
       });
 
-      const headings = Array.from(document.querySelectorAll<HTMLElement>('h1, h2, h3, h4, h5, h6'));
+      const headings = Array.from(
+        document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6"),
+      );
       let previousLevel = 0;
       headings.forEach((heading) => {
         const level = Number(heading.tagName[1]);
         if (previousLevel > 0 && level - previousLevel > 1) {
           issues.push({
-            type: 'warning',
+            type: "warning",
             message: `Heading level skipped from h${previousLevel} to h${level}`,
             element: truncate(heading.outerHTML),
-            suggestion: 'Maintain sequential heading hierarchy.'
+            suggestion: "Maintain sequential heading hierarchy.",
           });
         }
         previousLevel = level;
       });
 
-      const skipLink = document.querySelector('a[href^="#main"], a[href^="#content"]');
+      const skipLink = document.querySelector(
+        'a[href^="#main"], a[href^="#content"]',
+      );
       if (!skipLink) {
         issues.push({
-          type: 'warning',
-          message: 'No skip link found',
-          suggestion: 'Add a skip link at the top of the page.'
+          type: "warning",
+          message: "No skip link found",
+          suggestion: "Add a skip link at the top of the page.",
         });
       }
 

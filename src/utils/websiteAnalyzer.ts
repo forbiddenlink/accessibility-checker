@@ -1,7 +1,6 @@
-import { Browser, BrowserContext, Page } from '@playwright/test';
-import { chromium } from '@playwright/test';
-import { AccessibilityTestResult } from './accessibilityTesting';
-import validate from 'html-validator';
+import type { Browser, BrowserContext, Page } from "playwright-core";
+import { launchBrowser, createGuardedContext } from "./browser";
+import { AccessibilityTestResult } from "./accessibilityTesting";
 
 export interface WebsiteAnalysisResult {
   url: string;
@@ -9,7 +8,6 @@ export interface WebsiteAnalysisResult {
   totalViolations: number;
   totalPasses: number;
   commonIssues: string[];
-  htmlValidation: ValidationResult[];
 }
 
 export interface PageAnalysisResult {
@@ -23,13 +21,6 @@ export interface PageAnalysisResult {
   };
 }
 
-export interface ValidationResult {
-  type: string;
-  message: string;
-  line?: number;
-  column?: number;
-}
-
 export class WebsiteAnalyzer {
   private browser: Browser | null = null;
   private context: BrowserContext | null = null;
@@ -38,8 +29,8 @@ export class WebsiteAnalyzer {
 
   async initialize() {
     if (!this.browser) {
-      this.browser = await chromium.launch();
-      this.context = await this.browser.newContext();
+      this.browser = await launchBrowser();
+      this.context = await createGuardedContext(this.browser);
     }
   }
 
@@ -52,36 +43,44 @@ export class WebsiteAnalyzer {
     this.visitedUrls.clear();
   }
 
-  private async crawlPage(currentUrl: string, baseUrl: string): Promise<string[]> {
-    if (!this.context) throw new Error('Browser context not initialized');
+  private async crawlPage(
+    currentUrl: string,
+    baseUrl: string,
+  ): Promise<string[]> {
+    if (!this.context) throw new Error("Browser context not initialized");
 
     const page = await this.context.newPage();
     const newUrls: string[] = [];
 
     try {
-      await page.goto(currentUrl, { waitUntil: 'networkidle' });
+      await page.goto(currentUrl, { waitUntil: "networkidle", timeout: 30000 });
       this.visitedUrls.add(currentUrl);
 
       // Get all links on the page
       const links = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('a[href]'))
-          .map(a => a.getAttribute('href'))
-          .filter(href => href && !href.startsWith('#') && !href.startsWith('mailto:'))
-          .map(href => new URL(href!, window.location.href).href);
+        return Array.from(document.querySelectorAll("a[href]"))
+          .map((a) => a.getAttribute("href"))
+          .filter(
+            (href) =>
+              href && !href.startsWith("#") && !href.startsWith("mailto:"),
+          )
+          .map((href) => new URL(href!, window.location.href).href);
       });
 
       // Filter links to only include those from the same domain
       const baseUrlObj = new URL(baseUrl);
       newUrls.push(
-        ...links.filter(url => {
+        ...links.filter((url) => {
           try {
             const urlObj = new URL(url);
-            return urlObj.hostname === baseUrlObj.hostname &&
-              !this.visitedUrls.has(url);
+            return (
+              urlObj.hostname === baseUrlObj.hostname &&
+              !this.visitedUrls.has(url)
+            );
           } catch {
             return false;
           }
-        })
+        }),
       );
     } finally {
       await page.close();
@@ -93,22 +92,22 @@ export class WebsiteAnalyzer {
   private async analyzePage(
     page: Page,
     url: string,
-    startTime: number
+    startTime: number,
   ): Promise<PageAnalysisResult> {
     // Wait for network idle
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Inject axe-core
-    await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+    await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
 
     // Run accessibility tests inside the page
     const accessibilityResults = await page.evaluate(async () => {
       // @ts-ignore
-      const results = await window.axe.run('body', {
+      const results = await window.axe.run("body", {
         runOnly: {
-          type: 'tag',
-          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
-        }
+          type: "tag",
+          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+        },
       });
 
       return {
@@ -118,19 +117,19 @@ export class WebsiteAnalyzer {
           description: v.description,
           nodes: v.nodes.map((n: any) => n.html),
           help: v.help,
-          helpUrl: v.helpUrl
+          helpUrl: v.helpUrl,
         })),
         passes: results.passes.length,
         incomplete: results.incomplete.length,
-        inapplicable: results.inapplicable.length
+        inapplicable: results.inapplicable.length,
       };
     });
 
     // Get resource counts
     const resources = await page.evaluate(() => ({
-      images: document.getElementsByTagName('img').length,
-      scripts: document.getElementsByTagName('script').length,
-      stylesheets: document.getElementsByTagName('link').length,
+      images: document.getElementsByTagName("img").length,
+      scripts: document.getElementsByTagName("script").length,
+      stylesheets: document.getElementsByTagName("link").length,
     }));
 
     return {
@@ -158,8 +157,15 @@ export class WebsiteAnalyzer {
           const startTime = Date.now();
 
           try {
-            await page.goto(currentUrl, { waitUntil: 'networkidle' });
-            const pageResult = await this.analyzePage(page, currentUrl, startTime);
+            await page.goto(currentUrl, {
+              waitUntil: "networkidle",
+              timeout: 30000,
+            });
+            const pageResult = await this.analyzePage(
+              page,
+              currentUrl,
+              startTime,
+            );
             pages.push(pageResult);
 
             // Update statistics
@@ -167,7 +173,7 @@ export class WebsiteAnalyzer {
             totalPasses += pageResult.accessibility.passes;
 
             // Track issue frequency
-            pageResult.accessibility.violations.forEach(violation => {
+            pageResult.accessibility.violations.forEach((violation) => {
               const count = issueFrequency.get(violation.id) || 0;
               issueFrequency.set(violation.id, count + 1);
             });
@@ -195,10 +201,9 @@ export class WebsiteAnalyzer {
         totalViolations,
         totalPasses,
         commonIssues,
-        htmlValidation: [], // Add HTML validation results if needed
       };
     } finally {
       await this.cleanup();
     }
   }
-} 
+}

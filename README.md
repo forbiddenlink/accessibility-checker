@@ -1,62 +1,103 @@
-# Precision Contrast Control
+# AccessCheck
 
-![App Screenshot](/Users/elizabethstein/.gemini/antigravity/brain/0f1aaa17-8657-498f-9692-1c2e1e9e89f9/initial_load_1771265186078.png)
-
-A cinematic-grade, professional accessibility suite designed for modern interface designers and developers. Beyond simple contrast checking, this application provides deep insights into semantic structure, keyboard navigation, and color perception, all wrapped in a premium "Cinematic Archive" aesthetic.
+A professional accessibility suite for interface designers and developers. Beyond
+contrast checking, it analyses semantic structure, keyboard navigation, forms, images,
+and colour perception, wrapped in a dark "Cinematic Archive" aesthetic.
 
 ## ✨ Features
 
-### 🎨 Advanced Color Intelligence
-- **Real-time Contrast Analysis**: Instant feedback on WCAG 2.1 (AA/AAA) and APCA compliance.
-- **Smart Suggestions**: AI-driven color palette recommendations that maintain your aesthetic while ensuring accessibility.
-- **Color Blindness Simulation**: View your palettes through multiple vision deficiency simulations (Protanopia, Deuteranopia, etc.).
+### 🎨 Colour intelligence
 
-### 🛠 Comprehensive Accessibility Tools
-- **Semantic Structure Analyzer**: Visualizes your HTML hierarchy to ensure logical document flow.
-- **Keyboard Navigation Checker**: Simulates and verifies tab order and focus states.
-- **Form Accessibility Analyzer**: Validates form labels, error states, and ARIA attributes.
-- **Image Accessibility Analyzer**: Audits alt text and decorative image usage.
+- **Contrast analysis**: WCAG 2.1 (AA/AAA) ratios, plus APCA lightness contrast.
+- **Suggestions**: accessible colour and palette recommendations derived from your
+  current colours that keep the ratio above your target.
+- **Colour blindness simulation**: preview your pair under protanopia, deuteranopia,
+  tritanopia, and achromatopsia.
 
-### 💎 Premium Experience
-- **Cinematic Interface**: A deep dark mode design (`#0a0a0a`) with glassmorphism and subtle noise textures.
-- **Data Visualization**: "Code editor" style outputs for technical data and clean, high-contrast cards for educational content.
-- **Privacy First**: All analysis happens locally in your browser.
+### 🛠 Accessibility analysers
 
-## 🚀 Tech Stack
+Each of these fetches a URL you supply and inspects the rendered page in a headless
+browser:
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Website analyser**: crawls the site and reports axe-core violations per page.
+- **Semantic structure analyser**: visualises HTML hierarchy and document flow.
+- **Keyboard navigation checker**: verifies tab order and focus states.
+- **Form accessibility analyser**: checks labels, error states, and ARIA attributes.
+- **Image accessibility analyser**: audits alt text and decorative image usage.
+- **Dynamic content analyser**: inspects live regions and modal dialog semantics.
+
+### 💎 Experience
+
+- **Cinematic interface**: deep dark mode (`#0a0a0a`) with glassmorphism and noise.
+- **Export**: download results as a PDF report.
+
+## 🔒 Privacy
+
+Contrast checking, suggestions, and colour blindness simulation run entirely in your
+browser, and saved palettes stay in `localStorage`.
+
+The URL analysers are the exception: a URL you submit is sent to this app's server and
+fetched there, because inspecting a page needs a real browser engine. Requests to
+private, loopback, and link-local addresses are rejected. See the
+[privacy policy](src/app/privacy/page.tsx) for details.
+
+## 🚀 Tech stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router) + React 19
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS + Custom Design Tokens
-- **State Management**: Zustand
+- **Styling**: Tailwind CSS v4 + custom design tokens
+- **Analysis**: axe-core, apca-w3, Playwright (`playwright-core` + `@sparticuz/chromium`
+  on serverless)
 - **Testing**: Vitest + React Testing Library + Playwright
 
-## 📦 Getting Started
+## 📦 Getting started
+
+Requires Node.js >= 20 and [pnpm](https://pnpm.io/).
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/yourusername/accessibility-checker.git
+   git clone https://github.com/forbiddenlink/accessibility-checker.git
    cd accessibility-checker
    ```
 
 2. **Install dependencies**
+
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Run the development server**
+
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
-4. **Open [http://localhost:3000](http://localhost:3000)** to view the application.
+4. **Open [http://localhost:3000](http://localhost:3000)**.
+
+Copy `.env.example` to `.env.local` if you want rate limiting and bot protection
+locally; both are optional in development.
+
+### Useful scripts
+
+| Script           | Purpose                       |
+| ---------------- | ----------------------------- |
+| `pnpm test`      | Unit tests (Vitest)           |
+| `pnpm test:e2e`  | End-to-end tests (Playwright) |
+| `pnpm lint`      | ESLint, including jsx-a11y    |
+| `pnpm typecheck` | TypeScript                    |
+| `pnpm build`     | Production build              |
 
 ## 🤝 Contributing
 
-We welcome contributions to make the web more accessible for everyone. Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+We welcome contributions to make the web more accessible for everyone. Please read our
+[Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process
+for submitting pull requests.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for
+details.
 
 ---
 

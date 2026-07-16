@@ -3,11 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach, Mock } from "vitest";
 // Create a shared mock analyzeImages function that tests can configure
 const mockAnalyzeImages = vi.fn();
 
-// Mock Playwright chromium
-vi.mock("@playwright/test", () => ({
-  chromium: {
-    launch: vi.fn(),
-  },
+// Mock the serverless browser launcher
+vi.mock("@/utils/browser", () => ({
+  launchBrowser: vi.fn(),
+  createGuardedContext: vi.fn(
+    (browser: { newContext: (o?: unknown) => unknown }, options?: unknown) =>
+      browser.newContext(options),
+  ),
 }));
 
 // Mock ImageAnalyzer using a function constructor (not arrow function)
@@ -28,7 +30,7 @@ vi.mock("@/utils/security", () => ({
 
 // Import after mocks are set up
 import { POST } from "./route";
-import { chromium } from "@playwright/test";
+import { launchBrowser } from "@/utils/browser";
 import { validateUrl } from "@/utils/security";
 
 // Helper to create a mock Request with JSON body
@@ -161,8 +163,8 @@ describe("/api/analyze-images", () => {
       close: vi.fn().mockResolvedValue(undefined),
     };
 
-    // Setup chromium.launch to return mockBrowser
-    vi.mocked(chromium.launch).mockResolvedValue(mockBrowser as never);
+    // Setup launchBrowser to return mockBrowser
+    vi.mocked(launchBrowser).mockResolvedValue(mockBrowser as never);
   });
 
   afterEach(() => {
@@ -197,7 +199,7 @@ describe("/api/analyze-images", () => {
 
       await POST(request);
 
-      expect(chromium.launch).toHaveBeenCalled();
+      expect(launchBrowser).toHaveBeenCalled();
       expect(mockBrowser.newContext).toHaveBeenCalled();
       expect(mockContext.newPage).toHaveBeenCalled();
       expect(mockPage.goto).toHaveBeenCalledWith("https://example.com/page", {
@@ -624,7 +626,7 @@ describe("/api/analyze-images", () => {
   describe("browser/playwright errors - 500 errors", () => {
     it("returns 500 when browser fails to launch", async () => {
       vi.mocked(validateUrl).mockResolvedValue({ valid: true });
-      vi.mocked(chromium.launch).mockRejectedValue(
+      vi.mocked(launchBrowser).mockRejectedValue(
         new Error("Browser launch failed"),
       );
 

@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page } from "playwright-core";
 
 export interface ImageDimensions {
   width: number;
@@ -31,7 +31,7 @@ export interface ImageAccessibility {
 export interface ImageIssue {
   code: string;
   message: string;
-  type: 'error' | 'warning' | 'info';
+  type: "error" | "warning" | "info";
   suggestion?: string;
 }
 
@@ -54,77 +54,91 @@ export class ImageAnalyzer {
   async analyzeImages(): Promise<ImageAnalysisResult[]> {
     return await this.page.evaluate(() => {
       const getImageFormat = (url: string): string => {
-        const extension = url.split('.').pop()?.toLowerCase();
-        return extension || 'unknown';
+        const extension = url.split(".").pop()?.toLowerCase();
+        return extension || "unknown";
       };
 
       const estimateImageSize = (image: HTMLImageElement): number => {
         const pixelCount = image.naturalWidth * image.naturalHeight;
         const format = getImageFormat(image.currentSrc || image.src);
-        
+
         const bppMap: { [key: string]: number } = {
-          'jpg': 0.25,
-          'jpeg': 0.25,
-          'png': 0.5,
-          'gif': 0.15,
-          'webp': 0.15
+          jpg: 0.25,
+          jpeg: 0.25,
+          png: 0.5,
+          gif: 0.15,
+          webp: 0.15,
         };
 
         return pixelCount * (bppMap[format] || 0.3);
       };
 
       const measureLoadTime = (image: HTMLImageElement): number => {
-        const entry = performance.getEntriesByName(image.currentSrc || image.src)[0];
+        const entry = performance.getEntriesByName(
+          image.currentSrc || image.src,
+        )[0];
         return entry ? entry.duration : 0;
       };
 
-      const estimateCompressionRatio = (image: HTMLImageElement, actualSize: number): number => {
+      const estimateCompressionRatio = (
+        image: HTMLImageElement,
+        actualSize: number,
+      ): number => {
         if (actualSize <= 0) return 0;
         const rawSize = image.naturalWidth * image.naturalHeight * 3;
         return rawSize / actualSize;
       };
 
       const parseSrcSet = (srcset: string): string[] => {
-        return srcset.split(',').map(src => src.trim().split(' ')[1]).filter(Boolean);
+        return srcset
+          .split(",")
+          .map((src) => src.trim().split(" ")[1])
+          .filter(Boolean);
       };
 
-      const analyzePerformance = (image: HTMLImageElement): ImagePerformance => {
+      const analyzePerformance = (
+        image: HTMLImageElement,
+      ): ImagePerformance => {
         const format = getImageFormat(image.currentSrc || image.src);
         const size = estimateImageSize(image);
-        
+
         return {
           loadTime: measureLoadTime(image),
           size,
           format,
-          compressionRatio: estimateCompressionRatio(image, size)
+          compressionRatio: estimateCompressionRatio(image, size),
         };
       };
 
-      const checkAccessibility = (image: HTMLImageElement): ImageAccessibility => {
-        const alt = image.getAttribute('alt');
-        const role = image.getAttribute('role');
-        const ariaLabel = image.getAttribute('aria-label');
-        const longDesc = image.getAttribute('longdesc');
-        
+      const checkAccessibility = (
+        image: HTMLImageElement,
+      ): ImageAccessibility => {
+        const alt = image.getAttribute("alt");
+        const role = image.getAttribute("role");
+        const ariaLabel = image.getAttribute("aria-label");
+        const longDesc = image.getAttribute("longdesc");
+
         return {
           hasAlt: alt !== null,
           altText: alt || undefined,
-          isDecorative: alt === '' || role === 'presentation',
+          isDecorative: alt === "" || role === "presentation",
           role: role || undefined,
           ariaLabel: ariaLabel || undefined,
-          longDescription: longDesc || undefined
+          longDescription: longDesc || undefined,
         };
       };
 
-      const checkResponsiveness = (image: HTMLImageElement): ResponsiveImageData => {
+      const checkResponsiveness = (
+        image: HTMLImageElement,
+      ): ResponsiveImageData => {
         const srcset = image.srcset;
         const sizes = image.sizes;
-        
+
         return {
           hasSrcSet: !!srcset,
           hasSizes: !!sizes,
           isResponsive: !!srcset && !!sizes,
-          breakpoints: srcset ? parseSrcSet(srcset) : undefined
+          breakpoints: srcset ? parseSrcSet(srcset) : undefined,
         };
       };
 
@@ -139,17 +153,19 @@ export class ImageAnalyzer {
         const url = image.currentSrc || image.src;
         const dimensions = {
           width: image.naturalWidth,
-          height: image.naturalHeight
+          height: image.naturalHeight,
         };
 
         // Performance analysis
         const performance = analyzePerformance(image);
-        if (performance.size > 500000) { // 500KB
+        if (performance.size > 500000) {
+          // 500KB
           issues.push({
-            code: 'LARGE_IMAGE_SIZE',
-            message: 'Image file size exceeds recommended limit',
-            type: 'warning',
-            suggestion: 'Consider compressing the image or using a more efficient format'
+            code: "LARGE_IMAGE_SIZE",
+            message: "Image file size exceeds recommended limit",
+            type: "warning",
+            suggestion:
+              "Consider compressing the image or using a more efficient format",
           });
         }
 
@@ -157,49 +173,59 @@ export class ImageAnalyzer {
         const accessibility = checkAccessibility(image);
         if (!accessibility.hasAlt && !accessibility.isDecorative) {
           issues.push({
-            code: 'MISSING_ALT_TEXT',
-            message: 'Non-decorative image lacks alternative text',
-            type: 'error',
-            suggestion: 'Add descriptive alt text to convey the image\'s meaning'
+            code: "MISSING_ALT_TEXT",
+            message: "Non-decorative image lacks alternative text",
+            type: "error",
+            suggestion:
+              "Add descriptive alt text to convey the image's meaning",
           });
-        } else if (accessibility.altText && accessibility.altText.length > 125) {
+        } else if (
+          accessibility.altText &&
+          accessibility.altText.length > 125
+        ) {
           issues.push({
-            code: 'LONG_ALT_TEXT',
-            message: 'Alt text exceeds recommended length',
-            type: 'warning',
-            suggestion: 'Keep alt text concise and consider using longdesc for detailed descriptions'
+            code: "LONG_ALT_TEXT",
+            message: "Alt text exceeds recommended length",
+            type: "warning",
+            suggestion:
+              "Keep alt text concise and consider using longdesc for detailed descriptions",
           });
         }
 
         // Responsive image checks
         const responsive = checkResponsiveness(image);
-        if (!responsive.isResponsive && Math.max(dimensions.width, dimensions.height) > 800) {
+        if (
+          !responsive.isResponsive &&
+          Math.max(dimensions.width, dimensions.height) > 800
+        ) {
           issues.push({
-            code: 'NOT_RESPONSIVE',
-            message: 'Large image lacks responsive attributes',
-            type: 'warning',
-            suggestion: 'Use srcset and sizes attributes for responsive images'
+            code: "NOT_RESPONSIVE",
+            message: "Large image lacks responsive attributes",
+            type: "warning",
+            suggestion: "Use srcset and sizes attributes for responsive images",
           });
         }
 
         // Aspect ratio checks
-        const aspectRatio = dimensions.height > 0 ? dimensions.width / dimensions.height : 0;
+        const aspectRatio =
+          dimensions.height > 0 ? dimensions.width / dimensions.height : 0;
         if (aspectRatio > 3 || aspectRatio < 0.33) {
           issues.push({
-            code: 'EXTREME_ASPECT_RATIO',
-            message: 'Image has an unusual aspect ratio',
-            type: 'warning',
-            suggestion: 'Verify that the image dimensions are intentional'
+            code: "EXTREME_ASPECT_RATIO",
+            message: "Image has an unusual aspect ratio",
+            type: "warning",
+            suggestion: "Verify that the image dimensions are intentional",
           });
         }
 
         // Background image checks
         if (image.style.backgroundImage) {
           issues.push({
-            code: 'BACKGROUND_IMAGE_CONTENT',
-            message: 'Content image used as background',
-            type: 'warning',
-            suggestion: 'Use img element for content images instead of background-image'
+            code: "BACKGROUND_IMAGE_CONTENT",
+            message: "Content image used as background",
+            type: "warning",
+            suggestion:
+              "Use img element for content images instead of background-image",
           });
         }
 
@@ -209,7 +235,7 @@ export class ImageAnalyzer {
           performance,
           accessibility,
           responsive,
-          issues
+          issues,
         });
       });
 

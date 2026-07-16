@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4 does not auto-load a JS config; without this the theme in
+   tailwind.config.ts compiles to nothing. */
+@config "../../tailwind.config.ts";
 
 :root {
   /* Base colors */
@@ -155,7 +157,7 @@ body {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
   overflow-x: auto;
@@ -194,4 +196,21 @@ body {
 .focus-ring:focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
+}
+
+/* WCAG 2.2 SC 2.2.2: the status dot and spinners animate indefinitely with no
+   pause control, so honour the OS-level request to stop motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .glass-card:hover {
+    transform: none;
+  }
 }

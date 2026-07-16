@@ -50,22 +50,34 @@ export default function WebsiteAnalyzer() {
             type="url"
             id="website-url"
             aria-label="Website URL to analyze"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "website-url-error" : undefined}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter website URL"
-            className="relative w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+            placeholder="https://example.com"
+            className="focus-ring relative w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 transition-all"
           />
         </div>
         <button
+          type="button"
           onClick={handleAnalyze}
           disabled={loading || !url}
-          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 transition-all"
+          aria-busy={loading}
+          className="focus-ring px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-all"
         >
           {loading ? "Analyzing..." : "Analyze"}
         </button>
       </div>
 
-      {error && <div className="p-4 badge-fail rounded-lg">{error}</div>}
+      {error && (
+        <div
+          id="website-url-error"
+          role="alert"
+          className="p-4 badge-fail rounded-lg"
+        >
+          {error}
+        </div>
+      )}
 
       {results && (
         <div className="space-y-8">

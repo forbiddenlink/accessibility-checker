@@ -146,14 +146,14 @@ export default function RootLayout({
               </Link>
             </div>
 
-            <div
-              className="pl-4 border-l border-white/10"
-              aria-label="Service status: Online"
-            >
-              <span className="relative flex h-2 w-2" title="Service is online">
+            {/* aria-label is ignored on a bare div, and a green dot alone
+                conveys status by colour only (WCAG 1.4.1). */}
+            <div role="status" className="pl-4 border-l border-white/10">
+              <span className="relative flex h-2 w-2" aria-hidden="true">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
               </span>
+              <span className="sr-only">Service status: Online</span>
             </div>
           </nav>
         </div>
