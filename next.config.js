@@ -8,6 +8,18 @@ const nextConfig = {
   // @sparticuz/chromium resolves its binary via paths relative to its own
   // package, so it must not be bundled. playwright-core rides along with it.
   serverExternalPackages: ["playwright-core", "@sparticuz/chromium"],
+  // Externalised packages are traced from node_modules rather than bundled,
+  // and Next's tracer only follows static requires. playwright-core reads
+  // browsers.json (and other data files) by runtime path, and @sparticuz ships
+  // its chromium as .br blobs, so neither is picked up automatically and the
+  // analyzer functions crash with "Cannot find module browsers.json". Force
+  // both package trees into the analyzer route bundles.
+  outputFileTracingIncludes: {
+    "/api/analyze-**": [
+      "./node_modules/.pnpm/playwright-core@*/node_modules/playwright-core/**",
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/**",
+    ],
+  },
   async headers() {
     return [
       {
