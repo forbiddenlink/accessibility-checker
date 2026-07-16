@@ -4,6 +4,10 @@ const withBundleAnalyzer = withBundleAnalyzerInit({
 });
 
 const nextConfig = {
+  poweredByHeader: false,
+  // @sparticuz/chromium resolves its binary via paths relative to its own
+  // package, so it must not be bundled. playwright-core rides along with it.
+  serverExternalPackages: ["playwright-core", "@sparticuz/chromium"],
   async headers() {
     return [
       {

@@ -4,6 +4,9 @@ import { validateUrl } from "@/utils/security";
 
 export const runtime = "nodejs"; // Force Node.js runtime instead of Edge
 
+// Chromium cold start (binary unpack + launch) exceeds the default limit.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   try {
     const { url } = await request.json();

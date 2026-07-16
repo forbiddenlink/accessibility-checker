@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock Playwright - must be defined before other mocks since they may depend on it
 const mockGoto = vi.fn();
@@ -7,34 +7,36 @@ const mockNewContext = vi.fn();
 const mockBrowserClose = vi.fn();
 const mockLaunch = vi.fn();
 
-vi.mock('@playwright/test', () => ({
-  chromium: {
-    launch: () => mockLaunch(),
-  },
+vi.mock("@/utils/browser", () => ({
+  launchBrowser: () => mockLaunch(),
+  createGuardedContext: vi.fn(
+    (browser: { newContext: (o?: unknown) => unknown }, options?: unknown) =>
+      browser.newContext(options),
+  ),
 }));
 
 // Mock the security validation
 const mockValidateUrl = vi.fn();
-vi.mock('@/utils/security', () => ({
+vi.mock("@/utils/security", () => ({
   validateUrl: (url: string) => mockValidateUrl(url),
 }));
 
 // Mock the KeyboardNavigationAnalyzer
 const mockAnalyze = vi.fn();
-vi.mock('@/utils/keyboardNavigationAnalyzer', () => ({
+vi.mock("@/utils/keyboardNavigationAnalyzer", () => ({
   KeyboardNavigationAnalyzer: class MockKeyboardNavigationAnalyzer {
     analyze = mockAnalyze;
   },
 }));
 
-import { POST } from './route';
+import { POST } from "./route";
 
 // Helper to create a mock Request with JSON body
 function createMockRequest(body: unknown): Request {
-  return new Request('http://localhost/api/analyze-keyboard', {
-    method: 'POST',
+  return new Request("http://localhost/api/analyze-keyboard", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
@@ -42,12 +44,12 @@ function createMockRequest(body: unknown): Request {
 
 // Helper to create a mock Request with invalid JSON
 function createMalformedRequest(): Request {
-  return new Request('http://localhost/api/analyze-keyboard', {
-    method: 'POST',
+  return new Request("http://localhost/api/analyze-keyboard", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: 'invalid json {',
+    body: "invalid json {",
   });
 }
 
@@ -55,42 +57,43 @@ function createMalformedRequest(): Request {
 const mockAnalysisResult = {
   focusableElements: [
     {
-      tagName: 'button',
+      tagName: "button",
       tabIndex: 0,
       hasVisibleFocus: true,
-      ariaLabel: 'Submit form',
-      role: 'button',
-      text: 'Submit',
+      ariaLabel: "Submit form",
+      role: "button",
+      text: "Submit",
     },
     {
-      tagName: 'a',
+      tagName: "a",
       tabIndex: 0,
       hasVisibleFocus: true,
-      text: 'Home',
+      text: "Home",
     },
     {
-      tagName: 'input',
+      tagName: "input",
       tabIndex: 0,
       hasVisibleFocus: false,
-      ariaLabel: 'Email',
+      ariaLabel: "Email",
     },
   ],
   issues: [
     {
-      type: 'error',
-      message: 'Element lacks visible focus indicator',
+      type: "error",
+      message: "Element lacks visible focus indicator",
       element: '<input type="text" class="email-input">',
-      suggestion: 'Add focus-visible styles with a clear outline or box shadow.',
+      suggestion:
+        "Add focus-visible styles with a clear outline or box shadow.",
     },
     {
-      type: 'warning',
-      message: 'No skip link found',
-      suggestion: 'Add a skip link at the top of the page.',
+      type: "warning",
+      message: "No skip link found",
+      suggestion: "Add a skip link at the top of the page.",
     },
   ],
 };
 
-describe('/api/analyze-keyboard', () => {
+describe("/api/analyze-keyboard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -121,10 +124,10 @@ describe('/api/analyze-keyboard', () => {
     vi.restoreAllMocks();
   });
 
-  describe('valid input', () => {
-    it('returns keyboard analysis results for valid URL', async () => {
+  describe("valid input", () => {
+    it("returns keyboard analysis results for valid URL", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -132,23 +135,25 @@ describe('/api/analyze-keyboard', () => {
 
       expect(response.status).toBe(200);
       expect(data.results).toBeDefined();
-      expect(data.results.focusableElements).toEqual(mockAnalysisResult.focusableElements);
+      expect(data.results.focusableElements).toEqual(
+        mockAnalysisResult.focusableElements,
+      );
       expect(data.results.issues).toEqual(mockAnalysisResult.issues);
     });
 
-    it('calls validateUrl with the provided URL', async () => {
+    it("calls validateUrl with the provided URL", async () => {
       const request = createMockRequest({
-        url: 'https://example.com/page',
+        url: "https://example.com/page",
       });
 
       await POST(request);
 
-      expect(mockValidateUrl).toHaveBeenCalledWith('https://example.com/page');
+      expect(mockValidateUrl).toHaveBeenCalledWith("https://example.com/page");
     });
 
-    it('launches browser and navigates to URL', async () => {
+    it("launches browser and navigates to URL", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       await POST(request);
@@ -158,15 +163,15 @@ describe('/api/analyze-keyboard', () => {
         viewport: { width: 1280, height: 800 },
       });
       expect(mockNewPage).toHaveBeenCalled();
-      expect(mockGoto).toHaveBeenCalledWith('https://example.com', {
-        waitUntil: 'networkidle',
+      expect(mockGoto).toHaveBeenCalledWith("https://example.com", {
+        waitUntil: "networkidle",
         timeout: 30000,
       });
     });
 
-    it('closes browser after analysis', async () => {
+    it("closes browser after analysis", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       await POST(request);
@@ -174,9 +179,9 @@ describe('/api/analyze-keyboard', () => {
       expect(mockBrowserClose).toHaveBeenCalled();
     });
 
-    it('handles URL with query parameters', async () => {
+    it("handles URL with query parameters", async () => {
       const request = createMockRequest({
-        url: 'https://example.com/search?q=test&page=1',
+        url: "https://example.com/search?q=test&page=1",
       });
 
       const response = await POST(request);
@@ -185,14 +190,14 @@ describe('/api/analyze-keyboard', () => {
       expect(response.status).toBe(200);
       expect(data.results).toBeDefined();
       expect(mockGoto).toHaveBeenCalledWith(
-        'https://example.com/search?q=test&page=1',
-        expect.any(Object)
+        "https://example.com/search?q=test&page=1",
+        expect.any(Object),
       );
     });
 
-    it('handles URL with fragments', async () => {
+    it("handles URL with fragments", async () => {
       const request = createMockRequest({
-        url: 'https://example.com/page#section',
+        url: "https://example.com/page#section",
       });
 
       const response = await POST(request);
@@ -202,9 +207,9 @@ describe('/api/analyze-keyboard', () => {
       expect(data.results).toBeDefined();
     });
 
-    it('handles URL with ports', async () => {
+    it("handles URL with ports", async () => {
       const request = createMockRequest({
-        url: 'https://example.com:8080/page',
+        url: "https://example.com:8080/page",
       });
 
       const response = await POST(request);
@@ -215,110 +220,110 @@ describe('/api/analyze-keyboard', () => {
     });
   });
 
-  describe('response schema', () => {
-    it('returns results object with focusableElements and issues arrays', async () => {
+  describe("response schema", () => {
+    it("returns results object with focusableElements and issues arrays", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
-      expect(data).toHaveProperty('results');
-      expect(data.results).toHaveProperty('focusableElements');
-      expect(data.results).toHaveProperty('issues');
+      expect(data).toHaveProperty("results");
+      expect(data.results).toHaveProperty("focusableElements");
+      expect(data.results).toHaveProperty("issues");
       expect(Array.isArray(data.results.focusableElements)).toBe(true);
       expect(Array.isArray(data.results.issues)).toBe(true);
     });
 
-    it('focusableElements have expected structure', async () => {
+    it("focusableElements have expected structure", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       const element = data.results.focusableElements[0];
-      expect(element).toHaveProperty('tagName');
-      expect(element).toHaveProperty('tabIndex');
-      expect(element).toHaveProperty('hasVisibleFocus');
-      expect(typeof element.tagName).toBe('string');
-      expect(typeof element.tabIndex).toBe('number');
-      expect(typeof element.hasVisibleFocus).toBe('boolean');
+      expect(element).toHaveProperty("tagName");
+      expect(element).toHaveProperty("tabIndex");
+      expect(element).toHaveProperty("hasVisibleFocus");
+      expect(typeof element.tagName).toBe("string");
+      expect(typeof element.tabIndex).toBe("number");
+      expect(typeof element.hasVisibleFocus).toBe("boolean");
     });
 
-    it('issues have expected structure', async () => {
+    it("issues have expected structure", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       const issue = data.results.issues[0];
-      expect(issue).toHaveProperty('type');
-      expect(issue).toHaveProperty('message');
-      expect(issue).toHaveProperty('suggestion');
-      expect(['error', 'warning']).toContain(issue.type);
-      expect(typeof issue.message).toBe('string');
-      expect(typeof issue.suggestion).toBe('string');
+      expect(issue).toHaveProperty("type");
+      expect(issue).toHaveProperty("message");
+      expect(issue).toHaveProperty("suggestion");
+      expect(["error", "warning"]).toContain(issue.type);
+      expect(typeof issue.message).toBe("string");
+      expect(typeof issue.suggestion).toBe("string");
     });
 
-    it('issues may have optional element field', async () => {
+    it("issues may have optional element field", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       // First issue has element, second does not
-      expect(data.results.issues[0]).toHaveProperty('element');
-      expect(data.results.issues[1]).not.toHaveProperty('element');
+      expect(data.results.issues[0]).toHaveProperty("element");
+      expect(data.results.issues[1]).not.toHaveProperty("element");
     });
 
-    it('focusableElements may have optional ariaLabel and role fields', async () => {
+    it("focusableElements may have optional ariaLabel and role fields", async () => {
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       // First element has ariaLabel and role
-      expect(data.results.focusableElements[0].ariaLabel).toBe('Submit form');
-      expect(data.results.focusableElements[0].role).toBe('button');
+      expect(data.results.focusableElements[0].ariaLabel).toBe("Submit form");
+      expect(data.results.focusableElements[0].role).toBe("button");
       // Second element does not have these
       expect(data.results.focusableElements[1].ariaLabel).toBeUndefined();
       expect(data.results.focusableElements[1].role).toBeUndefined();
     });
   });
 
-  describe('invalid input - 400 errors', () => {
-    it('returns 400 when URL is missing', async () => {
+  describe("invalid input - 400 errors", () => {
+    it("returns 400 when URL is missing", async () => {
       const request = createMockRequest({});
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('URL is required');
+      expect(data.error).toBe("URL is required");
     });
 
-    it('returns 400 when URL is empty string', async () => {
+    it("returns 400 when URL is empty string", async () => {
       const request = createMockRequest({
-        url: '',
+        url: "",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('URL is required');
+      expect(data.error).toBe("URL is required");
     });
 
-    it('returns 400 when URL is null', async () => {
+    it("returns 400 when URL is null", async () => {
       const request = createMockRequest({
         url: null,
       });
@@ -327,239 +332,243 @@ describe('/api/analyze-keyboard', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('URL is required');
+      expect(data.error).toBe("URL is required");
     });
 
-    it('returns 400 for invalid protocol (file://)', async () => {
+    it("returns 400 for invalid protocol (file://)", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Invalid protocol. Only HTTP and HTTPS are allowed.',
+        error: "Invalid protocol. Only HTTP and HTTPS are allowed.",
       });
 
       const request = createMockRequest({
-        url: 'file:///etc/passwd',
+        url: "file:///etc/passwd",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Invalid protocol. Only HTTP and HTTPS are allowed.');
+      expect(data.error).toBe(
+        "Invalid protocol. Only HTTP and HTTPS are allowed.",
+      );
     });
 
-    it('returns 400 for invalid protocol (javascript:)', async () => {
+    it("returns 400 for invalid protocol (javascript:)", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Invalid protocol. Only HTTP and HTTPS are allowed.',
+        error: "Invalid protocol. Only HTTP and HTTPS are allowed.",
       });
 
       const request = createMockRequest({
-        url: 'javascript:alert(1)',
+        url: "javascript:alert(1)",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Invalid protocol. Only HTTP and HTTPS are allowed.');
+      expect(data.error).toBe(
+        "Invalid protocol. Only HTTP and HTTPS are allowed.",
+      );
     });
 
-    it('returns 400 for localhost URLs', async () => {
+    it("returns 400 for localhost URLs", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Access to localhost is denied.',
+        error: "Access to localhost is denied.",
       });
 
       const request = createMockRequest({
-        url: 'http://localhost:3000',
+        url: "http://localhost:3000",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Access to localhost is denied.');
+      expect(data.error).toBe("Access to localhost is denied.");
     });
 
-    it('returns 400 for 127.0.0.1 URLs', async () => {
+    it("returns 400 for 127.0.0.1 URLs", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Access to localhost is denied.',
+        error: "Access to localhost is denied.",
       });
 
       const request = createMockRequest({
-        url: 'http://127.0.0.1:8080',
+        url: "http://127.0.0.1:8080",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Access to localhost is denied.');
+      expect(data.error).toBe("Access to localhost is denied.");
     });
 
-    it('returns 400 for private network IPs (10.x.x.x)', async () => {
+    it("returns 400 for private network IPs (10.x.x.x)", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Access to private network resources is denied.',
+        error: "Access to private network resources is denied.",
       });
 
       const request = createMockRequest({
-        url: 'http://10.0.0.1/admin',
+        url: "http://10.0.0.1/admin",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Access to private network resources is denied.');
+      expect(data.error).toBe("Access to private network resources is denied.");
     });
 
-    it('returns 400 for private network IPs (192.168.x.x)', async () => {
+    it("returns 400 for private network IPs (192.168.x.x)", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Access to private network resources is denied.',
+        error: "Access to private network resources is denied.",
       });
 
       const request = createMockRequest({
-        url: 'http://192.168.1.1',
+        url: "http://192.168.1.1",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Access to private network resources is denied.');
+      expect(data.error).toBe("Access to private network resources is denied.");
     });
 
-    it('returns 400 for private network IPs (172.16-31.x.x)', async () => {
+    it("returns 400 for private network IPs (172.16-31.x.x)", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Access to private network resources is denied.',
+        error: "Access to private network resources is denied.",
       });
 
       const request = createMockRequest({
-        url: 'http://172.16.0.1',
+        url: "http://172.16.0.1",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Access to private network resources is denied.');
+      expect(data.error).toBe("Access to private network resources is denied.");
     });
 
-    it('returns 400 for unresolvable hostnames', async () => {
+    it("returns 400 for unresolvable hostnames", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Could not resolve hostname.',
+        error: "Could not resolve hostname.",
       });
 
       const request = createMockRequest({
-        url: 'https://thishostnamedoesnotexist12345.com',
+        url: "https://thishostnamedoesnotexist12345.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Could not resolve hostname.');
+      expect(data.error).toBe("Could not resolve hostname.");
     });
 
-    it('returns 400 for invalid URL format', async () => {
+    it("returns 400 for invalid URL format", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
-        error: 'Invalid URL format.',
+        error: "Invalid URL format.",
       });
 
       const request = createMockRequest({
-        url: 'not-a-valid-url',
+        url: "not-a-valid-url",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Invalid URL format.');
+      expect(data.error).toBe("Invalid URL format.");
     });
 
-    it('returns default error when validateUrl returns no error message', async () => {
+    it("returns default error when validateUrl returns no error message", async () => {
       mockValidateUrl.mockResolvedValue({
         valid: false,
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Invalid Request');
+      expect(data.error).toBe("Invalid Request");
     });
   });
 
-  describe('malformed JSON - 500 errors', () => {
-    it('returns 500 for malformed JSON body', async () => {
+  describe("malformed JSON - 500 errors", () => {
+    it("returns 500 for malformed JSON body", async () => {
       const request = createMalformedRequest();
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to analyze keyboard navigation');
+      expect(data.error).toBe("Failed to analyze keyboard navigation");
     });
   });
 
-  describe('browser/navigation errors - 500 errors', () => {
-    it('returns 500 when browser launch fails', async () => {
-      mockLaunch.mockRejectedValue(new Error('Browser launch failed'));
+  describe("browser/navigation errors - 500 errors", () => {
+    it("returns 500 when browser launch fails", async () => {
+      mockLaunch.mockRejectedValue(new Error("Browser launch failed"));
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to analyze keyboard navigation');
+      expect(data.error).toBe("Failed to analyze keyboard navigation");
     });
 
-    it('returns 500 when page navigation fails', async () => {
-      mockGoto.mockRejectedValue(new Error('Navigation timeout'));
+    it("returns 500 when page navigation fails", async () => {
+      mockGoto.mockRejectedValue(new Error("Navigation timeout"));
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to analyze keyboard navigation');
+      expect(data.error).toBe("Failed to analyze keyboard navigation");
     });
 
-    it('returns 500 when analyzer fails', async () => {
-      mockAnalyze.mockRejectedValue(new Error('Analysis failed'));
+    it("returns 500 when analyzer fails", async () => {
+      mockAnalyze.mockRejectedValue(new Error("Analysis failed"));
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to analyze keyboard navigation');
+      expect(data.error).toBe("Failed to analyze keyboard navigation");
     });
 
-    it('closes browser even when navigation fails', async () => {
-      mockGoto.mockRejectedValue(new Error('Navigation timeout'));
+    it("closes browser even when navigation fails", async () => {
+      mockGoto.mockRejectedValue(new Error("Navigation timeout"));
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       await POST(request);
@@ -567,11 +576,11 @@ describe('/api/analyze-keyboard', () => {
       expect(mockBrowserClose).toHaveBeenCalled();
     });
 
-    it('closes browser even when analysis fails', async () => {
-      mockAnalyze.mockRejectedValue(new Error('Analysis failed'));
+    it("closes browser even when analysis fails", async () => {
+      mockAnalyze.mockRejectedValue(new Error("Analysis failed"));
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       await POST(request);
@@ -580,15 +589,15 @@ describe('/api/analyze-keyboard', () => {
     });
   });
 
-  describe('edge cases - keyboard analysis specific', () => {
-    it('handles pages with no focusable elements', async () => {
+  describe("edge cases - keyboard analysis specific", () => {
+    it("handles pages with no focusable elements", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [],
         issues: [],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -599,9 +608,9 @@ describe('/api/analyze-keyboard', () => {
       expect(data.results.issues).toEqual([]);
     });
 
-    it('handles pages with many focusable elements', async () => {
+    it("handles pages with many focusable elements", async () => {
       const manyElements = Array.from({ length: 100 }, (_, i) => ({
-        tagName: 'button',
+        tagName: "button",
         tabIndex: 0,
         hasVisibleFocus: true,
         text: `Button ${i}`,
@@ -613,7 +622,7 @@ describe('/api/analyze-keyboard', () => {
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -623,9 +632,9 @@ describe('/api/analyze-keyboard', () => {
       expect(data.results.focusableElements.length).toBe(100);
     });
 
-    it('handles pages with many issues', async () => {
+    it("handles pages with many issues", async () => {
       const manyIssues = Array.from({ length: 50 }, (_, i) => ({
-        type: 'error' as const,
+        type: "error" as const,
         message: `Issue ${i}`,
         suggestion: `Fix suggestion ${i}`,
       }));
@@ -636,7 +645,7 @@ describe('/api/analyze-keyboard', () => {
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -646,23 +655,24 @@ describe('/api/analyze-keyboard', () => {
       expect(data.results.issues.length).toBe(50);
     });
 
-    it('handles elements with negative tabindex', async () => {
+    it("handles elements with negative tabindex", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [
-          { tagName: 'div', tabIndex: -1, hasVisibleFocus: false },
+          { tagName: "div", tabIndex: -1, hasVisibleFocus: false },
         ],
         issues: [
           {
-            type: 'warning',
-            message: 'Element with negative tabindex found: div',
+            type: "warning",
+            message: "Element with negative tabindex found: div",
             element: '<div tabindex="-1">',
-            suggestion: 'Avoid negative tabindex unless intentionally removing focus.',
+            suggestion:
+              "Avoid negative tabindex unless intentionally removing focus.",
           },
         ],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -670,107 +680,109 @@ describe('/api/analyze-keyboard', () => {
 
       expect(response.status).toBe(200);
       expect(data.results.focusableElements[0].tabIndex).toBe(-1);
-      expect(data.results.issues[0].type).toBe('warning');
+      expect(data.results.issues[0].type).toBe("warning");
     });
 
-    it('handles heading hierarchy issues', async () => {
+    it("handles heading hierarchy issues", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [],
         issues: [
           {
-            type: 'warning',
-            message: 'Heading level skipped from h1 to h3',
-            element: '<h3>Section Title</h3>',
-            suggestion: 'Maintain sequential heading hierarchy.',
+            type: "warning",
+            message: "Heading level skipped from h1 to h3",
+            element: "<h3>Section Title</h3>",
+            suggestion: "Maintain sequential heading hierarchy.",
           },
         ],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results.issues[0].message).toContain('Heading level skipped');
+      expect(data.results.issues[0].message).toContain("Heading level skipped");
     });
 
-    it('handles skip link issues', async () => {
+    it("handles skip link issues", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [],
         issues: [
           {
-            type: 'warning',
-            message: 'No skip link found',
-            suggestion: 'Add a skip link at the top of the page.',
+            type: "warning",
+            message: "No skip link found",
+            suggestion: "Add a skip link at the top of the page.",
           },
         ],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results.issues[0].message).toBe('No skip link found');
+      expect(data.results.issues[0].message).toBe("No skip link found");
     });
 
-    it('handles elements missing accessible names', async () => {
+    it("handles elements missing accessible names", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [
-          { tagName: 'button', tabIndex: 0, hasVisibleFocus: true },
+          { tagName: "button", tabIndex: 0, hasVisibleFocus: true },
         ],
         issues: [
           {
-            type: 'error',
-            message: 'Interactive element (button) lacks an accessible name',
-            element: '<button></button>',
-            suggestion: 'Add text content, aria-label, or aria-labelledby.',
+            type: "error",
+            message: "Interactive element (button) lacks an accessible name",
+            element: "<button></button>",
+            suggestion: "Add text content, aria-label, or aria-labelledby.",
           },
         ],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results.issues[0].type).toBe('error');
-      expect(data.results.issues[0].message).toContain('lacks an accessible name');
+      expect(data.results.issues[0].type).toBe("error");
+      expect(data.results.issues[0].message).toContain(
+        "lacks an accessible name",
+      );
     });
 
-    it('handles mixed issue types (errors and warnings)', async () => {
+    it("handles mixed issue types (errors and warnings)", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [],
         issues: [
           {
-            type: 'error',
-            message: 'Element lacks visible focus indicator',
-            suggestion: 'Add focus-visible styles.',
+            type: "error",
+            message: "Element lacks visible focus indicator",
+            suggestion: "Add focus-visible styles.",
           },
           {
-            type: 'warning',
-            message: 'No skip link found',
-            suggestion: 'Add a skip link.',
+            type: "warning",
+            message: "No skip link found",
+            suggestion: "Add a skip link.",
           },
           {
-            type: 'error',
-            message: 'Interactive element lacks accessible name',
-            suggestion: 'Add aria-label.',
+            type: "error",
+            message: "Interactive element lacks accessible name",
+            suggestion: "Add aria-label.",
           },
         ],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -778,23 +790,33 @@ describe('/api/analyze-keyboard', () => {
 
       expect(response.status).toBe(200);
       const errors = data.results.issues.filter(
-        (i: { type: string }) => i.type === 'error'
+        (i: { type: string }) => i.type === "error",
       );
       const warnings = data.results.issues.filter(
-        (i: { type: string }) => i.type === 'warning'
+        (i: { type: string }) => i.type === "warning",
       );
       expect(errors.length).toBe(2);
       expect(warnings.length).toBe(1);
     });
 
-    it('handles different focusable element types', async () => {
+    it("handles different focusable element types", async () => {
       const diverseElements = [
-        { tagName: 'a', tabIndex: 0, hasVisibleFocus: true, text: 'Link' },
-        { tagName: 'button', tabIndex: 0, hasVisibleFocus: true, text: 'Button' },
-        { tagName: 'input', tabIndex: 0, hasVisibleFocus: true, ariaLabel: 'Input' },
-        { tagName: 'select', tabIndex: 0, hasVisibleFocus: true },
-        { tagName: 'textarea', tabIndex: 0, hasVisibleFocus: true },
-        { tagName: 'div', tabIndex: 0, hasVisibleFocus: true, role: 'button' },
+        { tagName: "a", tabIndex: 0, hasVisibleFocus: true, text: "Link" },
+        {
+          tagName: "button",
+          tabIndex: 0,
+          hasVisibleFocus: true,
+          text: "Button",
+        },
+        {
+          tagName: "input",
+          tabIndex: 0,
+          hasVisibleFocus: true,
+          ariaLabel: "Input",
+        },
+        { tagName: "select", tabIndex: 0, hasVisibleFocus: true },
+        { tagName: "textarea", tabIndex: 0, hasVisibleFocus: true },
+        { tagName: "div", tabIndex: 0, hasVisibleFocus: true, role: "button" },
       ];
 
       mockAnalyze.mockResolvedValue({
@@ -803,7 +825,7 @@ describe('/api/analyze-keyboard', () => {
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -811,28 +833,25 @@ describe('/api/analyze-keyboard', () => {
 
       expect(response.status).toBe(200);
       expect(data.results.focusableElements.length).toBe(6);
-      expect(data.results.focusableElements.map((e: { tagName: string }) => e.tagName)).toEqual([
-        'a',
-        'button',
-        'input',
-        'select',
-        'textarea',
-        'div',
-      ]);
+      expect(
+        data.results.focusableElements.map(
+          (e: { tagName: string }) => e.tagName,
+        ),
+      ).toEqual(["a", "button", "input", "select", "textarea", "div"]);
     });
 
-    it('handles elements with positive tabindex values', async () => {
+    it("handles elements with positive tabindex values", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [
-          { tagName: 'input', tabIndex: 1, hasVisibleFocus: true },
-          { tagName: 'input', tabIndex: 2, hasVisibleFocus: true },
-          { tagName: 'button', tabIndex: 0, hasVisibleFocus: true },
+          { tagName: "input", tabIndex: 1, hasVisibleFocus: true },
+          { tagName: "input", tabIndex: 2, hasVisibleFocus: true },
+          { tagName: "button", tabIndex: 0, hasVisibleFocus: true },
         ],
         issues: [],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
@@ -843,27 +862,37 @@ describe('/api/analyze-keyboard', () => {
       expect(data.results.focusableElements[1].tabIndex).toBe(2);
     });
 
-    it('handles Unicode in element text', async () => {
+    it("handles Unicode in element text", async () => {
       mockAnalyze.mockResolvedValue({
         focusableElements: [
-          { tagName: 'button', tabIndex: 0, hasVisibleFocus: true, text: 'Enviar mensaje' },
-          { tagName: 'a', tabIndex: 0, hasVisibleFocus: true, text: '日本語' },
-          { tagName: 'button', tabIndex: 0, hasVisibleFocus: true, text: 'Emoji' },
+          {
+            tagName: "button",
+            tabIndex: 0,
+            hasVisibleFocus: true,
+            text: "Enviar mensaje",
+          },
+          { tagName: "a", tabIndex: 0, hasVisibleFocus: true, text: "日本語" },
+          {
+            tagName: "button",
+            tabIndex: 0,
+            hasVisibleFocus: true,
+            text: "Emoji",
+          },
         ],
         issues: [],
       });
 
       const request = createMockRequest({
-        url: 'https://example.com',
+        url: "https://example.com",
       });
 
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results.focusableElements[0].text).toBe('Enviar mensaje');
-      expect(data.results.focusableElements[1].text).toBe('日本語');
-      expect(data.results.focusableElements[2].text).toBe('Emoji');
+      expect(data.results.focusableElements[0].text).toBe("Enviar mensaje");
+      expect(data.results.focusableElements[1].text).toBe("日本語");
+      expect(data.results.focusableElements[2].text).toBe("Emoji");
     });
   });
 });
