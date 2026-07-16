@@ -1,7 +1,6 @@
 import type { Browser, BrowserContext, Page } from "playwright-core";
 import { launchBrowser, createGuardedContext } from "./browser";
 import { AccessibilityTestResult } from "./accessibilityTesting";
-import validate from "html-validator";
 
 export interface WebsiteAnalysisResult {
   url: string;
@@ -9,7 +8,6 @@ export interface WebsiteAnalysisResult {
   totalViolations: number;
   totalPasses: number;
   commonIssues: string[];
-  htmlValidation: ValidationResult[];
 }
 
 export interface PageAnalysisResult {
@@ -21,13 +19,6 @@ export interface PageAnalysisResult {
     scripts: number;
     stylesheets: number;
   };
-}
-
-export interface ValidationResult {
-  type: string;
-  message: string;
-  line?: number;
-  column?: number;
 }
 
 export class WebsiteAnalyzer {
@@ -210,7 +201,6 @@ export class WebsiteAnalyzer {
         totalViolations,
         totalPasses,
         commonIssues,
-        htmlValidation: [], // Add HTML validation results if needed
       };
     } finally {
       await this.cleanup();
