@@ -62,6 +62,43 @@ export class KeyboardNavigationAnalyzer {
         'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
 
+      // Clickable non-interactive elements are the most common keyboard trap
+      // and were invisible here: they match no part of the focusable selector,
+      // so a page built entirely from <div onclick> reported zero issues.
+      const INTERACTIVE_ROLES = new Set([
+        "button",
+        "link",
+        "checkbox",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "option",
+        "radio",
+        "switch",
+        "tab",
+      ]);
+
+      document.querySelectorAll<HTMLElement>("[onclick]").forEach((element) => {
+        if (element.matches("a[href], button, input, select, textarea")) {
+          return;
+        }
+        if (!isElementVisible(element)) return;
+
+        const role = element.getAttribute("role");
+        const reachable =
+          element.hasAttribute("tabindex") && element.tabIndex >= 0;
+
+        if (!reachable || !role || !INTERACTIVE_ROLES.has(role)) {
+          issues.push({
+            type: "error",
+            message: `Click handler on non-interactive <${element.tagName.toLowerCase()}> that keyboard users cannot reach`,
+            element: truncate(element.outerHTML),
+            suggestion:
+              'Use a <button>, or add role plus tabindex="0" and a key handler for Enter/Space.',
+          });
+        }
+      });
+
       focusable.forEach((element) => {
         const elementInfo: FocusableElement = {
           tagName: element.tagName.toLowerCase(),
@@ -77,13 +114,16 @@ export class KeyboardNavigationAnalyzer {
           return;
         }
 
-        if (element.tabIndex < 0) {
+        // A positive tabindex jumps the element ahead of everything in the
+        // natural order, so it desynchronises tab order from reading order for
+        // the whole page (WCAG 2.4.3).
+        if (element.tabIndex > 0) {
           issues.push({
-            type: "warning",
-            message: `Element with negative tabindex found: ${element.tagName.toLowerCase()}`,
+            type: "error",
+            message: `Positive tabindex (${element.tabIndex}) found on ${element.tagName.toLowerCase()}`,
             element: truncate(element.outerHTML),
             suggestion:
-              "Avoid negative tabindex unless intentionally removing focus.",
+              'Use tabindex="0" and order the DOM instead. A positive tabindex forces this element ahead of every other control.',
           });
         }
 

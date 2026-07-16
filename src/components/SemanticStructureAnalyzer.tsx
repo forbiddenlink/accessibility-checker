@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 
 interface SemanticElement {
   tagName: string;
@@ -23,7 +23,6 @@ export default function SemanticStructureAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [structure, setStructure] = useState<SemanticElement[]>([]);
   const [issues, setIssues] = useState<SemanticIssue[]>([]);
-  const parserDiv = useRef<HTMLDivElement>(null);
 
   const analyzeSemanticStructure = () => {
     setIsAnalyzing(true);
@@ -31,10 +30,13 @@ export default function SemanticStructureAnalyzer() {
     const elements: SemanticElement[] = [];
 
     try {
-      // Parse HTML input
-      if (parserDiv.current) {
-        parserDiv.current.innerHTML = htmlInput;
-        const parsedElements = parseElement(parserDiv.current);
+      // Parse into an inert document rather than assigning innerHTML on a live
+      // node: pasted markup like `<img src=x onerror=...>` executes in the
+      // page, and script-src 'unsafe-inline' means CSP would not stop it.
+      // DOMParser builds a detached document that never loads or runs anything.
+      {
+        const parsed = new DOMParser().parseFromString(htmlInput, "text/html");
+        const parsedElements = parseElement(parsed.body);
         elements.push(...parsedElements);
 
         // Analyze structure
@@ -241,7 +243,6 @@ export default function SemanticStructureAnalyzer() {
   return (
     <div className="space-y-6">
       {/* Hidden parser div */}
-      <div ref={parserDiv} className="hidden" />
 
       {/* Input Section */}
       <div className="space-y-4">
