@@ -18,9 +18,9 @@ export default function ApiDocs() {
         <section>
           <h2 className="text-h2 text-white mb-4">Introduction</h2>
           <p className="text-muted-foreground text-body leading-relaxed">
-            The AccessCheck API provides programmatic access to color contrast
-            checking and palette generation. It&apos;s RESTful and returns JSON
-            responses.
+            The Precision Contrast API provides programmatic access to color
+            contrast checking and palette generation. It&apos;s RESTful and
+            returns JSON responses.
           </p>
         </section>
 

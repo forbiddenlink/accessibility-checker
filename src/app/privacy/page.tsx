@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Privacy policy for AccessCheck accessibility color checker",
+  description:
+    "Privacy policy for Precision Contrast accessibility color checker",
 };
 
 export default function PrivacyPolicy() {
@@ -24,8 +25,8 @@ export default function PrivacyPolicy() {
           <section className="space-y-4">
             <h2 className="text-h3 text-white">Overview</h2>
             <p>
-              AccessCheck is committed to protecting your privacy. This policy
-              explains what data we collect and how we use it.
+              Precision Contrast is committed to protecting your privacy. This
+              policy explains what data we collect and how we use it.
             </p>
           </section>
 
