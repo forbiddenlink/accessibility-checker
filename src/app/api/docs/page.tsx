@@ -236,9 +236,13 @@ export default function ApiDocs() {
         <section>
           <h2 className="text-h2 text-white mb-4">Rate Limiting</h2>
           <p className="text-muted-foreground text-body leading-relaxed">
-            Currently, there are no rate limits in place. We recommend
-            implementing appropriate caching and error handling in your
-            applications.
+            These endpoints allow 20 requests per 10 seconds per IP. Exceeding
+            that returns <code className="text-white">429</code> with{" "}
+            <code className="text-white">RateLimit-Limit</code>,{" "}
+            <code className="text-white">RateLimit-Reset</code> and{" "}
+            <code className="text-white">Retry-After</code> headers. Handle 429
+            by backing off until <code className="text-white">Retry-After</code>{" "}
+            elapses.
           </p>
         </section>
 
