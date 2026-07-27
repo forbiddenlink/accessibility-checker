@@ -36,7 +36,7 @@
     "apca-w3": "^0.1.9",
     "axe-core": "^4.12.1",
     "jspdf": "^4.2.1",
-    "next": "^16.2.10",
+    "next": "^16.2.11",
     "playwright-core": "^1.61.1",
     "react": "^19",
     "react-dom": "^19",
