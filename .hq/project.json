@@ -1,0 +1,28 @@
+{
+  "allowedForCodex": true,
+  "automationLevel": "manual",
+  "confidentialContext": "none",
+  "context": "personal",
+  "hosting": [],
+  "kind": "app",
+  "lastReviewedAt": "2026-08-27",
+  "lifecycle": "prototype",
+  "observability": [],
+  "ownerContext": "personal",
+  "surface": "product",
+  "systems": ["solo-control-tower", "design-quality"],
+  "tags": [
+    "a11y",
+    "biome",
+    "eslint",
+    "next",
+    "playwright",
+    "react",
+    "tailwind",
+    "vitest"
+  ],
+  "urls": {
+    "repository": "https://github.com/forbiddenlink/accessibility-checker"
+  },
+  "notes": "Personal accessibility checker candidate for feeding hq design/a11y and launch-readiness signals."
+}
