@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getContrastRatio,
   getAPCA,
@@ -14,7 +14,6 @@ const DEFAULT_COLORS = {
 } as const;
 
 const DEBOUNCE_DELAY = {
-  COLOR_CHECK: 0, // Immediate client-side check
   URL_UPDATE: 1000, // ms
 } as const;
 
@@ -46,32 +45,6 @@ type ErrorType = "INVALID_COLOR" | null;
 interface ErrorState {
   type: ErrorType;
   message: string;
-}
-
-// Utility function for debouncing
-function useDebounce<T extends (...args: any[]) => void>(
-  callback: T,
-  delay: number,
-) {
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-
-  return useCallback(
-    (...args: Parameters<T>) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      if (delay === 0) {
-        callback(...args);
-        return;
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        callback(...args);
-      }, delay);
-    },
-    [callback, delay],
-  );
 }
 
 export default function useColorContrast(
@@ -227,24 +200,26 @@ export default function useColorContrast(
     }
   }, []);
 
-  const updateURL = useDebounce(() => {
-    if (
-      typeof window !== "undefined" &&
-      isValidHexColor(foregroundColor) &&
-      isValidHexColor(backgroundColor)
-    ) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("fg", foregroundColor);
-      url.searchParams.set("bg", backgroundColor);
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, DEBOUNCE_DELAY.URL_UPDATE);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (
+        typeof window !== "undefined" &&
+        isValidHexColor(foregroundColor) &&
+        isValidHexColor(backgroundColor)
+      ) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("fg", foregroundColor);
+        url.searchParams.set("bg", backgroundColor);
+        window.history.replaceState({}, "", url.toString());
+      }
+    }, DEBOUNCE_DELAY.URL_UPDATE);
+    return () => clearTimeout(timeout);
+  }, [foregroundColor, backgroundColor]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     checkContrast();
-    updateURL();
-  }, [foregroundColor, backgroundColor, mode, checkContrast, updateURL]);
+  }, [checkContrast]);
 
   return {
     foregroundColor,
