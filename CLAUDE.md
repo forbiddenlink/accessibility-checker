@@ -60,7 +60,6 @@ but are not the enforced linter.
   bot detection for the documented public API routes (every non-browser client looks
   like a bot to Arcjet)
 - `e2e/` - Playwright specs (`analyzers.spec.ts`, `core-journey.spec.ts`)
-- `docs/audits/` - accumulated audit reports
 
 ## Env vars
 
