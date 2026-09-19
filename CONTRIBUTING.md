@@ -16,7 +16,7 @@ Please be respectful and constructive in all interactions.
    ```
 3. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 4. Create a branch for your changes:
    ```bash
@@ -28,23 +28,23 @@ Please be respectful and constructive in all interactions.
 ### Running locally
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### Running tests
 
 ```bash
 # Unit tests
-npm run test
+pnpm test
 
 # E2E tests
-npm run test:e2e
+pnpm test:e2e
 ```
 
 ### Linting
 
 ```bash
-npm run lint
+pnpm lint
 ```
 
 ## Pull Request Process
