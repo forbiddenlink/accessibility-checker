@@ -22,7 +22,7 @@ Requests to private/loopback/link-local addresses are rejected. See
   headless browser)
 - Testing: Vitest + React Testing Library (unit), Playwright (e2e)
 - Rate limiting/bot protection: `@arcjet/next` + Upstash Redis (`@upstash/ratelimit`)
-- pnpm (`pnpm@10.18.0` pinned), Node >= 20
+- pnpm (`pnpm@10.34.5` pinned), Node >= 20
 
 ## Commands
 
