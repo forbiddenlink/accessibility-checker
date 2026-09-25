@@ -93,6 +93,7 @@ export default function AccessibilityLearningHub() {
           <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <input
             type="text"
+            aria-label="Search accessibility resources"
             placeholder="Search resources..."
             className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all backdrop-blur-xl"
             value={searchQuery}
@@ -103,6 +104,7 @@ export default function AccessibilityLearningHub() {
         <div className="flex flex-wrap gap-4">
           <div className="relative">
             <select
+              aria-label="Filter resources by category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
@@ -131,6 +133,7 @@ export default function AccessibilityLearningHub() {
 
           <div className="relative">
             <select
+              aria-label="Filter resources by difficulty level"
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
               className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
