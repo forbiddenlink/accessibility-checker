@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import type { DynamicContentAnalysis, DynamicElement, LiveRegion } from '@/utils/dynamicContentAnalyzer';
+import { useState } from "react";
+import type {
+  DynamicContentAnalysis,
+  DynamicElement,
+  LiveRegion,
+} from "@/utils/dynamicContentAnalyzer";
 
 export default function DynamicContentAnalyzer() {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<DynamicContentAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -11,23 +15,27 @@ export default function DynamicContentAnalyzer() {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch('/api/analyze-dynamic-content', {
-        method: 'POST',
+
+      const response = await fetch("/api/analyze-dynamic-content", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ url }),
       });
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error || 'Failed to analyze dynamic content');
+        throw new Error(data?.error || "Failed to analyze dynamic content");
       }
 
       setResults(data.results);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during analysis');
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during analysis",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,16 +54,16 @@ export default function DynamicContentAnalyzer() {
         </div>
         <div>
           <p className="text-gray-400">Aria-Live</p>
-          <p>{region.ariaLive || 'Not set'}</p>
+          <p>{region.ariaLive || "Not set"}</p>
         </div>
         <div>
           <p className="text-gray-400">Atomic</p>
-          <p>{region.ariaAtomic ? 'Yes' : 'No'}</p>
+          <p>{region.ariaAtomic ? "Yes" : "No"}</p>
         </div>
         {region.ariaRelevant && (
           <div className="col-span-2">
             <p className="text-gray-400">Relevant</p>
-            <p>{region.ariaRelevant.join(', ')}</p>
+            <p>{region.ariaRelevant.join(", ")}</p>
           </div>
         )}
       </div>
@@ -75,20 +83,20 @@ export default function DynamicContentAnalyzer() {
         </div>
         <div>
           <p className="text-gray-400">ARIA Controls</p>
-          <p>{element.hasAriaControls ? 'Yes' : 'No'}</p>
+          <p>{element.hasAriaControls ? "Yes" : "No"}</p>
         </div>
         <div>
           <p className="text-gray-400">ARIA Expanded</p>
-          <p>{element.hasAriaExpanded ? 'Yes' : 'No'}</p>
+          <p>{element.hasAriaExpanded ? "Yes" : "No"}</p>
         </div>
         <div>
           <p className="text-gray-400">ARIA Hidden</p>
-          <p>{element.hasAriaHidden ? 'Yes' : 'No'}</p>
+          <p>{element.hasAriaHidden ? "Yes" : "No"}</p>
         </div>
         {element.hasAriaModal !== undefined && (
           <div>
             <p className="text-gray-400">ARIA Modal</p>
-            <p>{element.hasAriaModal ? 'Yes' : 'No'}</p>
+            <p>{element.hasAriaModal ? "Yes" : "No"}</p>
           </div>
         )}
       </div>
@@ -98,19 +106,19 @@ export default function DynamicContentAnalyzer() {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-gray-400">Traps Focus</p>
-            <p>{element.focusManagement.trapsFocus ? 'Yes' : 'No'}</p>
+            <p>{element.focusManagement.trapsFocus ? "Yes" : "No"}</p>
           </div>
           <div>
             <p className="text-gray-400">Restores Focus</p>
-            <p>{element.focusManagement.restoresFocus ? 'Yes' : 'No'}</p>
+            <p>{element.focusManagement.restoresFocus ? "Yes" : "No"}</p>
           </div>
           <div>
             <p className="text-gray-400">Keyboard Navigation</p>
-            <p>{element.focusManagement.hasKeyboardNav ? 'Yes' : 'No'}</p>
+            <p>{element.focusManagement.hasKeyboardNav ? "Yes" : "No"}</p>
           </div>
           <div>
             <p className="text-gray-400">Escape Key</p>
-            <p>{element.escapeKey ? 'Yes' : 'No'}</p>
+            <p>{element.escapeKey ? "Yes" : "No"}</p>
           </div>
         </div>
       </div>
@@ -132,7 +140,7 @@ export default function DynamicContentAnalyzer() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter website URL"
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent"
             aria-label="Website URL"
           />
           <button
@@ -140,7 +148,7 @@ export default function DynamicContentAnalyzer() {
             disabled={loading || !url}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? 'Analyzing...' : 'Analyze Dynamic Content'}
+            {loading ? "Analyzing..." : "Analyze Dynamic Content"}
           </button>
         </div>
 
@@ -161,35 +169,38 @@ export default function DynamicContentAnalyzer() {
                   <p>Issues Found: {results.issues.length}</p>
                 </div>
               </div>
-              
+
               <div className="bg-white/5 p-4 rounded-lg">
                 <h3 className="text-lg font-medium mb-2">Common Issues</h3>
                 <ul className="list-disc list-inside space-y-1">
                   {Object.entries(
-                    results.issues
-                      .reduce<Record<string, number>>((acc, issue) => {
+                    results.issues.reduce<Record<string, number>>(
+                      (acc, issue) => {
                         acc[issue.code] = (acc[issue.code] || 0) + 1;
                         return acc;
-                      }, {})
+                      },
+                      {},
+                    ),
                   )
                     .sort(([, a], [, b]) => b - a)
                     .slice(0, 5)
                     .map(([code, count]) => (
-                      <li key={code}>{code}: {count} occurrence{count !== 1 ? 's' : ''}</li>
-                    ))
-                  }
+                      <li key={code}>
+                        {code}: {count} occurrence{count !== 1 ? "s" : ""}
+                      </li>
+                    ))}
                 </ul>
               </div>
             </div>
 
             {results.liveRegions.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white">Live Regions</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Live Regions
+                </h3>
                 <div className="grid grid-cols-1 gap-4">
                   {results.liveRegions.map((region, index) => (
-                    <div key={index}>
-                      {renderLiveRegion(region)}
-                    </div>
+                    <div key={index}>{renderLiveRegion(region)}</div>
                   ))}
                 </div>
               </div>
@@ -197,12 +208,12 @@ export default function DynamicContentAnalyzer() {
 
             {results.dynamicElements.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white">Dynamic Elements</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Dynamic Elements
+                </h3>
                 <div className="grid grid-cols-1 gap-4">
                   {results.dynamicElements.map((element, index) => (
-                    <div key={index}>
-                      {renderDynamicElement(element)}
-                    </div>
+                    <div key={index}>{renderDynamicElement(element)}</div>
                   ))}
                 </div>
               </div>
@@ -210,22 +221,28 @@ export default function DynamicContentAnalyzer() {
 
             {results.issues.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white">Accessibility Issues</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Accessibility Issues
+                </h3>
                 <div className="space-y-2">
                   {results.issues.map((issue, index) => (
                     <div
                       key={index}
                       className={`p-4 rounded-lg border ${
-                        issue.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
-                        issue.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
-                        'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                        issue.type === "error"
+                          ? "bg-red-500/10 border-red-500/20 text-red-400"
+                          : issue.type === "warning"
+                            ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                            : "bg-blue-500/10 border-blue-500/20 text-blue-400"
                       }`}
                     >
                       <div className="flex items-start gap-2">
                         <span className="font-medium">{issue.code}:</span>
                         <span>{issue.message}</span>
                       </div>
-                      <p className="mt-2 font-mono text-sm opacity-80 bg-black/30 p-1 rounded">{issue.element}</p>
+                      <p className="mt-2 font-mono text-sm opacity-80 bg-black/30 p-1 rounded">
+                        {issue.element}
+                      </p>
                       {issue.suggestion && (
                         <p className="mt-1 text-sm opacity-80">
                           Suggestion: {issue.suggestion}
@@ -241,4 +258,4 @@ export default function DynamicContentAnalyzer() {
       </div>
     </div>
   );
-} 
+}
