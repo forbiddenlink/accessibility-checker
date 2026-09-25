@@ -10,11 +10,11 @@ export default function ScreenshotDemo() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="glass-morphism p-8 rounded-2xl">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
             Check Color Contrast
           </h2>
           <div className="flex items-center space-x-2">
-            <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs cursor-help">
+            <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-400/20 text-blue-200 text-xs cursor-help">
               ?
             </div>
           </div>
@@ -24,13 +24,13 @@ export default function ScreenshotDemo() {
           <div>
             <label
               htmlFor="text-color"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Text Color
             </label>
             <div className="flex items-center space-x-4">
               <div
-                className="w-12 h-12 rounded-lg shadow-inner border border-slate-200"
+                className="w-12 h-12 rounded-lg shadow-inner border border-white/20"
                 style={{ backgroundColor: foregroundColor }}
                 aria-hidden="true"
               />
@@ -39,7 +39,7 @@ export default function ScreenshotDemo() {
                 type="text"
                 value={foregroundColor}
                 onChange={(e) => setForegroundColor(e.target.value)}
-                className="block w-full rounded-lg border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full rounded-lg bg-black/50 border-white/10 text-white shadow-sm focus:border-accent focus:ring-accent"
               />
             </div>
           </div>
@@ -47,13 +47,13 @@ export default function ScreenshotDemo() {
           <div>
             <label
               htmlFor="background-color"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Background Color
             </label>
             <div className="flex items-center space-x-4">
               <div
-                className="w-12 h-12 rounded-lg shadow-inner border border-slate-200"
+                className="w-12 h-12 rounded-lg shadow-inner border border-white/20"
                 style={{ backgroundColor: backgroundColor }}
                 aria-hidden="true"
               />
@@ -62,7 +62,7 @@ export default function ScreenshotDemo() {
                 type="text"
                 value={backgroundColor}
                 onChange={(e) => setBackgroundColor(e.target.value)}
-                className="block w-full rounded-lg border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full rounded-lg bg-black/50 border-white/10 text-white shadow-sm focus:border-accent focus:ring-accent"
               />
             </div>
           </div>
@@ -81,14 +81,14 @@ export default function ScreenshotDemo() {
       </div>
 
       <div className="glass-morphism p-8 rounded-2xl">
-        <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
           Results
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white/30 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4 flex items-center">
-              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm mr-3">
+          <div className="bg-white/5 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+              <span className="bg-blue-400/20 text-blue-200 px-3 py-1 rounded-full text-sm mr-3">
                 AA
               </span>
               WCAG 2.1 Level AA
@@ -109,8 +109,8 @@ export default function ScreenshotDemo() {
             </div>
           </div>
 
-          <div className="bg-white/30 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4 flex items-center">
+          <div className="bg-white/5 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
               <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm mr-3">
                 AAA
               </span>
@@ -150,7 +150,7 @@ export default function ScreenshotDemo() {
         </div>
 
         <div className="flex justify-end space-x-4">
-          <button className="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium">
+          <button className="px-4 py-2 text-blue-400 hover:text-blue-300 font-medium">
             Save Palette
           </button>
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
