@@ -28,6 +28,13 @@ updates:
       # dies. Drop this once the plugin ships ESLint 10 support.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
+      # No released typescript-eslint supports TypeScript 7: 8.70.1 still peers
+      # "<6.1.0", and its typescript-estree reads ts.ModuleKind.Cjs, which TS 7
+      # removed, so eslint dies at load with "Cannot read properties of
+      # undefined (reading 'Cjs')". Drop this once typescript-eslint ships TS 7
+      # support.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     labels: ["dependencies"]
     commit-message:
       prefix: "chore(deps):"
