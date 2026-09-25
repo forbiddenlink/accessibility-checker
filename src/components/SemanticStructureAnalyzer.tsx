@@ -372,7 +372,7 @@ export default function SemanticStructureAnalyzer() {
                           </p>
                           <div className="pl-4 border-l-2 border-white/10 ml-1 space-y-1">
                             {issue.element && (
-                              <div className="text-gray-500 text-xs break-all">
+                              <div className="text-muted-foreground text-xs break-all">
                                 Source:{" "}
                                 <span className="text-gray-400 font-mono bg-white/5 px-1 rounded">
                                   {issue.element}
@@ -428,7 +428,7 @@ function renderStructureTree(
 
         {/* Inline text preview if it's short */}
         {el.text && !el.children.length && (
-          <span className="text-gray-500 ml-2 truncate max-w-[200px]">
+          <span className="text-muted-foreground ml-2 truncate max-w-[200px]">
             {el.text}
           </span>
         )}

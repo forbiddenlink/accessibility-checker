@@ -123,7 +123,7 @@ const SavedColorPalettes = forwardRef<
         )}
 
         {palettes.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             <p>You haven&apos;t saved any color combinations yet.</p>
           </div>
         ) : (
