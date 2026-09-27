@@ -42,6 +42,16 @@ const redisConfigured = Boolean(
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
 );
 
+if (!redisConfigured && process.env.NODE_ENV === "production") {
+  // Same fail-open shape as the missing ARCJET_KEY above: without Redis,
+  // `limiter` below is null and every request skips rate limiting entirely,
+  // including the browser-launching analyzer routes, with nothing in the
+  // logs to say so.
+  console.error(
+    "UPSTASH_REDIS_REST_URL/TOKEN not set: rate limiting is disabled for /api/*",
+  );
+}
+
 const publicApiLimit = redisConfigured
   ? new Ratelimit({
       redis: Redis.fromEnv(),

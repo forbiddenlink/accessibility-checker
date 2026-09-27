@@ -88,12 +88,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        {/* Fonts load through next/font/google, which self-hosts them at
+            build time: no runtime request ever reaches fonts.googleapis.com
+            or fonts.gstatic.com, so preconnecting to them only opens an
+            unused connection. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
