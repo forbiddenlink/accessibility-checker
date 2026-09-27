@@ -177,6 +177,11 @@ export default function WebsiteAnalyzer() {
                         </div>
                       ),
                     )}
+                    {page.accessibility.violations.length === 0 && (
+                      <div className="p-4 rounded-lg badge-pass border-l-4 border-success">
+                        No accessibility violations detected on this page.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
