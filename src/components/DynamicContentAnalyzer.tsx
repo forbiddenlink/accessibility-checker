@@ -4,6 +4,8 @@ import type {
   DynamicElement,
   LiveRegion,
 } from "@/utils/dynamicContentAnalyzer";
+import ViolationCard from "@/components/ViolationCard";
+import { criterionForCode } from "@/utils/wcagCriteria";
 
 export default function DynamicContentAnalyzer() {
   const [url, setUrl] = useState("");
@@ -45,24 +47,24 @@ export default function DynamicContentAnalyzer() {
     <div className="p-4 bg-white/5 rounded-lg">
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <p className="text-gray-400">Element</p>
+          <p className="text-muted-foreground">Element</p>
           <p className="font-mono text-sm">{region.element}</p>
         </div>
         <div>
-          <p className="text-gray-400">Role</p>
+          <p className="text-muted-foreground">Role</p>
           <p>{region.role}</p>
         </div>
         <div>
-          <p className="text-gray-400">Aria-Live</p>
+          <p className="text-muted-foreground">Aria-Live</p>
           <p>{region.ariaLive || "Not set"}</p>
         </div>
         <div>
-          <p className="text-gray-400">Atomic</p>
+          <p className="text-muted-foreground">Atomic</p>
           <p>{region.ariaAtomic ? "Yes" : "No"}</p>
         </div>
         {region.ariaRelevant && (
           <div className="col-span-2">
-            <p className="text-gray-400">Relevant</p>
+            <p className="text-muted-foreground">Relevant</p>
             <p>{region.ariaRelevant.join(", ")}</p>
           </div>
         )}
@@ -74,50 +76,50 @@ export default function DynamicContentAnalyzer() {
     <div className="p-4 bg-white/5 rounded-lg">
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <p className="text-gray-400">Type</p>
+          <p className="text-muted-foreground">Type</p>
           <p className="capitalize">{element.type}</p>
         </div>
         <div>
-          <p className="text-gray-400">Role</p>
+          <p className="text-muted-foreground">Role</p>
           <p>{element.role}</p>
         </div>
         <div>
-          <p className="text-gray-400">ARIA Controls</p>
+          <p className="text-muted-foreground">ARIA Controls</p>
           <p>{element.hasAriaControls ? "Yes" : "No"}</p>
         </div>
         <div>
-          <p className="text-gray-400">ARIA Expanded</p>
+          <p className="text-muted-foreground">ARIA Expanded</p>
           <p>{element.hasAriaExpanded ? "Yes" : "No"}</p>
         </div>
         <div>
-          <p className="text-gray-400">ARIA Hidden</p>
+          <p className="text-muted-foreground">ARIA Hidden</p>
           <p>{element.hasAriaHidden ? "Yes" : "No"}</p>
         </div>
         {element.hasAriaModal !== undefined && (
           <div>
-            <p className="text-gray-400">ARIA Modal</p>
+            <p className="text-muted-foreground">ARIA Modal</p>
             <p>{element.hasAriaModal ? "Yes" : "No"}</p>
           </div>
         )}
       </div>
 
       <div className="mt-4">
-        <p className="text-gray-400 mb-2">Focus Management</p>
+        <p className="text-muted-foreground mb-2">Focus Management</p>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-gray-400">Traps Focus</p>
+            <p className="text-muted-foreground">Traps Focus</p>
             <p>{element.focusManagement.trapsFocus ? "Yes" : "No"}</p>
           </div>
           <div>
-            <p className="text-gray-400">Restores Focus</p>
+            <p className="text-muted-foreground">Restores Focus</p>
             <p>{element.focusManagement.restoresFocus ? "Yes" : "No"}</p>
           </div>
           <div>
-            <p className="text-gray-400">Keyboard Navigation</p>
+            <p className="text-muted-foreground">Keyboard Navigation</p>
             <p>{element.focusManagement.hasKeyboardNav ? "Yes" : "No"}</p>
           </div>
           <div>
-            <p className="text-gray-400">Escape Key</p>
+            <p className="text-muted-foreground">Escape Key</p>
             <p>{element.escapeKey ? "Yes" : "No"}</p>
           </div>
         </div>
@@ -128,7 +130,7 @@ export default function DynamicContentAnalyzer() {
   return (
     <div className="glass-morphism p-8 rounded-2xl">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-semibold text-white">
           Dynamic Content Analyzer
         </h2>
       </div>
@@ -146,14 +148,14 @@ export default function DynamicContentAnalyzer() {
           <button
             onClick={handleAnalyze}
             disabled={loading || !url}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="focus-ring px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-white/90 disabled:opacity-50"
           >
             {loading ? "Analyzing..." : "Analyze Dynamic Content"}
           </button>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg" role="alert">
+          <div className="p-4 badge-fail rounded-lg" role="alert">
             {error}
           </div>
         )}
@@ -162,8 +164,8 @@ export default function DynamicContentAnalyzer() {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Summary</h3>
-                <div className="space-y-2">
+                <h3 className="text-lg font-medium mb-2 text-white">Summary</h3>
+                <div className="space-y-2 text-muted-foreground">
                   <p>Live Regions: {results.liveRegions.length}</p>
                   <p>Dynamic Elements: {results.dynamicElements.length}</p>
                   <p>Issues Found: {results.issues.length}</p>
@@ -171,8 +173,10 @@ export default function DynamicContentAnalyzer() {
               </div>
 
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Common Issues</h3>
-                <ul className="list-disc list-inside space-y-1">
+                <h3 className="text-lg font-medium mb-2 text-white">
+                  Common Issues
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                   {Object.entries(
                     results.issues.reduce<Record<string, number>>(
                       (acc, issue) => {
@@ -226,29 +230,15 @@ export default function DynamicContentAnalyzer() {
                 </h3>
                 <div className="space-y-2">
                   {results.issues.map((issue, index) => (
-                    <div
+                    <ViolationCard
                       key={index}
-                      className={`p-4 rounded-lg border ${
-                        issue.type === "error"
-                          ? "bg-red-500/10 border-red-500/20 text-red-400"
-                          : issue.type === "warning"
-                            ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
-                            : "bg-blue-500/10 border-blue-500/20 text-blue-400"
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <span className="font-medium">{issue.code}:</span>
-                        <span>{issue.message}</span>
-                      </div>
-                      <p className="mt-2 font-mono text-sm opacity-80 bg-black/30 p-1 rounded">
-                        {issue.element}
-                      </p>
-                      {issue.suggestion && (
-                        <p className="mt-1 text-sm opacity-80">
-                          Suggestion: {issue.suggestion}
-                        </p>
-                      )}
-                    </div>
+                      code={issue.code}
+                      severity={issue.type}
+                      message={issue.message}
+                      fix={issue.suggestion}
+                      element={issue.element}
+                      criterion={criterionForCode(issue.code)}
+                    />
                   ))}
                 </div>
               </div>

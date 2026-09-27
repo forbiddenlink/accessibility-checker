@@ -4,6 +4,8 @@ import type {
   FormField,
   FormIssue,
 } from "@/utils/formAnalyzer";
+import ViolationCard from "@/components/ViolationCard";
+import { criterionForCode } from "@/utils/wcagCriteria";
 
 export default function FormAccessibilityAnalyzer() {
   const [url, setUrl] = useState("");
@@ -44,7 +46,7 @@ export default function FormAccessibilityAnalyzer() {
   return (
     <div className="glass-morphism p-8 rounded-2xl">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-semibold text-white">
           Form Accessibility Analyzer
         </h2>
       </div>
@@ -62,14 +64,14 @@ export default function FormAccessibilityAnalyzer() {
           <button
             onClick={handleAnalyze}
             disabled={loading || !url}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="focus-ring px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-white/90 disabled:opacity-50"
           >
             {loading ? "Analyzing..." : "Analyze Forms"}
           </button>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg" role="alert">
+          <div className="p-4 badge-fail rounded-lg" role="alert">
             {error}
           </div>
         )}
@@ -78,8 +80,8 @@ export default function FormAccessibilityAnalyzer() {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Summary</h3>
-                <div className="space-y-2">
+                <h3 className="text-lg font-medium mb-2 text-white">Summary</h3>
+                <div className="space-y-2 text-muted-foreground">
                   <p>Total Forms: {results.length}</p>
                   <p>
                     Forms with Issues:{" "}
@@ -93,8 +95,10 @@ export default function FormAccessibilityAnalyzer() {
               </div>
 
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Common Issues</h3>
-                <ul className="list-disc list-inside space-y-1">
+                <h3 className="text-lg font-medium mb-2 text-white">
+                  Common Issues
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                   {Object.entries(
                     results
                       .flatMap((r) => r.issues)
@@ -115,35 +119,39 @@ export default function FormAccessibilityAnalyzer() {
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold">Detailed Analysis</h3>
+              <h3 className="text-xl font-semibold text-white">
+                Detailed Analysis
+              </h3>
               {results.map((form, index) => (
                 <div
                   key={index}
                   className="bg-white/5 p-6 rounded-lg space-y-4"
                 >
-                  <h4 className="font-medium">Form {index + 1}</h4>
+                  <h4 className="font-medium text-white">Form {index + 1}</h4>
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-400">Form Role</p>
-                      <p>{form.role || "form"}</p>
+                      <p className="text-muted-foreground">Form Role</p>
+                      <p className="text-white">{form.role || "form"}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Form Name</p>
-                      <p>{form.name || "Unnamed Form"}</p>
+                      <p className="text-muted-foreground">Form Name</p>
+                      <p className="text-white">
+                        {form.name || "Unnamed Form"}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Input Fields</p>
-                      <p>{form.fields.length}</p>
+                      <p className="text-muted-foreground">Input Fields</p>
+                      <p className="text-white">{form.fields.length}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Submit Method</p>
-                      <p>{form.method.toUpperCase()}</p>
+                      <p className="text-muted-foreground">Submit Method</p>
+                      <p className="text-white">{form.method.toUpperCase()}</p>
                     </div>
                   </div>
 
                   <div>
-                    <h5 className="font-medium mb-2">Form Fields</h5>
+                    <h5 className="font-medium mb-2 text-white">Form Fields</h5>
                     <div className="space-y-2">
                       {form.fields.map(
                         (field: FormField, fieldIndex: number) => (
@@ -153,20 +161,34 @@ export default function FormAccessibilityAnalyzer() {
                           >
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <p className="text-gray-400">Field Type</p>
-                                <p>{field.type}</p>
+                                <p className="text-muted-foreground">
+                                  Field Type
+                                </p>
+                                <p className="text-white">{field.type}</p>
                               </div>
                               <div>
-                                <p className="text-gray-400">Label Present</p>
-                                <p>{field.hasLabel ? "Yes" : "No"}</p>
+                                <p className="text-muted-foreground">
+                                  Label Present
+                                </p>
+                                <p className="text-white">
+                                  {field.hasLabel ? "Yes" : "No"}
+                                </p>
                               </div>
                               <div>
-                                <p className="text-gray-400">Required</p>
-                                <p>{field.required ? "Yes" : "No"}</p>
+                                <p className="text-muted-foreground">
+                                  Required
+                                </p>
+                                <p className="text-white">
+                                  {field.required ? "Yes" : "No"}
+                                </p>
                               </div>
                               <div>
-                                <p className="text-gray-400">ARIA Labels</p>
-                                <p>{field.ariaLabels ? "Present" : "None"}</p>
+                                <p className="text-muted-foreground">
+                                  ARIA Labels
+                                </p>
+                                <p className="text-white">
+                                  {field.ariaLabels ? "Present" : "None"}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -183,28 +205,14 @@ export default function FormAccessibilityAnalyzer() {
                       <div className="space-y-2">
                         {form.issues.map(
                           (issue: FormIssue, issueIndex: number) => (
-                            <div
+                            <ViolationCard
                               key={issueIndex}
-                              className={`p-3 rounded-lg border ${
-                                issue.severity === "error"
-                                  ? "bg-red-500/10 border-red-500/20 text-red-400"
-                                  : issue.severity === "warning"
-                                    ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
-                                    : "bg-blue-500/10 border-blue-500/20 text-blue-400"
-                              }`}
-                            >
-                              <div className="flex items-start gap-2">
-                                <span className="font-medium">
-                                  {issue.code}:
-                                </span>
-                                <span>{issue.message}</span>
-                              </div>
-                              {issue.suggestion && (
-                                <p className="mt-1 text-sm opacity-80">
-                                  Suggestion: {issue.suggestion}
-                                </p>
-                              )}
-                            </div>
+                              code={issue.code}
+                              severity={issue.severity}
+                              message={issue.message}
+                              fix={issue.suggestion}
+                              criterion={criterionForCode(issue.code)}
+                            />
                           ),
                         )}
                       </div>

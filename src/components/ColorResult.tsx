@@ -73,12 +73,17 @@ export default function ColorResult({ results, mode }: ColorResultProps) {
         </div>
 
         {/* These read like the WCAG AA/AAA badges next to them, so say plainly
-            that passing here is not conformance with anything yet. */}
+            that passing here is not conformance with anything yet. Verified
+            against the W3C's WCAG 3 working draft and the (inactive) Silver
+            visual-contrast subgroup page: APCA is an experimental method
+            proposed for a possible future WCAG 3 contrast test, not yet
+            approved by the working group, and WCAG 3 itself has not settled
+            on any contrast algorithm. */}
         <p className="text-caption text-muted-foreground border-t border-white/5 pt-4">
-          APCA is a draft candidate method for WCAG 3, which is not yet a
-          published standard. These thresholds are guidance for perceptual
-          legibility, not a conformance result. For a compliance claim, use the
-          WCAG 2.1 tab.
+          APCA (informational) is an experimental contrast method proposed for a
+          future WCAG 3 and not yet adopted by the W3C working group. These
+          thresholds are guidance for perceptual legibility, not a WCAG
+          conformance result. For a compliance claim, use the WCAG tab.
         </p>
       </div>
     );

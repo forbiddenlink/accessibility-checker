@@ -6,7 +6,7 @@ export default function HeroSection() {
     <section className="relative py-16 text-center space-y-6">
       <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-caption text-muted-foreground backdrop-blur-xl">
         <span className="flex h-2 w-2 rounded-full bg-success mr-2"></span>
-        WCAG 2.2 &amp; APCA
+        WCAG 2.2 &amp; APCA (informational)
       </div>
       <h1 className="text-display md:text-[4.5rem] tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent leading-[1.1]">
         Precision Contrast
@@ -32,8 +32,8 @@ export default function HeroSection() {
         <span className="inline-flex items-center gap-2 rounded-md border border-purple-500/30 bg-purple-500/15 px-3 py-1.5 text-caption text-purple-400">
           AAA <span className="font-mono">7:1</span>
         </span>
-        <span className="badge-pass inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-caption">
-          APCA <span className="font-mono">Lc 75+</span>
+        <span className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-caption text-muted-foreground">
+          APCA <span className="font-mono">Lc 75</span> (info, not WCAG)
         </span>
       </div>
     </section>

@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import type { WebsiteAnalysisResult } from "@/utils/websiteAnalyzer";
+import ViolationCard, {
+  type NormalizedSeverity,
+} from "@/components/ViolationCard";
+import { criterionForCode } from "@/utils/wcagCriteria";
 
 // axe-core returns violations in rule-registration order, not by severity.
 // Established checkers (axe DevTools, WAVE) lead with what matters most, so
@@ -12,6 +16,13 @@ const IMPACT_ORDER: Record<string, number> = {
   serious: 1,
   moderate: 2,
   minor: 3,
+};
+
+const IMPACT_TO_SEVERITY: Record<string, NormalizedSeverity> = {
+  critical: "critical",
+  serious: "serious",
+  moderate: "moderate",
+  minor: "minor",
 };
 
 function byImpact<T extends { impact?: string | null }>(violations: T[]): T[] {
@@ -82,7 +93,7 @@ export default function WebsiteAnalyzer() {
           onClick={handleAnalyze}
           disabled={loading || !url}
           aria-busy={loading}
-          className="focus-ring px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-all"
+          className="focus-ring px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-white/90 disabled:opacity-50 transition-all"
         >
           {loading ? "Analyzing..." : "Analyze"}
         </button>
@@ -102,8 +113,8 @@ export default function WebsiteAnalyzer() {
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white/5 p-4 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">Summary</h3>
-              <div className="space-y-2">
+              <h3 className="text-lg font-medium mb-2 text-white">Summary</h3>
+              <div className="space-y-2 text-muted-foreground">
                 <p>Pages Analyzed: {results.pages.length}</p>
                 <p>Total Violations: {results.totalViolations}</p>
                 <p>Total Passes: {results.totalPasses}</p>
@@ -111,8 +122,10 @@ export default function WebsiteAnalyzer() {
             </div>
 
             <div className="bg-white/5 p-4 rounded-lg">
-              <h3 className="text-lg font-medium mb-2">Common Issues</h3>
-              <ul className="list-disc list-inside space-y-1">
+              <h3 className="text-lg font-medium mb-2 text-white">
+                Common Issues
+              </h3>
+              <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                 {results.commonIssues.map((issue, index) => (
                   <li key={index}>{issue}</li>
                 ))}
@@ -130,11 +143,11 @@ export default function WebsiteAnalyzer() {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-400">Load Time</p>
+                    <p className="text-muted-foreground">Load Time</p>
                     <p className="text-white">{Math.round(page.loadTime)}ms</p>
                   </div>
                   <div>
-                    <p className="text-gray-400">Resources</p>
+                    <p className="text-muted-foreground">Resources</p>
                     <p className="text-white">
                       {page.resources.images} images, {page.resources.scripts}{" "}
                       scripts, {page.resources.stylesheets} stylesheets
@@ -149,32 +162,18 @@ export default function WebsiteAnalyzer() {
                   <div className="space-y-2">
                     {byImpact(page.accessibility.violations).map(
                       (violation, vIndex) => (
-                        <div
+                        <ViolationCard
                           key={vIndex}
-                          className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg"
-                        >
-                          <div className="flex items-start gap-2">
-                            <span className="font-medium">{violation.id}:</span>
-                            <span>{violation.description}</span>
-                          </div>
-                          {violation.nodes.length > 0 && (
-                            <div className="mt-2 text-sm">
-                              <p className="font-medium text-red-300">
-                                Affected Elements:
-                              </p>
-                              <ul className="list-disc list-inside text-red-300/80">
-                                {violation.nodes.map((node, nIndex) => (
-                                  <li
-                                    key={nIndex}
-                                    className="font-mono text-xs mt-1"
-                                  >
-                                    {node}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
+                          code={violation.id}
+                          severity={
+                            IMPACT_TO_SEVERITY[violation.impact ?? ""] ??
+                            "minor"
+                          }
+                          message={violation.description}
+                          fix={violation.help}
+                          element={violation.nodes[0]}
+                          criterion={criterionForCode(violation.id)}
+                        />
                       ),
                     )}
                     {page.accessibility.violations.length === 0 && (
