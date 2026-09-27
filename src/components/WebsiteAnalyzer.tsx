@@ -3,6 +3,25 @@
 import { useState } from "react";
 import type { WebsiteAnalysisResult } from "@/utils/websiteAnalyzer";
 
+// axe-core returns violations in rule-registration order, not by severity.
+// Established checkers (axe DevTools, WAVE) lead with what matters most, so
+// sort critical first and put anything unrecognized last rather than
+// dropping it.
+const IMPACT_ORDER: Record<string, number> = {
+  critical: 0,
+  serious: 1,
+  moderate: 2,
+  minor: 3,
+};
+
+function byImpact<T extends { impact?: string | null }>(violations: T[]): T[] {
+  return [...violations].sort(
+    (a, b) =>
+      (IMPACT_ORDER[a.impact ?? ""] ?? 99) -
+      (IMPACT_ORDER[b.impact ?? ""] ?? 99),
+  );
+}
+
 export default function WebsiteAnalyzer() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +62,7 @@ export default function WebsiteAnalyzer() {
     <div className="space-y-6">
       <h2 className="text-h3 text-white">Website Analyzer</h2>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <div className="relative flex-1 group">
           <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition duration-300 blur" />
           <input
@@ -128,34 +147,36 @@ export default function WebsiteAnalyzer() {
                     Accessibility Issues
                   </h5>
                   <div className="space-y-2">
-                    {page.accessibility.violations.map((violation, vIndex) => (
-                      <div
-                        key={vIndex}
-                        className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg"
-                      >
-                        <div className="flex items-start gap-2">
-                          <span className="font-medium">{violation.id}:</span>
-                          <span>{violation.description}</span>
-                        </div>
-                        {violation.nodes.length > 0 && (
-                          <div className="mt-2 text-sm">
-                            <p className="font-medium text-red-300">
-                              Affected Elements:
-                            </p>
-                            <ul className="list-disc list-inside text-red-300/80">
-                              {violation.nodes.map((node, nIndex) => (
-                                <li
-                                  key={nIndex}
-                                  className="font-mono text-xs mt-1"
-                                >
-                                  {node}
-                                </li>
-                              ))}
-                            </ul>
+                    {byImpact(page.accessibility.violations).map(
+                      (violation, vIndex) => (
+                        <div
+                          key={vIndex}
+                          className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg"
+                        >
+                          <div className="flex items-start gap-2">
+                            <span className="font-medium">{violation.id}:</span>
+                            <span>{violation.description}</span>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          {violation.nodes.length > 0 && (
+                            <div className="mt-2 text-sm">
+                              <p className="font-medium text-red-300">
+                                Affected Elements:
+                              </p>
+                              <ul className="list-disc list-inside text-red-300/80">
+                                {violation.nodes.map((node, nIndex) => (
+                                  <li
+                                    key={nIndex}
+                                    className="font-mono text-xs mt-1"
+                                  >
+                                    {node}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>

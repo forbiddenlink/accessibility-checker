@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Accuracy fixture</title>
+  <style>
+    body { font-family: sans-serif; background: #ffffff; color: #111111; }
+    /* Violation 1: color-contrast - light gray text on white */
+    .low-contrast { color: #d0d0d0; background: #ffffff; }
+    /* Known-good: sufficient contrast */
+    .good-contrast { color: #111111; background: #ffffff; }
+  </style>
+</head>
+<body>
+  <h1>Fixture page</h1>
+  <h2>Section heading</h2>
+
+  <p class="low-contrast">This text fails color contrast (violation 1: color-contrast).</p>
+  <p class="good-contrast">This text passes color contrast (known-good 1).</p>
+
+  <!-- Violation 2: image-alt - no alt attribute -->
+  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7" />
+
+  <!-- Known-good: image with descriptive alt text -->
+  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7" alt="A single decorative pixel used as a spacer" />
+
+  <!-- Violation 3: label - input with no accessible name at all -->
+  <input type="text" id="unlabelled-input" />
+
+  <!-- Known-good: input with an associated label -->
+  <label for="labelled-input">Your name</label>
+  <input type="text" id="labelled-input" />
+
+  <!-- Violation 4: link-name - link with no discernible text -->
+  <a href="#somewhere"></a>
+
+  <!-- Violation 5: aria-valid-attr-value - aria-pressed must be true/false, not an arbitrary string -->
+  <button type="button" aria-pressed="maybe">Toggle</button>
+</body>
+</html>

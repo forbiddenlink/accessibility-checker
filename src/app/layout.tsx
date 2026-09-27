@@ -15,7 +15,7 @@ const siteUrl =
 
 export const metadata: Metadata = {
   title: {
-    default: "Precision Contrast — Accessibility Color Checker",
+    default: "Precision Contrast: Accessibility Color Checker",
     template: "%s | Precision Contrast",
   },
   description:
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Precision Contrast",
-    title: "Precision Contrast — Accessibility Color Checker",
+    title: "Precision Contrast: Accessibility Color Checker",
     description:
       "Check color combinations for WCAG 2.1 and APCA accessibility compliance.",
     images: [
@@ -47,13 +47,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Precision Contrast — Accessibility Color Checker",
+        alt: "Precision Contrast: Accessibility Color Checker",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Precision Contrast — Accessibility Color Checker",
+    title: "Precision Contrast: Accessibility Color Checker",
     description:
       "Check color combinations for WCAG 2.1 and APCA accessibility compliance.",
     images: ["/opengraph-image.png"],
