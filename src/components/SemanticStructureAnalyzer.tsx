@@ -168,15 +168,37 @@ export default function SemanticStructureAnalyzer() {
     elements.forEach(checkARIA);
   };
 
+  // `elements` is a tree, not a flat list - a landmark is commonly nested
+  // (e.g. <main><nav>...</nav></main>), so checking only the top-level array
+  // with .some() missed every landmark that wasn't a direct child of body.
+  // Walk the whole tree instead.
+  const treeHasLandmark = (
+    elements: SemanticElement[],
+    predicate: (el: SemanticElement) => boolean,
+  ): boolean =>
+    elements.some(
+      (el) => predicate(el) || treeHasLandmark(el.children, predicate),
+    );
+
   const analyzeLandmarks = (
     elements: SemanticElement[],
     issues: SemanticIssue[],
   ) => {
-    const hasMain = elements.some(
+    const hasMain = treeHasLandmark(
+      elements,
       (el) => el.role === "main" || el.tagName === "main",
     );
-    const hasNav = elements.some(
+    const hasNav = treeHasLandmark(
+      elements,
       (el) => el.role === "navigation" || el.tagName === "nav",
+    );
+    const hasHeader = treeHasLandmark(
+      elements,
+      (el) => el.role === "banner" || el.tagName === "header",
+    );
+    const hasFooter = treeHasLandmark(
+      elements,
+      (el) => el.role === "contentinfo" || el.tagName === "footer",
     );
 
     if (!hasMain) {
@@ -194,6 +216,26 @@ export default function SemanticStructureAnalyzer() {
         type: "info",
         message: "No navigation landmark found",
         suggestion: "Consider adding <nav> element for navigation sections",
+        priority: "low",
+      });
+    }
+
+    if (!hasHeader) {
+      issues.push({
+        type: "info",
+        message: "No header landmark found",
+        suggestion:
+          'Add <header> element or role="banner" to identify introductory content',
+        priority: "low",
+      });
+    }
+
+    if (!hasFooter) {
+      issues.push({
+        type: "info",
+        message: "No footer landmark found",
+        suggestion:
+          'Add <footer> element or role="contentinfo" to identify closing content',
         priority: "low",
       });
     }

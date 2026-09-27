@@ -44,6 +44,23 @@ export interface ImageAnalysisResult {
   issues: ImageIssue[];
 }
 
+// Exported and unit-tested directly. `page.evaluate()` below runs its
+// callback in the browser and can't close over this Node-side function
+// (Playwright serializes the callback and executes it in-page), so the
+// same logic is inlined there too - keep both in sync.
+export function parseImageFormat(url: string): string {
+  if (url.startsWith("data:")) {
+    const match = url.match(/^data:image\/([a-zA-Z0-9.+-]+)/i);
+    if (!match) return "unknown";
+    return match[1].split(";")[0].split("+")[0].toLowerCase();
+  }
+
+  const lastSegment = url.split(/[?#]/)[0].split("/").pop() || "";
+  const dotIndex = lastSegment.lastIndexOf(".");
+  if (dotIndex === -1) return "unknown";
+  return lastSegment.slice(dotIndex + 1).toLowerCase() || "unknown";
+}
+
 export class ImageAnalyzer {
   private page: Page;
 
@@ -53,9 +70,19 @@ export class ImageAnalyzer {
 
   async analyzeImages(): Promise<ImageAnalysisResult[]> {
     return await this.page.evaluate(() => {
+      // Mirrors the exported, unit-tested `parseImageFormat` above - see
+      // that function's comment for why this can't just call it directly.
       const getImageFormat = (url: string): string => {
-        const extension = url.split(".").pop()?.toLowerCase();
-        return extension || "unknown";
+        if (url.startsWith("data:")) {
+          const match = url.match(/^data:image\/([a-zA-Z0-9.+-]+)/i);
+          if (!match) return "unknown";
+          return match[1].split(";")[0].split("+")[0].toLowerCase();
+        }
+
+        const lastSegment = url.split(/[?#]/)[0].split("/").pop() || "";
+        const dotIndex = lastSegment.lastIndexOf(".");
+        if (dotIndex === -1) return "unknown";
+        return lastSegment.slice(dotIndex + 1).toLowerCase() || "unknown";
       };
 
       const estimateImageSize = (image: HTMLImageElement): number => {
