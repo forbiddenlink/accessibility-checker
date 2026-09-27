@@ -1,12 +1,12 @@
 export default function FontSizeAccessibility() {
   return (
     <div className="glass-morphism p-6 rounded-xl mb-8">
-      <h2 className="text-2xl font-semibold mb-6 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
-        Text Size & Accessibility
+      <h2 className="text-2xl font-semibold mb-6 text-white">
+        Text Size &amp; Accessibility
       </h2>
 
       <div className="space-y-6">
-        <p className="text-gray-300">
+        <p className="text-muted-foreground">
           WCAG guidelines have different contrast requirements based on text
           size. Here&apos;s how text size relates to contrast requirements:
         </p>
@@ -17,16 +17,18 @@ export default function FontSizeAccessibility() {
               Normal Text
             </h3>
             <div className="flex mb-4">
-              <div className="w-16 h-16 flex items-center justify-center bg-blue-500/20 text-blue-400 rounded-lg mr-4 border border-blue-500/20">
+              <div className="w-16 h-16 flex items-center justify-center bg-accent/20 text-indigo-300 rounded-lg mr-4 border border-accent/20">
                 <span className="text-lg font-bold">Aa</span>
               </div>
               <div>
-                <p className="text-gray-400 mb-1">Less than 18pt (24px) or</p>
-                <p className="text-gray-400 mb-1">
+                <p className="text-muted-foreground mb-1">
+                  Less than 18pt (24px) or
+                </p>
+                <p className="text-muted-foreground mb-1">
                   Less than 14pt (18.6px) if bold
                 </p>
                 <div className="mt-2 text-xs font-medium space-x-2">
-                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">
+                  <span className="badge-info px-2 py-1 rounded">
                     4.5:1 for AA
                   </span>
                   <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">
@@ -35,7 +37,7 @@ export default function FontSizeAccessibility() {
                 </div>
               </div>
             </div>
-            <div className="text-sm text-gray-400 bg-black/20 p-3 rounded border border-white/5">
+            <div className="text-sm text-muted-foreground bg-black/20 p-3 rounded border border-white/5">
               Most body text on websites falls into this category, including
               paragraphs, lists, table content, and navigation links.
             </div>
@@ -46,16 +48,18 @@ export default function FontSizeAccessibility() {
               Large Text
             </h3>
             <div className="flex mb-4">
-              <div className="w-16 h-16 flex items-center justify-center bg-green-500/20 text-green-400 rounded-lg mr-4 border border-green-500/20">
+              <div className="w-16 h-16 flex items-center justify-center bg-success/20 text-success rounded-lg mr-4 border border-success/20">
                 <span className="text-2xl font-bold">Aa</span>
               </div>
               <div>
-                <p className="text-gray-400 mb-1">At least 18pt (24px) or</p>
-                <p className="text-gray-400 mb-1">
+                <p className="text-muted-foreground mb-1">
+                  At least 18pt (24px) or
+                </p>
+                <p className="text-muted-foreground mb-1">
                   At least 14pt (18.6px) if bold
                 </p>
                 <div className="mt-2 text-xs font-medium space-x-2">
-                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">
+                  <span className="badge-info px-2 py-1 rounded">
                     3:1 for AA
                   </span>
                   <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">
@@ -64,18 +68,18 @@ export default function FontSizeAccessibility() {
                 </div>
               </div>
             </div>
-            <div className="text-sm text-gray-400 bg-black/20 p-3 rounded border border-white/5">
+            <div className="text-sm text-muted-foreground bg-black/20 p-3 rounded border border-white/5">
               Larger text is generally used for headings, titles, and emphasized
               content that needs to stand out on the page.
             </div>
           </div>
         </div>
 
-        <div className="mt-6 bg-yellow-500/10 border-l-4 border-yellow-500/50 p-4 rounded-r-lg">
-          <h3 className="text-lg font-medium text-yellow-400 mb-2">
+        <div className="mt-6 bg-warning/10 border-l-4 border-warning/50 p-4 rounded-r-lg">
+          <h3 className="text-lg font-medium text-warning mb-2">
             Font Size Tip
           </h3>
-          <p className="text-yellow-100/80">
+          <p className="text-warning">
             When designing, remember that the actual perceived size of text
             depends on the specific font family used. Some fonts appear smaller
             at the same pixel size compared to others.
@@ -84,12 +88,12 @@ export default function FontSizeAccessibility() {
 
         <div className="mt-4 flex justify-center">
           <a
-            href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html"
+            href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 inline-flex items-center font-medium"
+            className="text-indigo-400 hover:text-indigo-300 inline-flex items-center font-medium focus-ring rounded"
           >
-            WCAG 2.1 Contrast Guidelines
+            WCAG 2.2 Contrast Guidelines
             <svg
               className="ml-1 w-4 h-4"
               fill="none"

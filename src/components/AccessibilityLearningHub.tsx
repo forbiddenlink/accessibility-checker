@@ -18,7 +18,7 @@ const INITIAL_RESOURCES: LearningResource[] = [
     category: "tutorial",
     difficulty: "beginner",
     content: `Color contrast is essential for making content readable by users with visual impairments.
-    WCAG 2.1 requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text.
+    WCAG 2.2 requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text.
     
     Key points:
     • Test all color combinations in your design
@@ -82,7 +82,7 @@ export default function AccessibilityLearningHub() {
   return (
     <div className="glass-morphism p-8 rounded-2xl">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-semibold text-white">
           Accessibility Learning Hub
         </h2>
       </div>
@@ -90,12 +90,12 @@ export default function AccessibilityLearningHub() {
       {/* Search and Filters */}
       <div className="mb-8 space-y-4">
         <div className="relative group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <input
             type="text"
             aria-label="Search accessibility resources"
             placeholder="Search resources..."
-            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all backdrop-blur-xl"
+            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-accent transition-all backdrop-blur-xl"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -107,7 +107,7 @@ export default function AccessibilityLearningHub() {
               aria-label="Filter resources by category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
+              className="p-3 bg-card border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-accent appearance-none pr-10 cursor-pointer"
             >
               <option value="all">All Categories</option>
               <option value="tutorial">Tutorials</option>
@@ -136,7 +136,7 @@ export default function AccessibilityLearningHub() {
               aria-label="Filter resources by difficulty level"
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="p-3 bg-[#0d1117] border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-10 cursor-pointer"
+              className="p-3 bg-card border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-accent appearance-none pr-10 cursor-pointer"
             >
               <option value="all">All Levels</option>
               <option value="beginner">Beginner</option>
@@ -170,7 +170,7 @@ export default function AccessibilityLearningHub() {
             className="p-6 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all hover:border-white/10 hover:shadow-2xl group"
           >
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">
+              <h3 className="text-xl font-semibold text-white group-hover:text-indigo-400 transition-colors">
                 {resource.title}
               </h3>
               <span
@@ -178,10 +178,10 @@ export default function AccessibilityLearningHub() {
                 px-3 py-1 rounded-full text-xs font-medium border
                 ${
                   resource.difficulty === "beginner"
-                    ? "bg-green-500/10 text-green-400 border-green-500/20"
+                    ? "badge-pass"
                     : resource.difficulty === "intermediate"
-                      ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
-                      : "bg-red-500/10 text-red-400 border-red-500/20"
+                      ? "badge-warn"
+                      : "badge-fail"
                 }
               `}
               >
@@ -189,7 +189,7 @@ export default function AccessibilityLearningHub() {
               </span>
             </div>
 
-            <p className="text-gray-400 mb-6 whitespace-pre-line text-sm leading-relaxed">
+            <p className="text-muted-foreground mb-6 whitespace-pre-line text-sm leading-relaxed">
               {resource.content}
             </p>
 
@@ -197,7 +197,7 @@ export default function AccessibilityLearningHub() {
               {resource.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-white/5 border border-white/5 rounded text-xs text-gray-400 font-mono"
+                  className="px-2 py-1 bg-white/5 border border-white/5 rounded text-xs text-muted-foreground font-mono"
                 >
                   #{tag}
                 </span>
