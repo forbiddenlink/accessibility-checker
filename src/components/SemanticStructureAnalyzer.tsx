@@ -242,19 +242,26 @@ export default function SemanticStructureAnalyzer() {
 
   return (
     <div className="space-y-6">
+      {/* This card previously had no visible heading at all - unlike every
+          other analyzer on this page, so it read as an unlabeled block
+          between the two-column tool grids. */}
+      <h2 className="text-2xl font-semibold text-white">
+        Semantic Structure Analyzer
+      </h2>
+
       {/* Hidden parser div */}
 
       {/* Input Section */}
       <div className="space-y-4">
         <div className="relative group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
+          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/50 to-purple-500/50 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <textarea
             id="html-input"
             aria-label="HTML code to analyze"
             value={htmlInput}
             onChange={(e) => setHtmlInput(e.target.value)}
             placeholder="<!-- Paste your HTML here to analyze structure -->"
-            className="relative w-full h-48 p-4 rounded-lg bg-[#0d1117] border border-white/10 text-gray-300 font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600"
+            className="relative w-full h-48 p-4 rounded-lg bg-black/50 border border-white/10 text-white font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-accent placeholder-white/20"
             spellCheck="false"
           />
         </div>
@@ -262,7 +269,7 @@ export default function SemanticStructureAnalyzer() {
           onClick={analyzeSemanticStructure}
           disabled={isAnalyzing || !htmlInput.trim()}
           className="w-full px-4 py-3 bg-white text-black font-semibold rounded-lg disabled:opacity-50
-                   hover:bg-gray-200 transition-all flex items-center justify-center space-x-2"
+                   hover:bg-white/90 transition-all flex items-center justify-center space-x-2"
         >
           {isAnalyzing ? (
             <span>Running Analysis...</span>
@@ -365,7 +372,7 @@ export default function SemanticStructureAnalyzer() {
                                 ? "text-red-400"
                                 : issue.type === "warning"
                                   ? "text-yellow-400"
-                                  : "text-blue-400"
+                                  : "text-blue-300"
                             }`}
                           >
                             {issue.message}
@@ -380,7 +387,7 @@ export default function SemanticStructureAnalyzer() {
                               </div>
                             )}
                             <p className="text-gray-400 text-xs">
-                              <span className="text-blue-400 opacity-70">
+                              <span className="text-blue-300 opacity-70">
                                 Hint:
                               </span>{" "}
                               {issue.suggestion}
@@ -411,8 +418,8 @@ function renderStructureTree(
       className="hover:bg-white/5 rounded transition-colors duration-150"
     >
       <div className="flex items-center flex-wrap">
-        <span className="text-blue-400 opacity-80">&lt;</span>
-        <span className="text-blue-400 font-semibold">{el.tagName}</span>
+        <span className="text-blue-300 opacity-80">&lt;</span>
+        <span className="text-blue-300 font-semibold">{el.tagName}</span>
         {el.role && (
           <span className="text-purple-400 ml-2 italic">
             role=&quot;{el.role}&quot;
@@ -424,7 +431,7 @@ function renderStructureTree(
             className="text-green-400 ml-2"
           >{`${key}="${value}"`}</span>
         ))}
-        <span className="text-blue-400 opacity-80">&gt;</span>
+        <span className="text-blue-300 opacity-80">&gt;</span>
 
         {/* Inline text preview if it's short */}
         {el.text && !el.children.length && (
@@ -435,7 +442,7 @@ function renderStructureTree(
 
         {/* If no children and has text, close inline */}
         {!el.children.length && (
-          <span className="text-blue-400 opacity-80 ml-1">
+          <span className="text-blue-300 opacity-80 ml-1">
             &lt;/{el.tagName}&gt;
           </span>
         )}
@@ -446,7 +453,7 @@ function renderStructureTree(
           {renderStructureTree(el.children, depth + 1)}
           <div
             style={{ paddingLeft: `${depth * 20}px` }}
-            className="text-blue-400 opacity-60"
+            className="text-blue-300 opacity-80"
           >
             &lt;/{el.tagName}&gt;
           </div>

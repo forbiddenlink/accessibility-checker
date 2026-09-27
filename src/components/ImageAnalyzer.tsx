@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { ImageAnalysisResult } from "@/utils/imageAnalyzer";
+import ViolationCard from "@/components/ViolationCard";
+import { criterionForCode } from "@/utils/wcagCriteria";
 
 export default function ImageAnalyzer() {
   const [url, setUrl] = useState("");
@@ -46,7 +48,7 @@ export default function ImageAnalyzer() {
   return (
     <div className="glass-morphism p-8 rounded-2xl">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-semibold text-white">
           Image Accessibility Analyzer
         </h2>
       </div>
@@ -64,14 +66,14 @@ export default function ImageAnalyzer() {
           <button
             onClick={handleAnalyze}
             disabled={loading || !url}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="focus-ring px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-white/90 disabled:opacity-50"
           >
             {loading ? "Analyzing..." : "Analyze Images"}
           </button>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg" role="alert">
+          <div className="p-4 badge-fail rounded-lg" role="alert">
             {error}
           </div>
         )}
@@ -80,8 +82,8 @@ export default function ImageAnalyzer() {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Summary</h3>
-                <div className="space-y-2">
+                <h3 className="text-lg font-medium mb-2 text-white">Summary</h3>
+                <div className="space-y-2 text-muted-foreground">
                   <p>Total Images: {results.length}</p>
                   <p>
                     Images with Issues:{" "}
@@ -101,8 +103,10 @@ export default function ImageAnalyzer() {
               </div>
 
               <div className="bg-white/5 p-4 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Common Issues</h3>
-                <ul className="list-disc list-inside space-y-1">
+                <h3 className="text-lg font-medium mb-2 text-white">
+                  Common Issues
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                   {Object.entries(
                     results
                       .flatMap((r) => r.issues)
@@ -123,14 +127,16 @@ export default function ImageAnalyzer() {
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold">Detailed Analysis</h3>
+              <h3 className="text-xl font-semibold text-white">
+                Detailed Analysis
+              </h3>
               {results.map((image, index) => (
                 <div
                   key={index}
                   className="bg-white/5 p-6 rounded-lg space-y-4"
                 >
                   <div className="flex items-start gap-6">
-                    <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-32 h-32 bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={image.url}
@@ -140,55 +146,73 @@ export default function ImageAnalyzer() {
                     </div>
 
                     <div className="flex-grow space-y-4">
-                      <h4 className="font-medium">Image {index + 1}</h4>
+                      <h4 className="font-medium text-white">
+                        Image {index + 1}
+                      </h4>
 
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-400">Dimensions</p>
-                          <p>
+                          <p className="text-muted-foreground">Dimensions</p>
+                          <p className="text-white">
                             {image.dimensions.width}x{image.dimensions.height}px
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-400">Load Time</p>
-                          <p>{Math.round(image.performance.loadTime)}ms</p>
+                          <p className="text-muted-foreground">Load Time</p>
+                          <p className="text-white">
+                            {Math.round(image.performance.loadTime)}ms
+                          </p>
                         </div>
                         <div>
-                          <p className="text-gray-400">File Size</p>
-                          <p>{formatFileSize(image.performance.size)}</p>
+                          <p className="text-muted-foreground">File Size</p>
+                          <p className="text-white">
+                            {formatFileSize(image.performance.size)}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-gray-400">Format</p>
-                          <p>{image.performance.format.toUpperCase()}</p>
+                          <p className="text-muted-foreground">Format</p>
+                          <p className="text-white">
+                            {image.performance.format.toUpperCase()}
+                          </p>
                         </div>
                       </div>
 
                       <div>
-                        <h5 className="text-gray-400 mb-2">Accessibility</h5>
+                        <h5 className="text-muted-foreground mb-2">
+                          Accessibility
+                        </h5>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <p className="text-gray-400">Alt Text</p>
+                            <p className="text-muted-foreground">Alt Text</p>
                             {image.accessibility.isDecorative ? (
-                              <p className="italic">Decorative image</p>
+                              <p className="italic text-white">
+                                Decorative image
+                              </p>
                             ) : image.accessibility.altText ? (
-                              <p className="break-words">
+                              <p className="break-words text-white">
                                 {image.accessibility.altText}
                               </p>
                             ) : (
-                              <p className="text-red-500">Missing alt text</p>
+                              <p className="text-red-300">Missing alt text</p>
                             )}
                           </div>
                           <div>
-                            <p className="text-gray-400">ARIA Role</p>
-                            <p>{image.accessibility.role || "None"}</p>
+                            <p className="text-muted-foreground">ARIA Role</p>
+                            <p className="text-white">
+                              {image.accessibility.role || "None"}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-gray-400">ARIA Label</p>
-                            <p>{image.accessibility.ariaLabel || "None"}</p>
+                            <p className="text-muted-foreground">ARIA Label</p>
+                            <p className="text-white">
+                              {image.accessibility.ariaLabel || "None"}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-gray-400">Long Description</p>
-                            <p>
+                            <p className="text-muted-foreground">
+                              Long Description
+                            </p>
+                            <p className="text-white">
                               {image.accessibility.longDescription
                                 ? "Present"
                                 : "None"}
@@ -198,26 +222,30 @@ export default function ImageAnalyzer() {
                       </div>
 
                       <div>
-                        <h5 className="text-gray-400 mb-2">
+                        <h5 className="text-muted-foreground mb-2">
                           Responsive Design
                         </h5>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <p className="text-gray-400">Srcset</p>
-                            <p>
+                            <p className="text-muted-foreground">Srcset</p>
+                            <p className="text-white">
                               {image.responsive.hasSrcSet ? "Present" : "None"}
                             </p>
                           </div>
                           <div>
-                            <p className="text-gray-400">Sizes</p>
-                            <p>
+                            <p className="text-muted-foreground">Sizes</p>
+                            <p className="text-white">
                               {image.responsive.hasSizes ? "Present" : "None"}
                             </p>
                           </div>
                           {image.responsive.breakpoints && (
                             <div className="col-span-2">
-                              <p className="text-gray-400">Breakpoints</p>
-                              <p>{image.responsive.breakpoints.join(", ")}</p>
+                              <p className="text-muted-foreground">
+                                Breakpoints
+                              </p>
+                              <p className="text-white">
+                                {image.responsive.breakpoints.join(", ")}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -232,26 +260,14 @@ export default function ImageAnalyzer() {
                       </h5>
                       <div className="space-y-2">
                         {image.issues.map((issue, issueIndex) => (
-                          <div
+                          <ViolationCard
                             key={issueIndex}
-                            className={`p-3 rounded-lg border ${
-                              issue.type === "error"
-                                ? "bg-red-500/10 border-red-500/20 text-red-400"
-                                : issue.type === "warning"
-                                  ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
-                                  : "bg-blue-500/10 border-blue-500/20 text-blue-400"
-                            }`}
-                          >
-                            <div className="flex items-start gap-2">
-                              <span className="font-medium">{issue.code}:</span>
-                              <span>{issue.message}</span>
-                            </div>
-                            {issue.suggestion && (
-                              <p className="mt-1 text-sm opacity-80">
-                                Suggestion: {issue.suggestion}
-                              </p>
-                            )}
-                          </div>
+                            code={issue.code}
+                            severity={issue.type}
+                            message={issue.message}
+                            fix={issue.suggestion}
+                            criterion={criterionForCode(issue.code)}
+                          />
                         ))}
                       </div>
                     </div>

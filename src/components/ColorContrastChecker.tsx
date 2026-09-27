@@ -147,7 +147,7 @@ export default function ColorContrastChecker() {
               <button
                 onClick={checkContrast}
                 disabled={loading.colorCheck}
-                className="w-full bg-white text-black hover:bg-gray-200 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 flex items-center justify-center space-x-2"
+                className="w-full bg-white text-black hover:bg-white/90 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 flex items-center justify-center space-x-2"
               >
                 {loading.colorCheck ? (
                   <span>Analyzing...</span>
