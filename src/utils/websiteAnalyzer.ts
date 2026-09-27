@@ -103,10 +103,15 @@ export class WebsiteAnalyzer {
     // Run accessibility tests inside the page
     const accessibilityResults = await page.evaluate(async () => {
       // @ts-ignore
+      // WCAG 2.2 Level A/AA rules ship disabled by default in axe-core
+      // until the standard sees wider regulatory adoption, so they must be
+      // requested explicitly or this scan silently misses current-spec
+      // issues (e.g. target-size) even though WCAG 2.2 is the live
+      // standard. See https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md
       const results = await window.axe.run("body", {
         runOnly: {
           type: "tag",
-          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
         },
       });
 

@@ -54,7 +54,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Request Body
               </h4>
-              <pre className="code-block p-4 text-green-400">
+              <pre className="code-block p-4 text-green-400" tabIndex={0}>
                 {`{
   "foreground": "#000000",  // Hex color code for text
   "background": "#FFFFFF"   // Hex color code for background
@@ -66,7 +66,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Response
               </h4>
-              <pre className="code-block p-4 text-green-400">
+              <pre className="code-block p-4 text-green-400" tabIndex={0}>
                 {`{
   "contrast": 21,          // Contrast ratio
   "AA": {
@@ -87,7 +87,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Example Usage
               </h4>
-              <pre className="code-block p-4 text-blue-400">
+              <pre className="code-block p-4 text-blue-400" tabIndex={0}>
                 {`fetch('/api/v1/contrast', {
   method: 'POST',
   headers: {
@@ -121,7 +121,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Request Body
               </h4>
-              <pre className="code-block p-4 text-green-400">
+              <pre className="code-block p-4 text-green-400" tabIndex={0}>
                 {`{
   "color": "#1A365D",     // Base hex color code
   "type": "accessible"    // Optional: "accessible" | "analogous" | "all"
@@ -133,7 +133,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Response
               </h4>
-              <pre className="code-block p-4 text-green-400">
+              <pre className="code-block p-4 text-green-400" tabIndex={0}>
                 {`{
   "palettes": [
     {
@@ -170,7 +170,7 @@ export default function ApiDocs() {
               <h4 className="text-body-sm font-medium text-white mb-2">
                 Example Usage
               </h4>
-              <pre className="code-block p-4 text-blue-400">
+              <pre className="code-block p-4 text-blue-400" tabIndex={0}>
                 {`fetch('/api/v1/palettes', {
   method: 'POST',
   headers: {
@@ -200,7 +200,7 @@ export default function ApiDocs() {
                 <h4 className="text-body-sm font-medium text-white mb-2">
                   400 Bad Request
                 </h4>
-                <pre className="code-block p-4 text-red-400">
+                <pre className="code-block p-4 text-red-400" tabIndex={0}>
                   {`{
   "error": "Both foreground and background colors are required"
 }`}
@@ -211,7 +211,7 @@ export default function ApiDocs() {
                 <h4 className="text-body-sm font-medium text-white mb-2">
                   400 Invalid Format
                 </h4>
-                <pre className="code-block p-4 text-red-400">
+                <pre className="code-block p-4 text-red-400" tabIndex={0}>
                   {`{
   "error": "Colors must be in valid hex format (e.g., #FF0000)"
 }`}
@@ -222,7 +222,7 @@ export default function ApiDocs() {
                 <h4 className="text-body-sm font-medium text-white mb-2">
                   500 Internal Server Error
                 </h4>
-                <pre className="code-block p-4 text-red-400">
+                <pre className="code-block p-4 text-red-400" tabIndex={0}>
                   {`{
   "error": "Internal server error"
 }`}
@@ -256,7 +256,7 @@ export default function ApiDocs() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="glass-card rounded-lg p-6">
               <h3 className="text-h3 text-white mb-4">JavaScript</h3>
-              <pre className="code-block p-4 text-yellow-400">
+              <pre className="code-block p-4 text-yellow-400" tabIndex={0}>
                 {`// npm install accessibility-checker-api
 
 import { AccessibilityChecker } from 'accessibility-checker-api';
@@ -268,7 +268,7 @@ const result = await checker.checkContrast('#000000', '#FFFFFF');`}
 
             <div className="glass-card rounded-lg p-6">
               <h3 className="text-h3 text-white mb-4">Python</h3>
-              <pre className="code-block p-4 text-yellow-400">
+              <pre className="code-block p-4 text-yellow-400" tabIndex={0}>
                 {`# pip install accessibility-checker
 
 from accessibility_checker import ContrastChecker

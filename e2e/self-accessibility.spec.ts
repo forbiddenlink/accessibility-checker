@@ -26,7 +26,7 @@ const WCAG_TAGS = [
   "wcag22aa",
 ] as const;
 
-const ROUTES = ["/", "/privacy", "/terms", "/screenshot"];
+const ROUTES = ["/", "/privacy", "/terms", "/screenshot", "/api/docs"];
 
 interface AxeNode {
   target: string[];

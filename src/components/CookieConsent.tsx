@@ -44,7 +44,10 @@ export default function CookieConsent() {
       }}
       className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
     >
-      <div className="max-w-4xl mx-auto glass-card rounded-xl p-6 shadow-2xl shadow-black/50">
+      <div
+        className="max-w-4xl mx-auto glass-card rounded-xl p-6 shadow-2xl shadow-black/50"
+        style={{ backgroundColor: "rgba(10, 10, 10, 0.92)" }}
+      >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex-1">
             <h2 id="cookie-consent-title" className="font-semibold mb-1">
@@ -62,7 +65,7 @@ export default function CookieConsent() {
             <button
               type="button"
               onClick={declineCookies}
-              className="focus-ring flex-1 sm:flex-none px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-sm"
+              className="focus-ring flex-1 sm:flex-none px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-sm text-white"
             >
               Decline
             </button>

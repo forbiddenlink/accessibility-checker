@@ -134,7 +134,7 @@ export default function DynamicContentAnalyzer() {
       </div>
 
       <div className="space-y-6">
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <input
             type="url"
             value={url}

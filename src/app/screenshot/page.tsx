@@ -1,10 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { getContrastRatio, getLuminance, hexToRgb } from "@/utils/colorUtils";
+
+function CheckIcon({ pass }: { pass: boolean }) {
+  return (
+    <span
+      className={`w-5 h-5 mr-2 rounded-full flex items-center justify-center ${
+        pass ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+      }`}
+      aria-hidden="true"
+    >
+      {pass ? "✓" : "✕"}
+    </span>
+  );
+}
 
 export default function ScreenshotDemo() {
   const [foregroundColor, setForegroundColor] = useState("#1A365D");
   const [backgroundColor, setBackgroundColor] = useState("#EDF2F7");
+
+  const ratio = useMemo(() => {
+    const fg = hexToRgb(foregroundColor);
+    const bg = hexToRgb(backgroundColor);
+    if (!fg || !bg) return null;
+    return getContrastRatio(
+      getLuminance(fg.r, fg.g, fg.b),
+      getLuminance(bg.r, bg.g, bg.b),
+    );
+  }, [foregroundColor, backgroundColor]);
+
+  const checks = {
+    aaNormal: ratio !== null && ratio >= 4.5,
+    aaLarge: ratio !== null && ratio >= 3,
+    aaaNormal: ratio !== null && ratio >= 7,
+    aaaLarge: ratio !== null && ratio >= 4.5,
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -81,9 +112,15 @@ export default function ScreenshotDemo() {
       </div>
 
       <div className="glass-morphism p-8 rounded-2xl">
-        <h2 className="text-2xl font-semibold mb-8 bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
-          Results
-        </h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
+            Results
+          </h2>
+          <span className="text-sm text-muted-foreground">
+            Contrast ratio:{" "}
+            {ratio !== null ? `${ratio.toFixed(2)}:1` : "invalid color"}
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div className="bg-white/5 rounded-lg p-4">
@@ -95,15 +132,11 @@ export default function ScreenshotDemo() {
             </h3>
             <div className="space-y-2">
               <div className="flex items-center">
-                <span className="w-5 h-5 mr-2 rounded-full flex items-center justify-center bg-green-100 text-green-600">
-                  ✓
-                </span>
+                <CheckIcon pass={checks.aaNormal} />
                 <span>Normal text (4.5:1)</span>
               </div>
               <div className="flex items-center">
-                <span className="w-5 h-5 mr-2 rounded-full flex items-center justify-center bg-green-100 text-green-600">
-                  ✓
-                </span>
+                <CheckIcon pass={checks.aaLarge} />
                 <span>Large text (3:1)</span>
               </div>
             </div>
@@ -118,15 +151,11 @@ export default function ScreenshotDemo() {
             </h3>
             <div className="space-y-2">
               <div className="flex items-center">
-                <span className="w-5 h-5 mr-2 rounded-full flex items-center justify-center bg-green-100 text-green-600">
-                  ✓
-                </span>
+                <CheckIcon pass={checks.aaaNormal} />
                 <span>Normal text (7:1)</span>
               </div>
               <div className="flex items-center">
-                <span className="w-5 h-5 mr-2 rounded-full flex items-center justify-center bg-green-100 text-green-600">
-                  ✓
-                </span>
+                <CheckIcon pass={checks.aaaLarge} />
                 <span>Large text (4.5:1)</span>
               </div>
             </div>
