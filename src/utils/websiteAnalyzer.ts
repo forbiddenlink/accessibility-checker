@@ -1,6 +1,10 @@
+import axe from "axe-core";
 import type { Browser, BrowserContext, Page } from "playwright-core";
 import { launchBrowser, createGuardedContext } from "./browser";
 import { AccessibilityTestResult } from "./accessibilityTesting";
+import { AnalysisFailedError, type FailedPage } from "./analysisErrors";
+
+export type { FailedPage };
 
 export interface WebsiteAnalysisResult {
   url: string;
@@ -8,6 +12,24 @@ export interface WebsiteAnalysisResult {
   totalViolations: number;
   totalPasses: number;
   commonIssues: string[];
+  /** Pages that could not be analyzed. They are NOT counted as clean. */
+  failedPages: FailedPage[];
+}
+
+/** First line only, so Playwright call logs and stack frames never reach a client. */
+function failureReason(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const firstLine = (message.split("\n")[0] ?? "").replace(/^[\w.]+: /, "");
+  return firstLine.slice(0, 200) || "Unknown error";
+}
+
+export interface WebsiteAnalyzerOptions {
+  /**
+   * Builds the browsing context. Defaults to the SSRF-guarded context, which
+   * is the only thing the API route ever uses. Integration tests override it
+   * to scan a fixture served from localhost, which the guard rightly blocks.
+   */
+  createContext?: (browser: Browser) => Promise<BrowserContext>;
 }
 
 export interface PageAnalysisResult {
@@ -26,11 +48,16 @@ export class WebsiteAnalyzer {
   private context: BrowserContext | null = null;
   private visitedUrls: Set<string> = new Set();
   private maxPages: number = 10;
+  private createContext: (browser: Browser) => Promise<BrowserContext>;
+
+  constructor(options: WebsiteAnalyzerOptions = {}) {
+    this.createContext = options.createContext ?? createGuardedContext;
+  }
 
   async initialize() {
     if (!this.browser) {
       this.browser = await launchBrowser();
-      this.context = await createGuardedContext(this.browser);
+      this.context = await this.createContext(this.browser);
     }
   }
 
@@ -97,8 +124,16 @@ export class WebsiteAnalyzer {
     // Wait for network idle
     await page.waitForLoadState("networkidle");
 
-    // Inject axe-core
-    await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
+    // Inject axe-core as source text. `require.resolve` is rewritten to a
+    // numeric module id by the Next bundler, so a `path:` injection throws on
+    // every page in a built app. `axe.source` needs no file on disk, but it is
+    // only valid while axe-core stays external (see next.config.js).
+    await page.addScriptTag({ content: axe.source });
+    if (!(await page.evaluate(() => "axe" in window))) {
+      // Never run the scan on a page without axe: that is how a broken
+      // injection turned into a clean report.
+      throw new Error("axe-core failed to load in the page");
+    }
 
     // Run accessibility tests inside the page
     const accessibilityResults = await page.evaluate(async () => {
@@ -152,12 +187,16 @@ export class WebsiteAnalyzer {
     let totalViolations = 0;
     let totalPasses = 0;
     const issueFrequency: Map<string, number> = new Map();
+    const failedPages: FailedPage[] = [];
 
     try {
       while (urlsToVisit.length > 0 && pages.length < this.maxPages) {
         const currentUrl = urlsToVisit.shift()!;
 
         if (!this.visitedUrls.has(currentUrl)) {
+          // Mark visited up front so a page that fails is not re-queued from
+          // every other page that links to it.
+          this.visitedUrls.add(currentUrl);
           const page = await this.context!.newPage();
           const startTime = Date.now();
 
@@ -182,16 +221,29 @@ export class WebsiteAnalyzer {
               const count = issueFrequency.get(violation.id) || 0;
               issueFrequency.set(violation.id, count + 1);
             });
-
-            // Get new URLs to visit
-            const newUrls = await this.crawlPage(currentUrl, url);
-            urlsToVisit.push(...newUrls);
           } catch (error) {
             console.error(`Error analyzing ${currentUrl}:`, error);
+            failedPages.push({ url: currentUrl, reason: failureReason(error) });
+            continue;
           } finally {
             await page.close();
           }
+
+          // Link discovery is best-effort: a page that was analyzed stays
+          // analyzed even if collecting its links fails.
+          try {
+            urlsToVisit.push(...(await this.crawlPage(currentUrl, url)));
+          } catch (error) {
+            console.error(`Error collecting links from ${currentUrl}:`, error);
+          }
         }
+      }
+
+      if (pages.length === 0) {
+        throw new AnalysisFailedError(
+          "Could not analyze any page on this site.",
+          failedPages,
+        );
       }
 
       // Get most common issues
@@ -206,6 +258,7 @@ export class WebsiteAnalyzer {
         totalViolations,
         totalPasses,
         commonIssues,
+        failedPages,
       };
     } finally {
       await this.cleanup();

@@ -7,7 +7,15 @@ const nextConfig = {
   poweredByHeader: false,
   // @sparticuz/chromium resolves its binary via paths relative to its own
   // package, so it must not be bundled. playwright-core rides along with it.
-  serverExternalPackages: ["playwright-core", "@sparticuz/chromium"],
+  serverExternalPackages: [
+    "playwright-core",
+    "@sparticuz/chromium",
+    "axe-core",
+  ],
+  // axe-core must stay external too. Its `axe.source` (the text the website
+  // analyzer injects into pages) is built with `axeFunction.toString()`, so
+  // once the bundler rewrites that function the "source" is no longer
+  // self-contained and `window.axe` never appears in the scanned page.
   // Externalised packages are traced from node_modules rather than bundled,
   // and Next's tracer only follows static requires. playwright-core reads
   // browsers.json (and other data files) by runtime path, and @sparticuz ships

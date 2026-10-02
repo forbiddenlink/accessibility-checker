@@ -142,6 +142,42 @@ describe("validateUrl", () => {
       expect(result.valid).toBe(false);
     });
 
+    // Every spelling of an embedded IPv4 address must hit the v4 blocklist.
+    // The hex forms are what `new URL()` produces for dotted input.
+    it.each([
+      ["http://[::7f00:1]", "IPv4-compatible loopback"],
+      ["http://[::127.0.0.1]", "IPv4-compatible loopback, dotted"],
+      ["http://[::a9fe:a9fe]", "IPv4-compatible metadata"],
+      ["http://[::ffff:a9fe:a9fe]", "IPv4-mapped metadata, hex"],
+      ["http://[0:0:0:0:0:ffff:a9fe:a9fe]", "IPv4-mapped metadata, expanded"],
+      ["http://[::ffff:0:a9fe:a9fe]", "IPv4-translated (SIIT) metadata"],
+      ["http://[64:ff9b::a9fe:a9fe]", "NAT64 metadata"],
+      ["http://[64:ff9b::169.254.169.254]", "NAT64 metadata, dotted"],
+      ["http://[64:ff9b::a00:1]", "NAT64 10.0.0.1"],
+      ["http://[64:ff9b:1::1]", "local-use NAT64 range"],
+      ["http://[2002:a9fe:a9fe::]", "6to4 metadata"],
+      ["http://[2002:7f00:1::1]", "6to4 loopback"],
+      ["http://[2002:c0a8:101::]", "6to4 192.168.1.1"],
+    ])("blocks %s (%s)", async (url) => {
+      const result = await validateUrl(url);
+      expect(result.valid).toBe(false);
+    });
+
+    it("reports localhost wording for embedded loopback", async () => {
+      expect((await validateUrl("http://[::7f00:1]")).error).toBe(
+        "Access to localhost is denied.",
+      );
+    });
+
+    it.each([
+      "http://[::ffff:808:808]", // mapped 8.8.8.8
+      "http://[64:ff9b::808:808]", // NAT64 8.8.8.8
+      "http://[2002:808:808::]", // 6to4 8.8.8.8
+      "http://[2606:4700:4700::1111]", // plain global IPv6
+    ])("still allows %s (embedded public address)", async (url) => {
+      expect((await validateUrl(url)).valid).toBe(true);
+    });
+
     // The E2E spec asserts on these exact strings, and "localhost" would be
     // misleading wording for a private/link-local address.
     it("reports private-network wording for private literal IPs", async () => {

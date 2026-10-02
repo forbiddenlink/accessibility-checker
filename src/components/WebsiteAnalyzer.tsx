@@ -54,7 +54,9 @@ export default function WebsiteAnalyzer() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error || "Failed to analyze website");
+        const reason = data?.failedPages?.[0]?.reason;
+        const message = data?.error || "Failed to analyze website";
+        throw new Error(reason ? `${message} (${reason})` : message);
       }
 
       setResults(data.results);
@@ -111,6 +113,25 @@ export default function WebsiteAnalyzer() {
 
       {results && (
         <div className="space-y-8">
+          {results.failedPages?.length > 0 && (
+            <div role="alert" className="p-4 badge-fail rounded-lg">
+              <p className="font-medium">
+                {results.failedPages.length}{" "}
+                {results.failedPages.length === 1 ? "page" : "pages"} could not
+                be analyzed and{" "}
+                {results.failedPages.length === 1 ? "is" : "are"} not counted as
+                clean:
+              </p>
+              <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                {results.failedPages.map((failed) => (
+                  <li key={failed.url}>
+                    {failed.url}: {failed.reason}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white/5 p-4 rounded-lg">
               <h3 className="text-lg font-medium mb-2 text-white">Summary</h3>

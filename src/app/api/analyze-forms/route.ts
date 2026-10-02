@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { launchBrowser, createGuardedContext } from "@/utils/browser";
 import { FormAnalyzer } from "@/utils/formAnalyzer";
 import { validateUrl } from "@/utils/security";
+import { readUrlBody } from "@/utils/requestBody";
 
 export const runtime = "nodejs";
 
@@ -10,7 +11,9 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
+    const body = await readUrlBody(request);
+    if (!body.ok) return body.response;
+    const { url } = body;
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });

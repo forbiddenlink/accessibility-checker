@@ -510,14 +510,14 @@ describe("/api/analyze-keyboard", () => {
   });
 
   describe("malformed JSON - 500 errors", () => {
-    it("returns 500 for malformed JSON body", async () => {
+    it("returns 400 for malformed JSON body", async () => {
       const request = createMalformedRequest();
 
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBe("Failed to analyze keyboard navigation");
+      expect(response.status).toBe(400);
+      expect(data.error).toBe("Request body must be a JSON object.");
     });
   });
 
