@@ -29,6 +29,12 @@ export class KeyboardNavigationAnalyzer {
   }
 
   async analyze(): Promise<KeyboardNavigationAnalysis> {
+    // Put the page in keyboard modality first. Chromium only matches
+    // :focus-visible on a scripted focus() when the last input was the
+    // keyboard, so without a real key press the focus ring a user sees on Tab
+    // would be invisible to the checks below.
+    await this.page.keyboard.press("Tab");
+
     return await this.page.evaluate(() => {
       const focusableElements: FocusableElement[] = [];
       const issues: NavigationIssue[] = [];
@@ -46,12 +52,61 @@ export class KeyboardNavigationAnalyzer {
         return !!(ariaLabel || ariaLabelledBy || title || text);
       };
 
-      const hasVisibleFocus = (el: HTMLElement): boolean => {
+      // Transitions would leave computed styles at their start values right
+      // after focus(), hiding a ring that fades in. Freeze them while measuring.
+      const freeze = document.createElement("style");
+      freeze.textContent =
+        "*,*::before,*::after{transition:none!important;animation:none!important}";
+      document.head.appendChild(freeze);
+
+      const snapshot = (el: HTMLElement) => {
         const style = window.getComputedStyle(el);
-        const hasOutline =
-          style.outlineStyle !== "none" && style.outlineWidth !== "0px";
-        const hasBoxShadow = style.boxShadow !== "none";
-        return hasOutline || hasBoxShadow;
+        const outlineVisible =
+          style.outlineStyle !== "none" &&
+          parseFloat(style.outlineWidth) > 0 &&
+          style.outlineColor !== "transparent" &&
+          !/rgba\(.*,\s*0\)$/.test(style.outlineColor);
+        return {
+          outline: outlineVisible
+            ? `${style.outlineStyle}|${style.outlineWidth}|${style.outlineColor}|${style.outlineOffset}`
+            : "none",
+          boxShadow: style.boxShadow,
+          border: `${style.borderTopWidth}|${style.borderRightWidth}|${style.borderBottomWidth}|${style.borderLeftWidth}|${style.borderTopColor}|${style.borderRightColor}|${style.borderBottomColor}|${style.borderLeftColor}`,
+          background: style.backgroundColor,
+          textDecoration: style.textDecorationLine,
+          color: style.color,
+        };
+      };
+
+      /**
+       * Focus the element and compare its styles against the unfocused state.
+       * A focus indicator is something that CHANGES when focus arrives: an
+       * outline, a box-shadow, a border, a background, a color or an
+       * underline. Reading an unfocused element (the old behavior) cannot see
+       * a :focus-visible rule, and treats a decorative shadow that is always
+       * there as an indicator. Returns null when the element will not take
+       * focus (disabled, inert), since that is not a 2.4.7 failure.
+       */
+      const measureFocus = (el: HTMLElement): boolean | null => {
+        // The Tab press in analyze() leaves the first control focused; blur it
+        // so "before" really is the unfocused state.
+        (document.activeElement as HTMLElement | null)?.blur();
+        const before = snapshot(el);
+        el.focus({ preventScroll: true, focusVisible: true } as FocusOptions);
+        if (document.activeElement !== el) return null;
+        const after = snapshot(el);
+        el.blur();
+
+        if (after.outline !== "none" && after.outline !== before.outline) {
+          return true;
+        }
+        return (
+          after.boxShadow !== before.boxShadow ||
+          after.border !== before.border ||
+          after.background !== before.background ||
+          after.textDecoration !== before.textDecoration ||
+          after.color !== before.color
+        );
       };
 
       const truncate = (text: string): string => {
@@ -100,17 +155,22 @@ export class KeyboardNavigationAnalyzer {
       });
 
       focusable.forEach((element) => {
+        const visible = isElementVisible(element);
+        const focusResult = visible ? measureFocus(element) : false;
+        // Visible but unfocusable (disabled): not in the tab order at all.
+        if (focusResult === null) return;
+
         const elementInfo: FocusableElement = {
           tagName: element.tagName.toLowerCase(),
           tabIndex: element.tabIndex,
-          hasVisibleFocus: hasVisibleFocus(element),
+          hasVisibleFocus: focusResult,
           ariaLabel: element.getAttribute("aria-label") || undefined,
           role: element.getAttribute("role") || undefined,
           text: element.textContent?.trim() || undefined,
         };
         focusableElements.push(elementInfo);
 
-        if (!isElementVisible(element)) {
+        if (!visible) {
           return;
         }
 
@@ -133,7 +193,7 @@ export class KeyboardNavigationAnalyzer {
             message: "Element lacks visible focus indicator",
             element: truncate(element.outerHTML),
             suggestion:
-              "Add focus-visible styles with a clear outline or box shadow.",
+              "Add :focus-visible styles with a clear outline or box shadow. Removing the default outline needs a replacement.",
           });
         }
 
@@ -180,6 +240,7 @@ export class KeyboardNavigationAnalyzer {
         });
       }
 
+      freeze.remove();
       return { focusableElements, issues };
     });
   }

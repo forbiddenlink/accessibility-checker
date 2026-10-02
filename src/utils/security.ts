@@ -49,23 +49,99 @@ function isBlockedV4(address: string): boolean {
   });
 }
 
-function isBlockedV6(address: string): boolean {
-  const addr = address.toLowerCase().split("%")[0]; // strip zone index
+/**
+ * Expand an IPv6 literal into its eight 16-bit groups. Handles `::`
+ * compression and a dotted-quad tail (`::ffff:1.2.3.4`). Returns null for
+ * anything that is not a well-formed address, so callers fail closed.
+ */
+function parseV6(address: string): number[] | null {
+  let addr = address;
 
-  // IPv4-mapped addresses tunnel straight past a v6-only check, so re-test
-  // the embedded v4 address. Both spellings must be handled: the dotted form
-  // (::ffff:169.254.169.254) and the hex form it normalizes to
-  // (::ffff:a9fe:a9fe) — `new URL()` rewrites the former into the latter.
-  const dotted = addr.match(/^::(?:ffff:)?(\d+\.\d+\.\d+\.\d+)$/);
-  if (dotted?.[1]) return isBlockedV4(dotted[1]);
-
-  const hex = addr.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
-  if (hex?.[1] && hex[2]) {
-    const high = parseInt(hex[1], 16);
-    const low = parseInt(hex[2], 16);
-    const v4 = [high >> 8, high & 0xff, low >> 8, low & 0xff].join(".");
-    return isBlockedV4(v4);
+  const tail = addr.match(/^(.*:)(\d+\.\d+\.\d+\.\d+)$/);
+  if (tail?.[1] && tail[2]) {
+    if (net.isIP(tail[2]) !== 4) return null;
+    const v4 = v4ToInt(tail[2]);
+    addr = `${tail[1]}${(v4 >>> 16).toString(16)}:${(v4 & 0xffff).toString(16)}`;
   }
+
+  const halves = addr.split("::");
+  if (halves.length > 2) return null;
+
+  const toGroups = (part: string): number[] | null => {
+    if (part === "") return [];
+    const groups = part.split(":").map((g) => parseInt(g, 16));
+    return groups.every((g) => Number.isInteger(g) && g >= 0 && g <= 0xffff)
+      ? groups
+      : null;
+  };
+
+  const head = toGroups(halves[0] ?? "");
+  const rest = halves.length === 2 ? toGroups(halves[1] ?? "") : [];
+  if (!head || !rest) return null;
+
+  if (halves.length === 1) return head.length === 8 ? head : null;
+  const fill = 8 - head.length - rest.length;
+  if (fill < 1) return null;
+  return [...head, ...new Array<number>(fill).fill(0), ...rest];
+}
+
+const groupsToV4 = (high: number, low: number): string =>
+  [high >> 8, high & 0xff, low >> 8, low & 0xff].join(".");
+
+/**
+ * The IPv4 address an IPv6 address tunnels to, or null when it is not one of
+ * the embedding forms. Each of these reaches the embedded v4 host, so the v4
+ * blocklist has to be applied to it:
+ *   ::a.b.c.d          IPv4-compatible (deprecated, still routable by some stacks)
+ *   ::ffff:a.b.c.d     IPv4-mapped
+ *   ::ffff:0:a.b.c.d   IPv4-translated (SIIT)
+ *   64:ff9b::a.b.c.d   NAT64 well-known prefix
+ *   2002:AABB:CCDD::   6to4, v4 sits in bits 16-47
+ * `new URL()` rewrites dotted tails into hex groups, so this works on groups,
+ * never on the dotted spelling.
+ */
+function embeddedV4(groups: number[]): string | null {
+  const [g0, g1, g2, g3, g4, g5, g6, g7] = groups as [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+  const zeros = (n: number) => groups.slice(0, n).every((g) => g === 0);
+
+  if (zeros(5) && g5 === 0xffff) return groupsToV4(g6, g7); // mapped
+  if (zeros(6)) return groupsToV4(g6, g7); // compatible
+  if (zeros(4) && g4 === 0xffff && g5 === 0) return groupsToV4(g6, g7); // SIIT
+  if (
+    g0 === 0x64 &&
+    g1 === 0xff9b &&
+    g2 === 0 &&
+    g3 === 0 &&
+    g4 === 0 &&
+    g5 === 0
+  ) {
+    return groupsToV4(g6, g7); // NAT64
+  }
+  if (g0 === 0x2002) return groupsToV4(g1, g2); // 6to4
+  return null;
+}
+
+function isBlockedV6(address: string): boolean {
+  const addr = address.toLowerCase().split("%")[0] ?? ""; // strip zone index
+  const groups = parseV6(addr);
+  if (!groups) return true; // malformed — fail closed
+
+  const v4 = embeddedV4(groups);
+  if (v4) return isBlockedV4(v4);
+
+  // 64:ff9b:1::/48 is the local-use NAT64 prefix (RFC 8215): the embedded v4
+  // sits at an operator-chosen offset, so deny the whole range.
+  if (groups[0] === 0x64 && groups[1] === 0xff9b && groups[2] === 1)
+    return true;
 
   if (addr === "::" || addr === "::1") return true; // unspecified, loopback
   if (/^f[cd]/.test(addr)) return true; // fc00::/7 unique-local
@@ -96,8 +172,9 @@ function isLoopbackLiteral(address: string): boolean {
   }
   const addr = address.toLowerCase();
   if (addr === "::1" || addr === "::") return true;
-  const mapped = addr.match(/^::(?:ffff:)?(\d+\.\d+\.\d+\.\d+)$/);
-  return mapped?.[1] ? isLoopbackLiteral(mapped[1]) : false;
+  const groups = parseV6(addr.split("%")[0] ?? "");
+  const embedded = groups ? embeddedV4(groups) : null;
+  return embedded ? isLoopbackLiteral(embedded) : false;
 }
 
 export interface UrlValidation {
