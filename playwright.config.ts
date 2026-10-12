@@ -22,7 +22,14 @@ export default defineConfig({
     },
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      // CI's software-rendered WebKit can't keep the blur/transition animations
+      // stable, so the click actionability check times out (core-journey flaked on
+      // main too). Reduced motion is a real user setting the app honours
+      // (globals.css), so this tests a supported path, not a workaround.
+      use: {
+        ...devices["Desktop Safari"],
+        contextOptions: { reducedMotion: "reduce" },
+      },
     },
   ],
   webServer: {
