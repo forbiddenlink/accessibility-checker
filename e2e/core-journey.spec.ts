@@ -29,6 +29,9 @@ test("Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass", async ({
 
   // 5. Verify Suggestions Appear for failing colors
   await expect(page.getByText("Suggestions")).toBeVisible();
+  // Let the palette panel above the suggestions finish loading, so the Apply
+  // button is not mid-shift when clicked (WebKit on CI flaked on that race).
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
 
   // 6. Click Magic Fix (Apply First Suggestion)
   await page.getByRole("button", { name: "Apply" }).first().click();
