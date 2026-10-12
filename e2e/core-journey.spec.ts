@@ -24,11 +24,19 @@ test("Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass", async ({
   await fgInput.fill("#333333");
   await bgInput.fill("#000000");
 
-  // 4. Click Check Contrast
+  // 4. Click Check Contrast. The palette panel above the suggestions fetches
+  // /api/v1/palettes and expands when it lands, pushing the Apply button down.
+  // Clicking before that settles races the layout shift (WebKit flaked on it).
+  const palettesLoaded = page.waitForResponse(
+    (res) =>
+      res.url().endsWith("/api/v1/palettes") &&
+      res.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Execute Check" }).click();
 
   // 5. Verify Suggestions Appear for failing colors
   await expect(page.getByText("Suggestions")).toBeVisible();
+  await palettesLoaded;
 
   // 6. Click Magic Fix (Apply First Suggestion)
   await page.getByRole("button", { name: "Apply" }).first().click();
