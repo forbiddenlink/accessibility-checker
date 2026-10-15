@@ -58,6 +58,9 @@ const publicApiLimit = redisConfigured
       limiter: Ratelimit.slidingWindow(20, "10 s"),
       analytics: true,
       prefix: "rl:api",
+      // Default is 5s and a timeout resolves { success: true, reason: "timeout" }
+      // instead of throwing, so keep it short (see analyzer fail-closed below).
+      timeout: 1500,
     })
   : null;
 
@@ -69,6 +72,7 @@ const analyzerLimit = redisConfigured
       limiter: Ratelimit.slidingWindow(5, "60 s"),
       analytics: true,
       prefix: "rl:analyze",
+      timeout: 1500,
     })
   : null;
 
@@ -88,7 +92,17 @@ export async function middleware(request: NextRequest) {
 
   const limiter = isAnalyzer ? analyzerLimit : publicApiLimit;
   if (limiter) {
-    const { success, limit, reset } = await limiter.limit(clientIp(request));
+    const { success, limit, reset, reason } = await limiter.limit(
+      clientIp(request),
+    );
+    if (isAnalyzer && reason === "timeout") {
+      // A stalled Redis resolves success:true. Each analyzer call launches a
+      // browser, so fail closed instead of allowing everything.
+      return NextResponse.json(
+        { error: "Service temporarily unavailable" },
+        { status: 503, headers: { "Retry-After": "5" } },
+      );
+    }
     if (!success) {
       return NextResponse.json(
         { error: "Too Many Requests" },
