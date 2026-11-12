@@ -39,9 +39,9 @@ export default function ScreenshotDemo() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div className="glass-morphism p-8 rounded-2xl">
+      <div className="glass-morphism p-8 rounded-xl">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-semibold text-foreground">
             Check Color Contrast
           </h2>
           <div className="flex items-center space-x-2">
@@ -101,19 +101,16 @@ export default function ScreenshotDemo() {
 
         <div className="mt-8">
           <button
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-6 rounded-xl font-medium 
-                     hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                     focus:ring-offset-2 transform transition-all duration-200 hover:scale-[1.02] 
-                     active:scale-[0.98] shadow-lg hover:shadow-xl"
+            className="btn-accent w-full py-3 px-6"
           >
             Check Contrast
           </button>
         </div>
       </div>
 
-      <div className="glass-morphism p-8 rounded-2xl">
+      <div className="glass-morphism p-8 rounded-xl">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-blue-200 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-semibold text-foreground">
             Results
           </h2>
           <span className="text-sm text-muted-foreground">
@@ -182,7 +179,7 @@ export default function ScreenshotDemo() {
           <button className="px-4 py-2 text-blue-400 hover:text-blue-300 font-medium">
             Save Palette
           </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+          <button className="px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 font-medium">
             Export Results
           </button>
         </div>

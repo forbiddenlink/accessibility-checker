@@ -36,7 +36,7 @@ function ResultItem({ label, passed }: { label: string; passed: boolean }) {
 export default function ColorResult({ results, mode }: ColorResultProps) {
   // Common result box styles
   const resultBoxClass =
-    "rounded-lg p-6 border border-white/8 bg-white/5 backdrop-blur-md";
+    "rounded-lg p-6 border border-white/8 bg-white/5";
 
   if (mode === "APCA" && results.apca !== null) {
     const lc = Math.round(results.apca);

@@ -143,7 +143,7 @@ export default function ExportResults({
 
   return (
     <div className="glass-morphism p-6 rounded-xl">
-      <h2 className="text-2xl font-semibold mb-6 bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+      <h2 className="text-2xl font-semibold mb-6 text-foreground">
         Export Results
       </h2>
 

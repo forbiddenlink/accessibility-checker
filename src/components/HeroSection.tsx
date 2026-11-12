@@ -1,41 +1,83 @@
-// Server Component - no "use client" directive
-// This component contains only static content that can be server-rendered
+// Server Component: static content, no client JS.
+// The object is a printed calibration card. The signature move is the step
+// wedge: twelve grey steps, each printed with its measured contrast against
+// the page ground, with a pointer that lands on the 4.5:1 step.
+
+import { buildWedge } from "@/utils/stepWedge";
+
+const MARKS: Record<number, string> = {
+  3: "AA large text, UI",
+  4.5: "AA body text",
+  7: "AAA body text",
+};
 
 export default function HeroSection() {
-  return (
-    <section className="relative py-16 text-center space-y-6">
-      <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-caption text-muted-foreground backdrop-blur-xl">
-        <span className="flex h-2 w-2 rounded-full bg-success mr-2"></span>
-        WCAG 2.2 &amp; APCA (informational)
-      </div>
-      <h1 className="text-display md:text-[4.5rem] tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent leading-[1.1]">
-        Precision Contrast
-        <br />
-        Control.
-      </h1>
-      <p className="text-h3 text-muted-foreground max-w-2xl mx-auto font-normal leading-relaxed">
-        Advanced color accessibility tools for designers and developers. Check
-        contrast ratios, analyze websites, and build inclusive experiences.
-      </p>
+  const steps = buildWedge();
 
-      {/* Signature element: the AA/AAA pass thresholds this whole product is
-          built around, shown as the same badges the live checker below
-          renders results in - so the hero states the product's actual
-          mechanic instead of a generic value-prop line. */}
-      <div
-        className="flex flex-wrap items-center justify-center gap-3 pt-2"
-        aria-hidden="true"
+  return (
+    <section aria-labelledby="hero-heading">
+      <p className="eyebrow mb-6">WCAG 2.1 contrast, APCA lightness contrast</p>
+      <h1
+        id="hero-heading"
+        className="font-display text-[clamp(3.5rem,11vw,8.5rem)] leading-[0.94]"
       >
-        <span className="badge-info inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-caption">
-          AA <span className="font-mono">4.5:1</span>
-        </span>
-        <span className="inline-flex items-center gap-2 rounded-md border border-purple-500/30 bg-purple-500/15 px-3 py-1.5 text-caption text-purple-400">
-          AAA <span className="font-mono">7:1</span>
-        </span>
-        <span className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-caption text-muted-foreground">
-          APCA <span className="font-mono">Lc 75</span> (info, not WCAG)
-        </span>
+        Measure the gap between text and ground.
+      </h1>
+
+      <div className="mt-10 grid gap-8 md:grid-cols-[minmax(0,34rem)_auto] md:items-end md:justify-between">
+        <p className="text-lg leading-relaxed">
+          Precision Contrast checks any foreground and background pair against
+          WCAG 2.1 and APCA, then audits a live page, an image or a form. Color
+          checks run in your browser.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <a href="#checker" className="btn-accent">
+            Check a pair
+          </a>
+          <a href="#analyze" className="btn-line">
+            Analyze a website
+          </a>
+        </div>
       </div>
+
+      <figure className="wedge" aria-labelledby="wedge-caption">
+        <ol
+          className="wedge-steps"
+          aria-label="Step wedge: twelve grey steps and their contrast ratio against the page background"
+        >
+          {steps.map((step, i) => (
+            <li
+              key={step.ratio}
+              className="wedge-step"
+              style={
+                {
+                  "--l": step.light,
+                  "--d": step.dark,
+                  "--i": i,
+                } as React.CSSProperties
+              }
+            >
+              <span className="wedge-chip" aria-hidden="true" />
+              <span className="wedge-val">
+                {step.ratio}
+                <span className="text-[rgb(var(--muted-foreground))]">:1</span>
+              </span>
+              <span
+                className="wedge-mark"
+                data-pass={step.ratio >= 4.5 ? "" : undefined}
+              >
+                {MARKS[step.ratio] ?? ""}
+              </span>
+              {step.ratio === 4.5 && (
+                <span className="wedge-pointer" aria-hidden="true" />
+              )}
+            </li>
+          ))}
+        </ol>
+        <figcaption id="wedge-caption" className="wedge-caption">
+          Body text passes from here.
+        </figcaption>
+      </figure>
     </section>
   );
 }

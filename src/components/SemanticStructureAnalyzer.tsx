@@ -296,14 +296,13 @@ export default function SemanticStructureAnalyzer() {
       {/* Input Section */}
       <div className="space-y-4">
         <div className="relative group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/50 to-purple-500/50 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <textarea
             id="html-input"
             aria-label="HTML code to analyze"
             value={htmlInput}
             onChange={(e) => setHtmlInput(e.target.value)}
             placeholder="<!-- Paste your HTML here to analyze structure -->"
-            className="relative w-full h-48 p-4 rounded-lg bg-black/50 border border-white/10 text-white font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-accent placeholder-white/20"
+            className="relative w-full h-48 p-4 rounded-lg bg-black/50 border border-white/10 text-white font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-accent placeholder-muted-foreground"
             spellCheck="false"
           />
         </div>

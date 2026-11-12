@@ -80,7 +80,7 @@ export default function AccessibilityLearningHub() {
   });
 
   return (
-    <div className="glass-morphism p-8 rounded-2xl">
+    <div className="glass-morphism p-8 rounded-xl">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-semibold text-white">
           Accessibility Learning Hub
@@ -90,12 +90,11 @@ export default function AccessibilityLearningHub() {
       {/* Search and Filters */}
       <div className="mb-8 space-y-4">
         <div className="relative group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <input
             type="text"
             aria-label="Search accessibility resources"
             placeholder="Search resources..."
-            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-accent transition-all backdrop-blur-xl"
+            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -163,19 +162,19 @@ export default function AccessibilityLearningHub() {
       </div>
 
       {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="border-t border-[rgb(var(--rule))] divide-y divide-[rgb(var(--rule)/0.28)]">
         {filteredResources.map((resource) => (
           <article
             key={resource.id}
-            className="p-6 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all hover:border-white/10 hover:shadow-2xl group"
+            className="py-8 md:grid md:grid-cols-[minmax(0,20rem)_1fr] md:gap-x-12"
           >
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white group-hover:text-indigo-400 transition-colors">
+            <div className="flex items-start justify-between gap-4 mb-4 md:row-span-2 md:flex-col md:justify-start">
+              <h3 className="text-xl font-semibold text-white ">
                 {resource.title}
               </h3>
               <span
                 className={`
-                px-3 py-1 rounded-full text-xs font-medium border
+                px-2 py-0.5 text-xs font-medium border
                 ${
                   resource.difficulty === "beginner"
                     ? "badge-pass"
@@ -189,11 +188,11 @@ export default function AccessibilityLearningHub() {
               </span>
             </div>
 
-            <p className="text-muted-foreground mb-6 whitespace-pre-line text-sm leading-relaxed">
+            <p className="text-muted-foreground mb-6 whitespace-pre-line text-sm leading-relaxed md:col-start-2">
               {resource.content}
             </p>
 
-            <div className="flex flex-wrap gap-2 mt-auto">
+            <div className="flex flex-wrap gap-2 mt-auto md:col-start-2">
               {resource.tags.map((tag) => (
                 <span
                   key={tag}

@@ -77,7 +77,6 @@ export default function WebsiteAnalyzer() {
 
       <div className="flex flex-wrap gap-4">
         <div className="relative flex-1 group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition duration-300 blur" />
           <input
             type="url"
             id="website-url"
@@ -87,7 +86,7 @@ export default function WebsiteAnalyzer() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com"
-            className="focus-ring relative w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 transition-all"
+            className="focus-ring relative w-full px-4 py-3 rounded-lg bg-black/50 border border-white/10 text-white placeholder-muted-foreground transition-all"
           />
         </div>
         <button

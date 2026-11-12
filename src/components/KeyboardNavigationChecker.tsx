@@ -54,13 +54,12 @@ export default function KeyboardNavigationChecker() {
 
       <div className="flex gap-4">
         <div className="relative flex-1 group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition duration-300 blur" />
           <input
             type="url"
             id="keyboard-nav-url"
             aria-label="Website URL for keyboard navigation check"
             placeholder="Enter website URL to check"
-            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent transition-all backdrop-blur-xl"
+            className="relative w-full p-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-all"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
