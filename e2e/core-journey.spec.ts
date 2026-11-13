@@ -8,7 +8,7 @@ test("Core Journey: Check Contrast -> Fail -> Magic Fix -> Pass", async ({
 
   // 2. Check title
   await expect(
-    page.getByRole("heading", { name: /Precision Contrast/i }),
+    page.getByRole("heading", { name: /Measure the gap/i }),
   ).toBeVisible();
 
   // 3. Enter Failing Colors (Grey on Black)

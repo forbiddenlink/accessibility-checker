@@ -73,19 +73,19 @@ const SavedColorPalettes = forwardRef<
     return (
       <div className="glass-morphism p-6 rounded-xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-semibold text-foreground">
             Saved Color Combinations
           </h2>
           <button
             onClick={() => setShowSaveDialog(true)}
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-blue-500/20"
+            className="bg-white text-black py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors shadow-lg"
           >
             Save Current
           </button>
         </div>
 
         {showSaveDialog && (
-          <div className="mb-6 bg-white/10 p-4 rounded-lg border border-white/10 backdrop-blur-md">
+          <div className="mb-6 bg-white/10 p-4 rounded-lg border border-white/10">
             <h3 className="text-lg font-medium mb-3 text-white">
               Save Current Palette
             </h3>
@@ -101,7 +101,7 @@ const SavedColorPalettes = forwardRef<
                 type="text"
                 value={paletteName}
                 onChange={(e) => setPaletteName(e.target.value)}
-                className="w-full rounded-md bg-black/50 border-white/10 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white placeholder-gray-500"
+                className="w-full rounded-md bg-black/50 border-white/10 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white placeholder-muted-foreground"
                 placeholder="My Color Combination"
               />
             </div>
@@ -114,7 +114,7 @@ const SavedColorPalettes = forwardRef<
               </button>
               <button
                 onClick={savePalette}
-                className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="py-2 px-4 bg-white text-black rounded-md hover:bg-gray-200 transition-colors"
               >
                 Save
               </button>

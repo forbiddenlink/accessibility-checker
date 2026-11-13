@@ -14,6 +14,13 @@ export default function CookieConsent() {
     }
   }, []);
 
+  // The footer's "Cookie preferences" button reopens the banner.
+  useEffect(() => {
+    const open = () => setShowBanner(true);
+    window.addEventListener("open-cookie-preferences", open);
+    return () => window.removeEventListener("open-cookie-preferences", open);
+  }, []);
+
   // The banner renders last in the DOM and is fixed over the foot of the page,
   // so without moving focus a keyboard user must tab the whole page to reach
   // it, while it covers whatever they focus down there.
@@ -45,8 +52,7 @@ export default function CookieConsent() {
       className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
     >
       <div
-        className="max-w-4xl mx-auto glass-card rounded-xl p-6 shadow-2xl shadow-black/50"
-        style={{ backgroundColor: "rgba(10, 10, 10, 0.92)" }}
+        className="max-w-4xl mx-auto glass-card rounded-xl p-6 border-[rgb(var(--rule))]"
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex-1">

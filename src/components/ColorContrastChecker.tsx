@@ -118,14 +118,23 @@ export default function ColorContrastChecker() {
   return (
     <>
       {/* Main Control Deck */}
-      <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div id="checker" className="scroll-mt-20">
+        <div className="sec-head">
+          <span className="eyebrow">01</span>
+          <h2>Check a pair</h2>
+        </div>
+      </div>
+      <section
+        aria-label="Contrast checker"
+        className="grid grid-cols-1 md:grid-cols-12 gap-6 -mt-16 lg:-mt-20"
+      >
         {/* Color Pickers - 4 cols */}
         <div className="col-span-1 md:col-span-4 glass-card rounded-xl p-6 space-y-6 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
           <div className="relative z-10">
-            <h2 className="text-caption text-muted-foreground uppercase tracking-widest mb-6">
+            <h3 className="eyebrow mb-6">
               Input Parameters
-            </h2>
+            </h3>
             <div className="space-y-6">
               <div className="space-y-2">
                 <ColorPicker
@@ -147,7 +156,7 @@ export default function ColorContrastChecker() {
               <button
                 onClick={checkContrast}
                 disabled={loading.colorCheck}
-                className="w-full bg-white text-black hover:bg-white/90 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 flex items-center justify-center space-x-2"
+                className="btn-accent w-full py-4 text-lg font-bold space-x-2 disabled:opacity-60"
               >
                 {loading.colorCheck ? (
                   <span>Analyzing...</span>
@@ -176,11 +185,11 @@ export default function ColorContrastChecker() {
 
         {/* Main Result Display - 8 cols */}
         <div className="col-span-1 md:col-span-8 glass-card rounded-xl p-8 flex flex-col justify-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4">
+          <div className="self-end mb-4 md:mb-0 md:absolute md:top-0 md:right-0 md:p-4">
             <div
               role="group"
               aria-label="Scoring method"
-              className="flex bg-black/40 rounded-lg p-1"
+              className="flex border border-[rgb(var(--rule)/0.4)] p-1"
             >
               {["WCAG", "APCA"].map((m) => (
                 <button
@@ -244,11 +253,11 @@ export default function ColorContrastChecker() {
         {/* Preview Card - 6 cols */}
         {results && (
           <div className="col-span-1 md:col-span-6 glass-card rounded-xl p-6 min-h-[300px] flex flex-col">
-            <h3 className="text-caption text-muted-foreground uppercase tracking-widest mb-4">
+            <h3 className="eyebrow mb-4">
               Live Preview
             </h3>
             <div
-              className="flex-1 rounded-2xl p-8 transition-colors duration-500 flex flex-col justify-center relative overflow-hidden shadow-2xl"
+              className="flex-1 rounded-xl p-8 transition-colors duration-500 flex flex-col justify-center relative overflow-hidden shadow-2xl"
               style={{ backgroundColor, color: foregroundColor }}
             >
               <div className="relative z-10">
@@ -274,7 +283,7 @@ export default function ColorContrastChecker() {
         {/* Color blindness simulation - 6 cols */}
         {results && (
           <div className="col-span-1 md:col-span-6 glass-card rounded-xl p-6">
-            <h3 className="text-caption text-muted-foreground uppercase tracking-widest mb-4">
+            <h3 className="eyebrow mb-4">
               Color Vision
             </h3>
             <ColorBlindnessSimulation
@@ -287,7 +296,7 @@ export default function ColorContrastChecker() {
         {/* Suggestions & Palettes - 6 cols */}
         {results && (
           <div className="col-span-1 md:col-span-6 glass-card rounded-xl p-6 space-y-6">
-            <h3 className="text-caption text-muted-foreground uppercase tracking-widest">
+            <h3 className="eyebrow">
               Suggestions
             </h3>
             <ColorPaletteSuggestions
@@ -308,12 +317,13 @@ export default function ColorContrastChecker() {
         )}
 
         {/* Full Width Analyzers */}
-        <div className="col-span-1 md:col-span-12 space-y-6 pt-12">
-          <div className="flex items-center gap-6 mb-8">
-            <h2 className="text-h2 tracking-tight text-white">
-              Full-Site Analysis
-            </h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
+        <div
+          id="analyze"
+          className="col-span-1 md:col-span-12 space-y-6 pt-16 scroll-mt-20"
+        >
+          <div className="sec-head">
+            <span className="eyebrow">02</span>
+            <h2>Analyze a page</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -323,7 +333,7 @@ export default function ColorContrastChecker() {
             <div className="glass-card rounded-xl p-6">
               <Suspense
                 fallback={
-                  <div className="animate-pulse h-64 bg-white/5 rounded-2xl" />
+                  <div className="animate-pulse h-64 bg-white/5 rounded-xl" />
                 }
               >
                 <ImageAnalyzer />
@@ -348,7 +358,7 @@ export default function ColorContrastChecker() {
             <div className="glass-card rounded-xl p-6">
               <Suspense
                 fallback={
-                  <div className="animate-pulse h-64 bg-white/5 rounded-2xl" />
+                  <div className="animate-pulse h-64 bg-white/5 rounded-xl" />
                 }
               >
                 <FormAccessibilityAnalyzer />
@@ -357,7 +367,7 @@ export default function ColorContrastChecker() {
             <div className="glass-card rounded-xl p-6">
               <Suspense
                 fallback={
-                  <div className="animate-pulse h-64 bg-white/5 rounded-2xl" />
+                  <div className="animate-pulse h-64 bg-white/5 rounded-xl" />
                 }
               >
                 <DynamicContentAnalyzer />

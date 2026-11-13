@@ -15,7 +15,7 @@ vi.mock('@/components/ColorContrastChecker', () => ({
 vi.mock('@/components/HeroSection', () => ({
     default: () => (
         <section>
-            <h1>Precision Contrast Control.</h1>
+            <h1>Measure the gap between text and ground.</h1>
             <p>Advanced color accessibility tools for designers and developers.</p>
         </section>
     ),
@@ -26,7 +26,7 @@ describe('Home Page', () => {
         render(<Home />);
 
         // Check for the main heading
-        const heading = screen.getByText(/Precision Contrast/i);
+        const heading = screen.getByRole('heading', { name: /Measure the gap/i });
         expect(heading).toBeDefined();
     });
 

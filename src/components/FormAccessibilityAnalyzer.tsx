@@ -44,7 +44,7 @@ export default function FormAccessibilityAnalyzer() {
   };
 
   return (
-    <div className="glass-morphism p-8 rounded-2xl">
+    <div className="glass-morphism p-8 rounded-xl">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-semibold text-white">
           Form Accessibility Analyzer
@@ -58,7 +58,7 @@ export default function FormAccessibilityAnalyzer() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter website URL"
-            className="flex-1 px-4 py-2 rounded-lg bg-black/50 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-accent"
+            className="flex-1 px-4 py-2 rounded-lg bg-black/50 border border-white/10 text-white placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
             aria-label="Website URL"
           />
           <button

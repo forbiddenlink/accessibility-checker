@@ -12,7 +12,6 @@ export default function ColorPicker({ label, color, onChange }: ColorPickerProps
       <label htmlFor={inputId} className="block text-xs font-medium text-muted-foreground uppercase tracking-wider">{label}</label>
       <div className="flex gap-4">
         <div className="relative group">
-          <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 group-hover:opacity-100 transition duration-500 blur"></div>
           <input
             type="color"
             value={color}
@@ -22,14 +21,13 @@ export default function ColorPicker({ label, color, onChange }: ColorPickerProps
           />
         </div>
         <div className="relative flex-1 group">
-           <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-20 transition duration-500 blur"></div>
            <input
             id={inputId}
             type="text"
             value={color}
             onChange={(e) => onChange(e.target.value)}
-            className="relative w-full h-12 rounded-lg bg-black/50 border border-white/10 px-4 text-white placeholder-white/20
-                     focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all uppercase font-mono tracking-wider backdrop-blur-xl"
+            className="relative w-full h-12 rounded-lg bg-black/50 border border-white/10 px-4 text-white placeholder-muted-foreground
+                     focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all uppercase font-mono tracking-wider"
             placeholder="#000000"
           />
         </div>

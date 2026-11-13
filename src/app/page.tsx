@@ -9,22 +9,24 @@ import AccessibilityLearningHub from "@/components/AccessibilityLearningHub";
 
 export default function Home() {
   return (
-    <div className="space-y-12 pb-24">
-      {/* Server-rendered static content */}
+    <div className="space-y-24 lg:space-y-32">
       <HeroSection />
 
-      {/* Client-rendered interactive content */}
+      {/* Client-rendered interactive content: the checker and the analyzers */}
       <ColorContrastChecker />
 
       {/* Reference material. WcagInformation and FontSizeAccessibility hold no
           state, so they stay server-rendered and cost no client JS. */}
-      <section aria-labelledby="learn-heading" className="space-y-8">
-        <h2 id="learn-heading" className="sr-only">
-          Learn about accessibility
-        </h2>
-        <WcagInformation />
-        <FontSizeAccessibility />
-        <AccessibilityLearningHub />
+      <section aria-labelledby="learn-heading" id="learn" className="scroll-mt-20">
+        <div className="sec-head">
+          <span className="eyebrow">03</span>
+          <h2 id="learn-heading">Thresholds and reading list</h2>
+        </div>
+        <div className="space-y-8">
+          <WcagInformation />
+          <FontSizeAccessibility />
+          <AccessibilityLearningHub />
+        </div>
       </section>
     </div>
   );
