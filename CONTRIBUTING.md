@@ -11,7 +11,7 @@ Please be respectful and constructive in all interactions.
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/accessibility-checker.git
+   git clone https://github.com/forbiddenlink/accessibility-checker.git
    cd accessibility-checker
    ```
 3. Install dependencies:

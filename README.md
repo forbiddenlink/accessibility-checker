@@ -1,47 +1,49 @@
 # Precision Contrast
 
-A professional accessibility suite for interface designers and developers. Beyond
-contrast checking, it analyses semantic structure, keyboard navigation, forms, images,
-and colour perception, wrapped in a dark "Cinematic Archive" aesthetic.
+Precision Contrast is a web app for checking accessibility. Beyond contrast checking, it
+analyzes semantic structure, keyboard navigation, forms, images, dynamic content and
+color perception.
 
-## ✨ Features
+Live site: <https://precision-contrast.vercel.app>
 
-### 🎨 Colour intelligence
+## Features
+
+### Color tools
 
 - **Contrast analysis**: WCAG 2.1 (AA/AAA) ratios, plus APCA lightness contrast.
-- **Suggestions**: accessible colour and palette recommendations derived from your
-  current colours that keep the ratio above your target.
-- **Colour blindness simulation**: preview your pair under protanopia, deuteranopia,
+- **Suggestions**: accessible color and palette recommendations derived from your
+  current colors that keep the ratio above your target.
+- **Color blindness simulation**: preview your pair under protanopia, deuteranopia,
   tritanopia, and achromatopsia.
 
-### 🛠 Accessibility analysers
+### Page analyzers
 
 Each of these fetches a URL you supply and inspects the rendered page in a headless
 browser:
 
-- **Website analyser**: crawls the site and reports axe-core violations per page.
-- **Semantic structure analyser**: visualises HTML hierarchy and document flow.
+- **Website analyzer**: crawls the site and reports axe-core violations per page.
+- **Semantic structure analyzer**: visualizes HTML hierarchy and document flow.
 - **Keyboard navigation checker**: verifies tab order and focus states.
-- **Form accessibility analyser**: checks labels, error states, and ARIA attributes.
-- **Image accessibility analyser**: audits alt text and decorative image usage.
-- **Dynamic content analyser**: inspects live regions and modal dialog semantics.
+- **Form accessibility analyzer**: checks labels, error states, and ARIA attributes.
+- **Image accessibility analyzer**: audits alt text and decorative image usage.
+- **Dynamic content analyzer**: inspects live regions and modal dialog semantics.
 
-### 💎 Experience
+### Output and interface
 
-- **Cinematic interface**: deep dark mode (`#0a0a0a`) with glassmorphism and noise.
+- **Themes**: light and dark, defined in `src/app/globals.css`.
 - **Export**: download results as a PDF report.
 
-## 🔒 Privacy
+## Privacy
 
-Contrast checking, suggestions, and colour blindness simulation run entirely in your
+Contrast checking, suggestions, and color blindness simulation run entirely in your
 browser, and saved palettes stay in `localStorage`.
 
-The URL analysers are the exception: a URL you submit is sent to this app's server and
+The URL analyzers are the exception: a URL you submit is sent to this app's server and
 fetched there, because inspecting a page needs a real browser engine. Requests to
 private, loopback, and link-local addresses are rejected. See the
 [privacy policy](src/app/privacy/page.tsx) for details.
 
-## 🚀 Tech stack
+## Tech stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router) + React 19
 - **Language**: TypeScript
@@ -50,9 +52,9 @@ private, loopback, and link-local addresses are rejected. See the
   on serverless)
 - **Testing**: Vitest + React Testing Library + Playwright
 
-## 📦 Getting started
+## Getting started
 
-Requires Node.js >= 20 and [pnpm](https://pnpm.io/).
+Requires Node.js 24 (`engines` in `package.json`) and [pnpm](https://pnpm.io/).
 
 1. **Clone the repository**
 
@@ -87,20 +89,12 @@ locally; both are optional in development.
 | `pnpm lint`      | ESLint, including jsx-a11y    |
 | `pnpm typecheck` | TypeScript                    |
 | `pnpm build`     | Production build              |
+| `pnpm check`     | Lint, typecheck and unit tests |
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions to make the web more accessible for everyone. Please read our
-[Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process
-for submitting pull requests.
+Read the [Contributing guide](CONTRIBUTING.md) before you open a pull request.
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for
-details.
-
----
-
-<p align="center">
-  Built with ❤️ for the accessible web.
-</p>
+MIT. See [LICENSE](LICENSE).
