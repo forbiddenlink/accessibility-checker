@@ -76,6 +76,42 @@ const analyzerLimit = redisConfigured
     })
   : null;
 
+/**
+ * Per-instance fixed-window counter used for analyzer routes when Redis is
+ * not configured. It is not shared across serverless instances, so it is a
+ * floor rather than a guarantee, but it stops one client from launching an
+ * unbounded number of browsers against a single warm instance.
+ */
+const FALLBACK_MAX = 5;
+const FALLBACK_WINDOW_MS = 60_000;
+const FALLBACK_MAX_KEYS = 5_000;
+const fallbackBuckets = new Map<string, { count: number; reset: number }>();
+
+function fallbackLimit(key: string, now = Date.now()) {
+  if (fallbackBuckets.size >= FALLBACK_MAX_KEYS) {
+    for (const [k, v] of fallbackBuckets) {
+      if (v.reset <= now) fallbackBuckets.delete(k);
+    }
+    // Still full of live buckets: drop the oldest so memory stays bounded.
+    if (fallbackBuckets.size >= FALLBACK_MAX_KEYS) {
+      const oldest = fallbackBuckets.keys().next().value;
+      if (oldest !== undefined) fallbackBuckets.delete(oldest);
+    }
+  }
+  let bucket = fallbackBuckets.get(key);
+  if (!bucket || bucket.reset <= now) {
+    bucket = { count: 0, reset: now + FALLBACK_WINDOW_MS };
+    fallbackBuckets.set(key, bucket);
+  }
+  bucket.count += 1;
+  return {
+    success: bucket.count <= FALLBACK_MAX,
+    limit: FALLBACK_MAX,
+    reset: bucket.reset,
+    reason: undefined as string | undefined,
+  };
+}
+
 function clientIp(request: NextRequest): string {
   // Prefer the platform-set header: x-forwarded-for is client-supplied, so on
   // any host that does not normalise it a caller can mint a fresh bucket per
@@ -91,10 +127,13 @@ export async function middleware(request: NextRequest) {
   const isAnalyzer = request.nextUrl.pathname.startsWith("/api/analyze-");
 
   const limiter = isAnalyzer ? analyzerLimit : publicApiLimit;
-  if (limiter) {
-    const { success, limit, reset, reason } = await limiter.limit(
-      clientIp(request),
-    );
+  // Without Redis the analyzer routes (one browser launch each) would be
+  // completely unthrottled, so they fall back to a local counter.
+  const useFallback = !limiter && isAnalyzer;
+  if (limiter || useFallback) {
+    const { success, limit, reset, reason } = limiter
+      ? await limiter.limit(clientIp(request))
+      : fallbackLimit(clientIp(request));
     if (isAnalyzer && reason === "timeout") {
       // A stalled Redis resolves success:true. Each analyzer call launches a
       // browser, so fail closed instead of allowing everything.
