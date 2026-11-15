@@ -61,3 +61,41 @@ describe("middleware rate limit timeout", () => {
     expect((await run("/api/analyze-forms")).status).toBe(429);
   });
 });
+
+describe("middleware without Redis", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    limit.mockReset();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  });
+
+  const run = async (path: string, ip = "203.0.113.7") => {
+    const { middleware } = await import("./middleware");
+    return middleware(
+      new NextRequest(`https://example.com${path}`, {
+        headers: { "x-real-ip": ip },
+      }),
+    );
+  };
+
+  it("still caps analyzer routes with the in-memory fallback", async () => {
+    for (let i = 0; i < 5; i++) {
+      expect((await run("/api/analyze-forms")).status).toBe(200);
+    }
+    const blocked = await run("/api/analyze-forms");
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get("Retry-After")).not.toBeNull();
+  });
+
+  it("keeps buckets separate per client", async () => {
+    for (let i = 0; i < 5; i++) await run("/api/analyze-forms", "198.51.100.1");
+    expect((await run("/api/analyze-forms", "198.51.100.2")).status).toBe(200);
+  });
+
+  it("does not throttle the cheap public API", async () => {
+    for (let i = 0; i < 30; i++) {
+      expect((await run("/api/contrast")).status).toBe(200);
+    }
+  });
+});
