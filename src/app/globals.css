@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* Tailwind v4 does not auto-load a JS config; without this the theme in
    tailwind.config.ts compiles to nothing. */
