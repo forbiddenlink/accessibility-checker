@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import {
   getLuminance,
@@ -180,6 +181,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ palettes });
   } catch (error) {
+    Sentry.captureException(error);
     console.error(
       "Error generating color palettes:",
       error instanceof Error ? error.message : "Unknown error",

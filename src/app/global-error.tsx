@@ -1,5 +1,6 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 
 export default function GlobalError({
@@ -9,10 +10,10 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // This boundary catches errors that took out the root layout, and it was
-  // reporting them nowhere at all. There is no error-tracking service wired up
-  // yet, so the digest is the only thread back to the server-side stack.
+  // This boundary catches errors that took out the root layout. Report them to
+  // Sentry; the digest still links back to the server-side stack.
   useEffect(() => {
+    Sentry.captureException(error);
     console.error("Critical error:", error.message, { digest: error.digest });
   }, [error]);
 

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { getLuminance, getContrastRatio, hexToRgb } from "@/utils/colorUtils";
 
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(results);
   } catch (error) {
+    Sentry.captureException(error);
     console.error(
       "Error processing contrast check:",
       error instanceof Error ? error.message : "Unknown error",

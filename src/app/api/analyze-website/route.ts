@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { WebsiteAnalyzer } from "@/utils/websiteAnalyzer";
 import { validateUrl } from "@/utils/security";
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
         { status: 502 },
       );
     }
+    Sentry.captureException(error);
     console.error(
       "Error analyzing website:",
       error instanceof Error ? error.message : "Unknown error",

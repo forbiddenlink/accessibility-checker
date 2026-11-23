@@ -1,3 +1,4 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import withBundleAnalyzerInit from "@next/bundle-analyzer";
 const withBundleAnalyzer = withBundleAnalyzerInit({
   enabled: process.env.ANALYZE === "true",
@@ -51,4 +52,17 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withSentryConfig(withBundleAnalyzer(nextConfig), {
+  org: "imkindageeky",
+  project: "precision-contrast",
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Same-origin tunnel keeps reports working behind ad blockers and the CSP.
+  tunnelRoute: "/monitoring",
+  // No auth token yet: skip source map upload so the build still passes.
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+    deleteSourcemapsAfterUpload: true,
+  },
+});
