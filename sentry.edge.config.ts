@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { scrubEvent } from "./src/utils/sentry-scrub";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -7,4 +8,6 @@ Sentry.init({
   release: process.env.VERCEL_GIT_COMMIT_SHA,
   tracesSampleRate: 0.1,
   sendDefaultPii: false,
+  beforeSend: scrubEvent,
+  beforeSendTransaction: scrubEvent,
 });
