@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { launchBrowser, createGuardedContext } from "@/utils/browser";
 import { DynamicContentAnalyzer } from "@/utils/dynamicContentAnalyzer";
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
       await browser.close();
     }
   } catch (error) {
+    Sentry.captureException(error);
     console.error(
       "Dynamic content analysis error:",
       error instanceof Error ? error.message : "Unknown error",
