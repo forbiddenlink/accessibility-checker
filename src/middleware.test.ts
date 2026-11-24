@@ -3,11 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const limit = vi.hoisted(() => vi.fn());
 
-vi.mock("@arcjet/next", () => ({
-  default: () => ({ protect: async () => ({ isDenied: () => false }) }),
-  shield: () => ({}),
-  detectBot: () => ({}),
-}));
 vi.mock("@upstash/redis", () => ({ Redis: { fromEnv: () => ({}) } }));
 vi.mock("@upstash/ratelimit", () => {
   class Ratelimit {

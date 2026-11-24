@@ -21,7 +21,7 @@ Requests to private/loopback/link-local addresses are rejected. See
 - Analysis: axe-core, apca-w3, `playwright-core` + `@sparticuz/chromium` (serverless
   headless browser)
 - Testing: Vitest + React Testing Library (unit), Playwright (e2e)
-- Rate limiting/bot protection: `@arcjet/next` + Upstash Redis (`@upstash/ratelimit`)
+- Rate limiting: Upstash Redis (`@upstash/ratelimit`)
 - pnpm (`pnpm@10.34.5` pinned), Node >= 20
 
 ## Commands
@@ -56,23 +56,18 @@ but are not the enforced linter.
 - `src/components` - one component per analyser/feature (e.g. `WebsiteAnalyzer.tsx`,
   `ColorContrastChecker.tsx`, `KeyboardNavigationChecker.tsx`)
 - `src/hooks`, `src/utils`, `src/types`, `src/mocks` (MSW mocks for tests)
-- `src/middleware.ts` - Arcjet shield + bot detection on `/api/*`, deliberately skips
-  bot detection for the documented public API routes (every non-browser client looks
-  like a bot to Arcjet)
+- `src/middleware.ts` - Upstash rate limiting on `/api/*`
 - `e2e/` - Playwright specs (`analyzers.spec.ts`, `core-journey.spec.ts`)
 
 ## Env vars
 
-`ARCJET_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
-`NEXT_PUBLIC_SITE_URL`. Copy `.env.example` to `.env.local`; Arcjet + rate limiting are
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`NEXT_PUBLIC_SITE_URL`. Copy `.env.example` to `.env.local`; Rate limiting is
 optional in development. `VERCEL` / `AWS_LAMBDA_FUNCTION_VERSION` are read to detect
 the serverless runtime (for the `@sparticuz/chromium` Playwright launch path).
 
 ## Gotchas
 
-- If `ARCJET_KEY` is unset in production, the middleware logs an error but Arcjet
-  fails open: requests are served with no shield/bot protection and no visible
-  failure. Confirm the key is set before trusting production traffic is protected.
 - The URL analysers spin up a real headless browser server-side; only http(s) targets
   outside private/loopback/link-local ranges are accepted (SSRF guard).
 - `pnpm test` and `pnpm test:unit` are the same command (`vitest run`) - `test:unit`
