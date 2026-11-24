@@ -1,52 +1,15 @@
-import arcjet, { shield, detectBot } from "@arcjet/next";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
-
-const arcjetKey = process.env.ARCJET_KEY;
-
-if (!arcjetKey && process.env.NODE_ENV === "production") {
-  // `key!` used to hide this: the assertion is erased at compile time, so an
-  // undefined key reached Arcjet, the call failed, and Arcjet fails open —
-  // production served every request with no protection and said nothing.
-  console.error(
-    "ARCJET_KEY is not set: shield and bot detection are disabled for /api/*",
-  );
-}
-
-/**
- * The documented public API. Bot detection must NOT apply here: every
- * legitimate consumer of a JSON API is a bot by Arcjet's definition, so
- * detectBot rejected curl, fetch and every script while letting browsers
- * through — the exact inverse of what a public API is for.
- */
-const publicApi = arcjetKey
-  ? arcjet({ key: arcjetKey, rules: [shield({ mode: "LIVE" })] })
-  : null;
-
-/**
- * The analyzer routes each spawn a headless browser, so they are worth
- * defending harder. They are only ever called from this app's own UI.
- */
-const browserOnlyApi = arcjetKey
-  ? arcjet({
-      key: arcjetKey,
-      rules: [
-        shield({ mode: "LIVE" }),
-        detectBot({ mode: "LIVE", allow: ["CATEGORY:SEARCH_ENGINE"] }),
-      ],
-    })
-  : null;
 
 const redisConfigured = Boolean(
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
 );
 
 if (!redisConfigured && process.env.NODE_ENV === "production") {
-  // Same fail-open shape as the missing ARCJET_KEY above: without Redis,
-  // `limiter` below is null and every request skips rate limiting entirely,
-  // including the browser-launching analyzer routes, with nothing in the
-  // logs to say so.
+  // Without Redis, `limiter` below is null and every request skips rate
+  // limiting entirely, including the browser-launching analyzer routes, with
+  // nothing in the logs to say so.
   console.error(
     "UPSTASH_REDIS_REST_URL/TOKEN not set: rate limiting is disabled for /api/*",
   );
@@ -156,14 +119,6 @@ export async function middleware(request: NextRequest) {
           },
         },
       );
-    }
-  }
-
-  const aj = isAnalyzer ? browserOnlyApi : publicApi;
-  if (aj) {
-    const decision = await aj.protect(request);
-    if (decision.isDenied()) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
 
